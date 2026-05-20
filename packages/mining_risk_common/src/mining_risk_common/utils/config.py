@@ -92,6 +92,24 @@ Returns:
         return self
 
 
+class DecisionConfig(BaseModel):
+    """完整决策结果持久化与批量处理配置。"""
+
+    output_dir: str = "var/decisions"
+    persist_enabled: bool = True
+    batch_max_concurrency: int = 3
+    batch_max_rows: int = 500
+
+    @model_validator(mode="after")
+    def _apply_env_override(self) -> "DecisionConfig":
+        """从环境变量覆盖决策输出目录。"""
+
+        env_output_dir = os.getenv("MINING_DECISION_OUTPUT_DIR")
+        if env_output_dir:
+            self.output_dir = env_output_dir
+        return self
+
+
 class DataConfig(BaseModel):
     """
     数据集路径、编码与表关联配置。
@@ -492,6 +510,7 @@ class AppConfig(BaseModel):
 
     project: ProjectConfig
     paths: PathsConfig = Field(default_factory=PathsConfig)
+    decision: DecisionConfig = Field(default_factory=DecisionConfig)
     data: DataConfig
     features: FeatureConfig
     model: ModelConfig

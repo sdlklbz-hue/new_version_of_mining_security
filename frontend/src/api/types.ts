@@ -144,6 +144,53 @@ export interface DecisionResponse {
   rag_evidence?: EvidenceAnchor[];
   node_status?: NodeStatus[];
   mock?: boolean;
+  output_path?: string;
+  output_display_path?: string;
+}
+
+export interface DecisionSettingsResponse {
+  output_dir: string;
+  resolved_path: string;
+  persist_enabled: boolean;
+  batch_max_concurrency: number;
+  batch_max_rows: number;
+}
+
+export interface DecisionSettingsUpdate {
+  output_dir?: string;
+  persist_enabled?: boolean;
+  batch_max_concurrency?: number;
+  batch_max_rows?: number;
+}
+
+export interface BatchDecisionResponse {
+  success: boolean;
+  message: string;
+  job_id: string;
+  total: number;
+  status_url: string;
+}
+
+export interface BatchDecisionItem {
+  row_index: number;
+  enterprise_id: string;
+  status: string;
+  risk_level?: string | null;
+  output_path?: string | null;
+  error?: string | null;
+}
+
+export interface BatchJobStatus {
+  job_id: string;
+  status: string;
+  total: number;
+  completed: number;
+  failed: number;
+  running: number;
+  output_dir: string;
+  manifest_path?: string | null;
+  results: BatchDecisionItem[];
+  errors: Array<Record<string, unknown>>;
 }
 
 export interface KnowledgeOverviewMetrics {
@@ -682,23 +729,6 @@ export interface WarningLog {
   status: "active" | "resolved" | "expired";
   resolution?: string;
   experience_recorded?: boolean;
-}
-
-export interface IterationRecord {
-  id: string;
-  version: string;
-  date: string;
-  status: "draft" | "testing" | "pending_approval" | "approved" | "rejected" | "canary" | "production";
-  f1: number;
-  samples: number;
-  description: string;
-  improvements: string[];
-  technical_details: string;
-  expected_effect: string;
-  approver?: string;
-  approval_comment?: string;
-  approved_at?: number;
-  created_at: number;
 }
 
 export interface EnterpriseRiskScore {

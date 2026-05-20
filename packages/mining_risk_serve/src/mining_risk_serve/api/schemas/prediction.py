@@ -75,6 +75,8 @@ class DecisionResponse(BaseModel):
   three_d_risk: Optional[Dict[str, Any]] = None
   node_status: List[Dict[str, Any]] = Field(default_factory=list)
   mock: bool = Field(default=False, description="是否为演示降级数据")
+  output_path: Optional[str] = Field(default=None, description="服务端完整决策 JSON 输出路径")
+  output_display_path: Optional[str] = Field(default=None, description="相对项目根的输出路径")
 
 
 class DecisionStreamMessage(BaseModel):
@@ -90,6 +92,66 @@ class DecisionStreamMessage(BaseModel):
   error: Optional[str] = None
   mock: bool = False
   decision_response: Optional[DecisionResponse] = None
+
+
+class DecisionSettingsResponse(BaseModel):
+  """完整决策结果输出设置。"""
+
+
+  output_dir: str
+  resolved_path: str
+  persist_enabled: bool
+  batch_max_concurrency: int
+  batch_max_rows: int
+
+
+class DecisionSettingsUpdate(BaseModel):
+  """完整决策结果输出设置更新。"""
+
+
+  output_dir: Optional[str] = None
+  persist_enabled: Optional[bool] = None
+  batch_max_concurrency: Optional[int] = Field(default=None, ge=1, le=20)
+  batch_max_rows: Optional[int] = Field(default=None, ge=1, le=5000)
+
+
+class BatchDecisionResponse(BaseModel):
+  """批量完整决策任务创建响应。"""
+
+
+  success: bool
+  message: str
+  job_id: str
+  total: int
+  status_url: str
+
+
+class BatchDecisionItem(BaseModel):
+  """批量完整决策单行进度。"""
+
+
+  row_index: int
+  enterprise_id: str
+  status: str
+  risk_level: Optional[str] = None
+  output_path: Optional[str] = None
+  error: Optional[str] = None
+
+
+class BatchJobStatus(BaseModel):
+  """批量完整决策任务状态。"""
+
+
+  job_id: str
+  status: str
+  total: int
+  completed: int
+  failed: int
+  running: int = 0
+  output_dir: str
+  manifest_path: Optional[str] = None
+  results: List[BatchDecisionItem] = Field(default_factory=list)
+  errors: List[Dict[str, Any]] = Field(default_factory=list)
 
 
 class ScenarioSwitchResponse(BaseModel):

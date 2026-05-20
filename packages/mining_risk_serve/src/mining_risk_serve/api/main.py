@@ -16,7 +16,7 @@ from mining_risk_common.compat.pickle_legacy import register_legacy_pickle_modul
 register_legacy_pickle_modules()
 
 from mining_risk_serve.api.exception_handlers import register_exception_handlers
-from mining_risk_serve.api.routers import audit, data, iteration, knowledge, memory, memory, prediction
+from mining_risk_serve.api.routers import audit, data, iteration, knowledge, memory, prediction
 from mining_risk_serve.api.routers.prediction import agent_router
 from mining_risk_serve.api.schemas.common import HealthPayload
 from mining_risk_common.utils.config import get_config, resolve_project_path
@@ -81,6 +81,27 @@ def _log_rag_startup_status(config) -> None:
         )
     except Exception as exc:
         logger.warning("RAG 启动检查失败（不影响 API 启动）: %s", exc)
+
+
+def _uvicorn_reload_options() -> dict:
+    """开发态 reload 仅监视源码包，避免 .venv / var / logs 等触发无限重载。"""
+    root = resolve_project_path(".")
+    return {
+        "reload_dirs": [
+            str(root / "packages" / "mining_risk_serve" / "src"),
+            str(root / "packages" / "mining_risk_common" / "src"),
+        ],
+        "reload_excludes": [
+            ".venv",
+            "**/.venv/**",
+            "node_modules",
+            "**/node_modules/**",
+            "var",
+            "artifacts",
+            "catboost_info",
+            "logs",
+        ],
+    }
 
 
 def _get_cors_origins() -> List[str]:
@@ -159,11 +180,14 @@ app = create_app()
 
 if __name__ == "__main__":
     import uvicorn
+
     config = get_config()
+    reload_kwargs = _uvicorn_reload_options() if config.api.reload else {}
     uvicorn.run(
         "mining_risk_serve.api.main:app",
         host=config.api.host,
         port=config.api.port,
         reload=config.api.reload,
         workers=config.api.workers,
+        **reload_kwargs,
     )

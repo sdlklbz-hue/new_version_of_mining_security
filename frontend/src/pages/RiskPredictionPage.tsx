@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { postDecision, streamDecision, uploadDataFile } from "../api/client";
-import type { DecisionResponse, NodeStatus, ScenarioId } from "../api/types";
+import {
+  createDecisionBatch,
+  downloadDecisionBatch,
+  fetchDecisionBatchStatus,
+  postDecision,
+  streamDecision,
+  uploadDataFile,
+} from "../api/client";
+import type { BatchJobStatus, DecisionResponse, NodeStatus, ScenarioId } from "../api/types";
 import {
   SCENARIO_NAMES,
   generateMockDecision,
@@ -29,6 +36,59 @@ const LEVEL_GLOW: Record<string, string> = {
   蓝: "glow-blue",
 };
 
+/** 三维风险加权总分上限（与后端 RiskAssessor 一致） */
+const THREE_D_SCORE_MAX = 4;
+
+/** Stacking 等级 → 风险权重，用于无三维评分时的加权期望 */
+const LEVEL_RISK_WEIGHT: Record<string, number> = {
+  红: 1.0,
+  橙: 0.75,
+  黄: 0.5,
+  蓝: 0.25,
+};
+
+function getStackingTopProbability(
+  dist?: Record<string, number>,
+): { level: string; probability: number } | null {
+  const entries = Object.entries(dist || {}).sort(([, a], [, b]) => b - a);
+  if (!entries.length) return null;
+  return { level: entries[0][0], probability: entries[0][1] };
+}
+
+function getStackingExpectedRisk(dist?: Record<string, number>): number {
+  return Object.entries(dist || {}).reduce((sum, [level, prob]) => {
+    const weight = LEVEL_RISK_WEIGHT[level] ?? 0.5;
+    return sum + prob * weight;
+  }, 0);
+}
+
+interface CompositeRiskDisplay {
+  gaugeValue: number;
+  primaryText: string;
+  sourceLabel: string;
+  usesThreeD: boolean;
+}
+
+function resolveCompositeRisk(decision: DecisionResponse): CompositeRiskDisplay {
+  const tdr = decision.three_d_risk;
+  if (tdr?.total_score !== undefined) {
+    const score = tdr.total_score;
+    return {
+      gaugeValue: Math.min(score / THREE_D_SCORE_MAX, 1),
+      primaryText: score.toFixed(1),
+      sourceLabel: `三维加权（满分 ${THREE_D_SCORE_MAX}）`,
+      usesThreeD: true,
+    };
+  }
+  const expected = getStackingExpectedRisk(decision.probability_distribution);
+  return {
+    gaugeValue: expected,
+    primaryText: `${(expected * 100).toFixed(0)}%`,
+    sourceLabel: "Stacking 等级加权期望",
+    usesThreeD: false,
+  };
+}
+
 type MockSource = "backend" | "frontend" | null;
 
 export default function RiskPredictionPage({ scenario }: Props) {
@@ -42,6 +102,9 @@ export default function RiskPredictionPage({ scenario }: Props) {
   const [streamLog, setStreamLog] = useState<NodeStatus[]>([]);
   const [useStream, setUseStream] = useState(true);
   const [mockSource, setMockSource] = useState<MockSource>(null);
+  const [batchLoading, setBatchLoading] = useState(false);
+  const [batchInfo, setBatchInfo] = useState("");
+  const [batchStatus, setBatchStatus] = useState<BatchJobStatus | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -63,6 +126,34 @@ export default function RiskPredictionPage({ scenario }: Props) {
       setUploadedRow(null);
     }
   }
+
+  async function handleBatchUpload(file: File) {
+    setBatchLoading(true);
+    setBatchInfo(`正在创建批量完整决策任务：${file.name}`);
+    setBatchStatus(null);
+    const resp = await createDecisionBatch(file, scenario);
+    if (!resp?.success) {
+      setBatchInfo("批量任务创建失败，请确认后端服务与管理员令牌配置。");
+      setBatchLoading(false);
+      return;
+    }
+    setBatchInfo(resp.message);
+    const firstStatus = await fetchDecisionBatchStatus(resp.job_id);
+    setBatchStatus(firstStatus);
+  }
+
+  useEffect(() => {
+    if (!batchStatus?.job_id) return;
+    if (batchStatus.status === "completed" || batchStatus.status === "completed_with_errors") {
+      setBatchLoading(false);
+      return;
+    }
+    const timer = window.setInterval(async () => {
+      const next = await fetchDecisionBatchStatus(batchStatus.job_id);
+      if (next) setBatchStatus(next);
+    }, 1500);
+    return () => window.clearInterval(timer);
+  }, [batchStatus?.job_id, batchStatus?.status]);
 
   async function handlePredict() {
     setError(null);
@@ -182,6 +273,32 @@ export default function RiskPredictionPage({ scenario }: Props) {
             </div>
           )}
 
+          <div className="scada-card" style={{ marginTop: 12, padding: 12 }}>
+            <div className="scada-card-title">批量完整决策</div>
+            <div style={{ fontSize: 11, color: "#94a3b8", margin: "6px 0 8px" }}>
+              多行 CSV/Excel 会逐家企业运行完整 Agent 工作流，并将 JSON 输出到系统配置页指定的服务端目录。
+            </div>
+            <input
+              type="file"
+              accept=".csv,.xlsx,.xls"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleBatchUpload(f);
+                e.currentTarget.value = "";
+              }}
+              disabled={batchLoading}
+              style={{ color: "#9ca3af", fontSize: 12 }}
+            />
+            {batchInfo && (
+              <div style={{ fontSize: 11, color: "#38bdf8", marginTop: 6 }}>
+                {batchInfo}
+              </div>
+            )}
+            {batchStatus && (
+              <BatchDecisionPanel status={batchStatus} />
+            )}
+          </div>
+
           <label
             style={{
               display: "flex",
@@ -236,6 +353,72 @@ export default function RiskPredictionPage({ scenario }: Props) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function BatchDecisionPanel({ status }: { status: BatchJobStatus }) {
+  const done = status.completed + status.failed;
+  const percent = status.total > 0 ? Math.round((done / status.total) * 100) : 0;
+  const recent = status.results.slice(0, 8);
+
+  async function handleDownload() {
+    const blob = await downloadDecisionBatch(status.job_id);
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${status.job_id}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <div style={{ marginTop: 10 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#94a3b8" }}>
+        <span>任务 {status.job_id}</span>
+        <span>{percent}%</span>
+      </div>
+      <div style={{ height: 6, background: "#1e293b", borderRadius: 999, overflow: "hidden", margin: "6px 0" }}>
+        <div style={{ width: `${percent}%`, height: "100%", background: "#38bdf8" }} />
+      </div>
+      <div style={{ fontSize: 11, color: "#94a3b8" }}>
+        状态 {status.status}，完成 {status.completed}，失败 {status.failed}，运行中 {status.running}，总数 {status.total}
+      </div>
+      {status.manifest_path && (
+        <div className="font-mono" style={{ fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
+          manifest: {status.manifest_path}
+        </div>
+      )}
+      {recent.length > 0 && (
+        <table className="scada-table" style={{ marginTop: 8, fontSize: 11 }}>
+          <thead>
+            <tr>
+              <th>企业</th>
+              <th>状态</th>
+              <th>等级</th>
+              <th>输出</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recent.map((item) => (
+              <tr key={`${item.row_index}-${item.enterprise_id}`}>
+                <td>{item.enterprise_id}</td>
+                <td>{item.status}</td>
+                <td>{item.risk_level || "-"}</td>
+                <td className="font-mono" style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {item.output_path || item.error || "-"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {(status.status === "completed" || status.status === "completed_with_errors") && (
+        <button className="scada-btn secondary" type="button" onClick={handleDownload} style={{ marginTop: 8 }}>
+          下载批量结果 ZIP
+        </button>
+      )}
     </div>
   );
 }
@@ -413,11 +596,14 @@ function DecisionView({ decision, streamLog, mockSource }: DecisionProps) {
 }
 
 function KpiCards({ decision }: { decision: DecisionResponse }) {
-  const probs = decision.probability_distribution || {};
-  const top = Object.entries(probs).sort(([, a], [, b]) => b - a)[0];
-  const confidence = top ? `${(top[1] * 100).toFixed(0)}%` : "—";
+  const stackingTop = getStackingTopProbability(decision.probability_distribution);
+  const modelProbText = stackingTop
+    ? `${(stackingTop.probability * 100).toFixed(0)}%`
+    : "—";
   const tdr = decision.three_d_risk;
   const mc = decision.monte_carlo_result;
+  const mcPassRate =
+    mc?.confidence !== undefined ? `${(mc.confidence * 100).toFixed(0)}%` : "—";
 
   return (
     <div className="row cols-4">
@@ -427,8 +613,13 @@ function KpiCards({ decision }: { decision: DecisionResponse }) {
         glowClass="glow-blue"
       />
       <ScadaCard
-        title="判定置信度"
-        value={confidence}
+        title="模型主类概率"
+        value={modelProbText}
+        sub={
+          stackingTop
+            ? `Stacking · 预测 ${stackingTop.level}`
+            : undefined
+        }
         glowClass="glow-green"
       />
       <ScadaCard
@@ -438,9 +629,17 @@ function KpiCards({ decision }: { decision: DecisionResponse }) {
         glowClass={tdr?.blocked ? "glow-red" : "glow-yellow"}
       />
       <ScadaCard
-        title="蒙特卡洛"
-        value={mc?.confidence !== undefined ? mc.confidence.toFixed(2) : "—"}
-        sub={mc ? `valid ${mc.valid_count}/${mc.total_samples}` : undefined}
+        title="蒙特卡洛通过率"
+        value={mcPassRate}
+        sub={
+          mc
+            ? `采样 ${mc.valid_count ?? "—"}/${mc.total_samples ?? mc.n_samples ?? "—"}${
+                mc.threshold !== undefined
+                  ? ` · 阈值 ${(mc.threshold * 100).toFixed(0)}%`
+                  : ""
+              }`
+            : undefined
+        }
         glowClass={mc?.passed ? "glow-green" : "glow-orange"}
       />
     </div>
@@ -545,13 +744,15 @@ function ValidationCards({ decision }: { decision: DecisionResponse }) {
           : undefined,
     },
     {
-      title: "蒙特卡洛置信采样",
+      title: "蒙特卡洛采样通过率",
       passed: decision.monte_carlo_result?.passed,
       detail: decision.monte_carlo_result?.status,
       extra:
         decision.monte_carlo_result?.confidence !== undefined
-          ? `confidence: ${decision.monte_carlo_result.confidence.toFixed(2)} / threshold: ${
-              decision.monte_carlo_result.threshold ?? "—"
+          ? `通过率 ${(decision.monte_carlo_result.confidence * 100).toFixed(0)}% / 阈值 ${
+              decision.monte_carlo_result.threshold !== undefined
+                ? `${(decision.monte_carlo_result.threshold * 100).toFixed(0)}%`
+                : "—"
             }`
           : undefined,
     },
@@ -639,10 +840,8 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
   const tdr = decision.three_d_risk;
   const mc = decision.monte_carlo_result;
   const level = decision.predicted_level || "未知";
-
-  const topProb = Object.entries(decision.probability_distribution || {})
-    .sort(([, a], [, b]) => b - a)[0];
-  const riskScore = topProb ? topProb[1] : 0;
+  const stackingTop = getStackingTopProbability(decision.probability_distribution);
+  const composite = resolveCompositeRisk(decision);
 
   const levelColor = LEVEL_HEX[level] ?? "#64748b";
   const levelInfo = RISK_LEVELS_CONFIG.find((l) => l.key === level);
@@ -690,11 +889,12 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
         fontFamily: "JetBrains Mono, monospace",
         color: levelColor,
         offsetCenter: [0, "10%"],
-        formatter: (v: number) => (v > 0 ? v.toFixed(2) : "—"),
+        formatter: () =>
+          composite.gaugeValue > 0 ? composite.primaryText : "—",
       },
-      data: [{ value: riskScore }],
+      data: [{ value: composite.gaugeValue }],
     }],
-  }), [riskScore, levelColor]);
+  }), [composite, levelColor]);
 
   const radarOption = useMemo(() => ({
     backgroundColor: "transparent",
@@ -743,8 +943,17 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
       <div className="subtitle">🎯 风险评分与等级分析</div>
       <div className="row cols-3">
         <div className="scada-card">
-          <div className="risk-report-title" style={{ marginBottom: 12 }}>
+          <div className="risk-report-title" style={{ marginBottom: 4 }}>
             综合风险评分
+          </div>
+          <div
+            style={{
+              fontSize: 11,
+              color: "#64748b",
+              marginBottom: 8,
+            }}
+          >
+            {composite.sourceLabel}
           </div>
           <div className="risk-gauge-container" style={{ padding: "10px 0" }}>
             <div style={{ width: 200, height: 160 }}>
@@ -818,7 +1027,11 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
             </span>
             {mc && (
               <span className={`tag ${mc.passed ? "tag-emerald" : "tag-red"}`}>
-                蒙特卡洛: {mc.passed ? "通过" : "未通过"} ({mc.confidence?.toFixed(2)})
+                蒙特卡洛: {mc.passed ? "通过" : "未通过"} (
+                {mc.confidence !== undefined
+                  ? `${(mc.confidence * 100).toFixed(0)}%`
+                  : "—"}
+                )
               </span>
             )}
           </div>
@@ -826,8 +1039,19 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
         <div style={{ fontSize: 13, lineHeight: 1.8, color: "#d1d5db" }}>
           <p style={{ margin: "0 0 6px" }}>
             企业 <b style={{ color: "#f1f5f9" }}>{decision.enterprise_id}</b> 风险评估完成，
-            预测等级为 <b style={{ color: levelColor }}>{level}级</b>，
-            综合评分 <b style={{ color: levelColor }}>{riskScore.toFixed(2)}</b>。
+            Stacking 预测等级为 <b style={{ color: levelColor }}>{level}级</b>
+            {stackingTop && (
+              <>
+                ，主类概率{" "}
+                <b style={{ color: levelColor }}>
+                  {(stackingTop.probability * 100).toFixed(0)}%
+                </b>
+              </>
+            )}
+            ；综合风险评分{" "}
+            <b style={{ color: levelColor }}>{composite.primaryText}</b>
+            {composite.usesThreeD ? ` / ${THREE_D_SCORE_MAX}` : ""}（
+            {composite.sourceLabel}）。
           </p>
           {decision.risk_level_and_attribution?.root_cause && (
             <p style={{ margin: "0 0 6px" }}>
@@ -837,7 +1061,7 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
           {tdr && (
             <p style={{ margin: "0 0 6px" }}>
               三维风险评估：严重性 <b>{tdr.severity}</b>、相关性 <b>{tdr.relevance}</b>、
-              不可逆性 <b>{tdr.irreversibility}</b>，综合评分 <b>{tdr.total_score?.toFixed(1)}</b>
+              不可逆性 <b>{tdr.irreversibility}</b>，分级 <b>{tdr.risk_level}</b>
               {tdr.blocked ? " — 触发拦截" : " — 未触发拦截"}。
             </p>
           )}

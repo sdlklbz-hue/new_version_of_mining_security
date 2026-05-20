@@ -1,6 +1,13 @@
-import { apiBase, fetchHealth, listKnowledge, readKnowledge } from "../api/client";
+import {
+  apiBase,
+  fetchDecisionSettings,
+  fetchHealth,
+  listKnowledge,
+  readKnowledge,
+  updateDecisionSettings,
+} from "../api/client";
 import { SCENARIO_CONFIG, SCENARIO_NAMES } from "../data/demoData";
-import type { HealthResponse, ScenarioId } from "../api/types";
+import type { DecisionSettingsResponse, HealthResponse, ScenarioId } from "../api/types";
 import { useEffect, useMemo, useState } from "react";
 import JsonView from "../components/JsonView";
 
@@ -164,13 +171,39 @@ export default function SystemConfigPage({ scenario, health }: Props) {
   const [previewContent, setPreviewContent] = useState<string>("");
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [decisionSettings, setDecisionSettings] = useState<DecisionSettingsResponse | null>(null);
+  const [decisionOutputDir, setDecisionOutputDir] = useState("var/decisions");
+  const [decisionPersistEnabled, setDecisionPersistEnabled] = useState(true);
+  const [decisionSettingsStatus, setDecisionSettingsStatus] = useState("");
 
   useEffect(() => {
     fetchHealth().then(setLatestHealth);
     listKnowledge().then((files) => {
       if (files.length > 0) setKnowledgeFiles(files);
     });
+    fetchDecisionSettings().then((settings) => {
+      if (!settings) return;
+      setDecisionSettings(settings);
+      setDecisionOutputDir(settings.output_dir);
+      setDecisionPersistEnabled(settings.persist_enabled);
+    });
   }, []);
+
+  async function saveDecisionSettings() {
+    setDecisionSettingsStatus("正在保存完整决策输出设置...");
+    const updated = await updateDecisionSettings({
+      output_dir: decisionOutputDir,
+      persist_enabled: decisionPersistEnabled,
+    });
+    if (!updated) {
+      setDecisionSettingsStatus("保存失败，请确认后端已启动且目录位于 var 运行时目录下。");
+      return;
+    }
+    setDecisionSettings(updated);
+    setDecisionOutputDir(updated.output_dir);
+    setDecisionPersistEnabled(updated.persist_enabled);
+    setDecisionSettingsStatus("完整决策输出设置已保存。");
+  }
 
   async function openKnowledgePreview(filename: string) {
     setPreviewFile(filename);
@@ -265,6 +298,50 @@ export default function SystemConfigPage({ scenario, health }: Props) {
           <div className="scada-card-title">治理阈值</div>
           <div className="system-kpi-value font-mono">{String(cfg["置信度阈值"])}</div>
           <div className="scada-card-sub">蒙特卡洛置信度下限</div>
+        </div>
+      </div>
+
+      <div className="scada-card" style={{ marginTop: 14 }}>
+        <div className="risk-report-header">
+          <div className="scada-card-title">完整决策输出目录</div>
+          <button className="scada-btn secondary" type="button" onClick={saveDecisionSettings}>
+            保存设置
+          </button>
+        </div>
+        <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
+          <label className="scada-label" htmlFor="decision-output-dir">
+            服务端相对目录
+          </label>
+          <input
+            id="decision-output-dir"
+            className="scada-input"
+            value={decisionOutputDir}
+            onChange={(e) => setDecisionOutputDir(e.target.value)}
+            placeholder="var/decisions"
+          />
+          <label style={{ display: "flex", gap: 8, alignItems: "center", color: "#9ca3af", fontSize: 12 }}>
+            <input
+              type="checkbox"
+              checked={decisionPersistEnabled}
+              onChange={(e) => setDecisionPersistEnabled(e.target.checked)}
+            />
+            自动保存单次与批量完整决策 JSON
+          </label>
+          <div style={{ color: "#94a3b8", fontSize: 12 }}>
+            解析路径：
+            <span className="font-mono" style={{ color: "#e5e7eb" }}>
+              {decisionSettings?.resolved_path || "等待后端返回"}
+            </span>
+          </div>
+          <div style={{ color: "#94a3b8", fontSize: 12 }}>
+            批量限制：并发 {decisionSettings?.batch_max_concurrency ?? "-"}，单批最多{" "}
+            {decisionSettings?.batch_max_rows ?? "-"} 行。目录必须位于服务端 var 运行时目录下。
+          </div>
+          {decisionSettingsStatus && (
+            <div className={`alert ${decisionSettingsStatus.includes("失败") ? "error" : "success"}`}>
+              {decisionSettingsStatus}
+            </div>
+          )}
         </div>
       </div>
 

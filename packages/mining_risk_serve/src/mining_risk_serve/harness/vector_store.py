@@ -17,8 +17,12 @@ import hashlib
 import math
 import os
 import re
+import sqlite3
 from datetime import datetime
 from typing import Any, Dict, Iterable, List, Optional
+
+# Chroma 在 import 前读取该环境变量；与 Settings(anonymized_telemetry=False) 一并关闭遥测。
+os.environ.setdefault("ANONYMIZED_TELEMETRY", "FALSE")
 
 try:
     import chromadb
@@ -45,6 +49,72 @@ logger = get_logger(__name__)
 
 
 DEFAULT_FALLBACK_EMBEDDING_DIMENSIONS = 384
+
+
+def _repair_legacy_chroma_collection_configs(persist_directory: str) -> None:
+    """修复 config_json_str 为 {} 的遗留 collection（Chroma 0.5.x 会 KeyError: '_type'）。"""
+    if chromadb is None:
+        return
+
+    db_path = os.path.join(persist_directory, "chroma.sqlite3")
+    if not os.path.isfile(db_path):
+        return
+
+    from chromadb.api.configuration import (
+        CollectionConfigurationInternal,
+        ConfigurationParameter,
+        HNSWConfigurationInternal,
+    )
+    from chromadb.segment.impl.vector.hnsw_params import PersistentHnswParams
+
+    conn = sqlite3.connect(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT id, config_json_str FROM collections")
+        repaired = 0
+        for collection_id, config_json in cur.fetchall():
+            if config_json and config_json.strip() not in ("", "{}"):
+                continue
+
+            cur.execute(
+                "SELECT key, str_value, int_value, float_value, bool_value "
+                "FROM collection_metadata WHERE collection_id=?",
+                (collection_id,),
+            )
+            metadata: Dict[str, Any] = {}
+            for key, str_value, int_value, float_value, bool_value in cur.fetchall():
+                if str_value is not None:
+                    metadata[key] = str_value
+                elif int_value is not None:
+                    metadata[key] = int_value
+                elif float_value is not None:
+                    metadata[key] = float_value
+                elif bool_value is not None:
+                    metadata[key] = bool(bool_value)
+
+            hnsw_configuration = HNSWConfigurationInternal.from_legacy_params(
+                PersistentHnswParams.extract(metadata)
+            )
+            configuration = CollectionConfigurationInternal(
+                parameters=[
+                    ConfigurationParameter(name="hnsw_configuration", value=hnsw_configuration)
+                ]
+            )
+            cur.execute(
+                "UPDATE collections SET config_json_str=? WHERE id=?",
+                (configuration.to_json_str(), collection_id),
+            )
+            repaired += 1
+
+        if repaired:
+            conn.commit()
+            logger.info(
+                "已修复 %d 个 Chroma collection 的空配置（%s）",
+                repaired,
+                persist_directory,
+            )
+    finally:
+        conn.close()
 
 
 def _env_bool(names: Iterable[str], default: bool) -> bool:
@@ -303,6 +373,7 @@ class VectorStore:
             persist_directory = str(resolve_project_path(str(persist_directory)))
         self.persist_directory = persist_directory
         os.makedirs(persist_directory, exist_ok=True)
+        _repair_legacy_chroma_collection_configs(persist_directory)
 
         if chromadb is None or Settings is None:
             detail = f" 原始错误: {_CHROMADB_IMPORT_ERROR}" if _CHROMADB_IMPORT_ERROR else ""

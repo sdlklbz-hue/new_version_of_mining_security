@@ -4,10 +4,12 @@
 
 import csv
 import json
+import math
 import os
 import zipfile
+from io import BytesIO, StringIO
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import pandas as pd
 from pydantic import BaseModel, Field, field_validator
@@ -17,6 +19,37 @@ from mining_risk_common.utils.exceptions import DataLoadingError
 from mining_risk_common.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+
+def dataframe_to_records(df: pd.DataFrame, n: Optional[int] = None) -> List[Dict[str, Any]]:
+    """
+    将 DataFrame 转为 JSON 可序列化的 dict 列表。
+    优先 to_json，规避部分 pandas 版本下 ``to_dict(orient='records')`` 的内部模块错误。
+    """
+    subset = df.head(n) if n is not None else df
+    if len(subset) == 0:
+        return []
+    try:
+        return json.loads(subset.to_json(orient="records", force_ascii=False))
+    except Exception:
+        records: List[Dict[str, Any]] = []
+        for _, row in subset.iterrows():
+            rec: Dict[str, Any] = {}
+            for col in subset.columns:
+                val = row[col]
+                if val is None or (isinstance(val, float) and math.isnan(val)):
+                    rec[str(col)] = None
+                elif hasattr(val, "item"):
+                    try:
+                        rec[str(col)] = val.item()
+                    except Exception:
+                        rec[str(col)] = val
+                elif isinstance(val, pd.Timestamp):
+                    rec[str(col)] = val.isoformat()
+                else:
+                    rec[str(col)] = val
+            records.append(rec)
+        return records
 
 
 class DataUploadRequest(BaseModel):
@@ -99,7 +132,7 @@ class DataLoader:
         self.supported_formats = config.data.supported_formats
         self.supported_suffixes = self._supported_suffixes(self.supported_formats)
         self.csv_encoding_fallbacks = self._unique_encodings(
-            [self.encoding, *config.data.csv_encoding_fallbacks, "utf-8", "gb18030", "gbk"]
+            [self.encoding, "utf-8-sig", *config.data.csv_encoding_fallbacks, "utf-8", "gb18030", "gbk"]
         )
         self._cache: Dict[str, pd.DataFrame] = {}
 
@@ -297,6 +330,29 @@ class DataLoader:
                 break
 
         raise DataLoadingError(f"CSV 文件无法读取 {file_path}: {last_error}")
+
+    def _read_csv_bytes_with_fallback(self, content: bytes) -> pd.DataFrame:
+        """多编码回退读取内存中的 CSV 字节流。"""
+        last_error: Optional[Exception] = None
+        for encoding in self.csv_encoding_fallbacks:
+            try:
+                buf = BytesIO(content)
+                df = pd.read_csv(buf, encoding=encoding)
+                df.columns = self._deduplicate_columns(list(df.columns), "API csv")
+                return df
+            except (UnicodeDecodeError, pd.errors.ParserError, LookupError) as exc:
+                last_error = exc
+                continue
+            except Exception as exc:
+                last_error = exc
+                break
+        raise DataLoadingError(f"API CSV 字节流无法读取: {last_error}")
+
+    def _read_csv_text_with_fallback(self, content: str) -> pd.DataFrame:
+        """读取内存中的 CSV 文本（已为 Unicode）。"""
+        df = pd.read_csv(StringIO(content))
+        df.columns = self._deduplicate_columns(list(df.columns), "API csv")
+        return df
 
     @staticmethod
     def _drop_unsupported_kwargs(ext: str, kwargs: Dict) -> Dict:
@@ -521,13 +577,10 @@ class DataLoader:
         try:
             if fmt == "csv":
                 if isinstance(content, str):
-                    from io import StringIO
-                    df = pd.read_csv(StringIO(content), encoding=self.encoding)
+                    df = self._read_csv_text_with_fallback(content)
                 else:
-                    from io import BytesIO
-                    df = pd.read_csv(BytesIO(content), encoding=self.encoding)
+                    df = self._read_csv_bytes_with_fallback(content)
             elif fmt == "excel":
-                from io import BytesIO
                 if isinstance(content, str):
                     content = content.encode(self.encoding)
                 df = pd.read_excel(BytesIO(content))
@@ -535,7 +588,6 @@ class DataLoader:
                 if isinstance(content, dict):
                     df = pd.json_normalize(content)
                 else:
-                    from io import StringIO
                     df = pd.read_json(StringIO(content))
             else:
                 raise DataLoadingError(f"不支持的格式: {fmt}")

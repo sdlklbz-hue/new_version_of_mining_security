@@ -8,13 +8,13 @@ import json
 import re
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 
-from mining_risk_common.dataplane.loader import DataLoader, DataUploadRequest
+from mining_risk_common.dataplane.loader import DataLoader, DataUploadRequest, dataframe_to_records
 from mining_risk_common.utils.config import get_config, resolve_project_path
 from mining_risk_common.utils.exceptions import DataLoadingError
 from mining_risk_common.utils.logger import get_logger
@@ -88,7 +88,10 @@ def _persist_upload_bytes(content: bytes, filename: str, enterprise_id: str) -> 
 def _persist_records(df: pd.DataFrame, upload_path: Path) -> Path:
     """内部辅助方法 ``_persist_records``；参数与返回值见类型注解。"""
     record_path = upload_path.with_suffix(upload_path.suffix + ".records.jsonl")
-    df.to_json(record_path, orient="records", lines=True, force_ascii=False)
+    records = dataframe_to_records(df)
+    with record_path.open("w", encoding="utf-8") as handle:
+        for record in records:
+            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
     if not record_path.exists() or (record_path.stat().st_size == 0 and len(df) > 0):
         raise DataLoadingError("规范化记录持久化校验失败")
     return record_path
@@ -115,7 +118,7 @@ async def upload_data(
         persisted = _persist_upload_bytes(content, file.filename or "upload.csv", enterprise)
         fmt = _data_format_from_filename(file.filename or "")
 
-        request = LoaderUploadRequest(
+        request = DataUploadRequest(
             enterprise_id=enterprise,
             data_format=fmt,
             content=content,
@@ -125,7 +128,7 @@ async def upload_data(
         df = loader.load_from_api(request)
         record_path = _persist_records(df, persisted["path"])
 
-        preview = df.head(5).to_dict(orient="records") if len(df) > 0 else None
+        preview = dataframe_to_records(df, n=5) if len(df) > 0 else None
 
         return DataUploadResponse(
             success=True,
@@ -133,6 +136,12 @@ async def upload_data(
             rows=len(df),
             columns=len(df.columns),
             preview=preview,
+            saved_path=_display_path(persisted["path"]),
+            record_path=_display_path(record_path),
+            checksum=persisted["checksum"],
+            bytes=persisted["bytes"],
+            persisted=True,
+            record_count=len(df),
         )
     except Exception as exc:
         logger.error("数据上传失败: %s", exc)
@@ -154,7 +163,13 @@ async def upload_batch(request: BatchUploadRequest) -> DataUploadResponse:
             message="批量上传成功，记录已持久化",
             rows=len(df),
             columns=len(df.columns),
-            preview=df.head(5).to_dict(orient="records"),
+            preview=dataframe_to_records(df, n=5),
+            saved_path=_display_path(persisted["path"]),
+            record_path=_display_path(record_path),
+            checksum=persisted["checksum"],
+            bytes=persisted["bytes"],
+            persisted=True,
+            record_count=len(df),
         )
     except Exception as exc:
         logger.error("批量上传失败: %s", exc)

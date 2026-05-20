@@ -629,6 +629,9 @@ function RiskVisualizationSection() {
             {loading ? "评估中..." : "🚀 执行批量风险评估"}
           </button>
         </div>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#94a3b8" }}>
+          这里用于记忆库演示级批量评分；需要逐家运行完整 Agent 决策并输出 JSON 时，请使用「企业风险预测」页的批量完整决策。
+        </div>
         {message && <div className={`alert ${message.includes("✅") ? "success" : message.includes("❌") ? "error" : "info"}`} style={{ marginTop: 10 }}>{message}</div>}
       </div>
 

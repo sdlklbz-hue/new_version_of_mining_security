@@ -22,6 +22,7 @@ from mining_risk_serve.api.schemas.prediction import (
     PredictResponse,
     ScenarioSwitchResponse,
 )
+from mining_risk_serve.api.services.decision_store import DecisionStore, get_decision_settings
 from mining_risk_serve.api.services.dependencies import ResourceRegistry, get_registry, mock_fallback_enabled
 from mining_risk_common.dataplane.field_normalizer import normalize_enterprise_record
 from mining_risk_serve.harness.validation import ValidationPipeline
@@ -129,7 +130,15 @@ class PredictionService:
             suggestions=suggestions,
         )
 
-    async def run_decision(self, request: DecisionRequest) -> DecisionResponse:
+    async def run_decision(
+        self,
+        request: DecisionRequest,
+        *,
+        persist: bool = True,
+        source: str = "single",
+        job_id: Optional[str] = None,
+        row_index: Optional[int] = None,
+    ) -> DecisionResponse:
         """执行完整决策工作流（含 Mock 降级策略）。
 
         Args:
@@ -158,9 +167,27 @@ class PredictionService:
                 logger.warning("Workflow 返回结果不完整，降级至 Mock: %s", invalid_err)
                 mock_resp = self._generate_mock_decision(request)
                 mock_resp.mock = True
+                self._persist_decision(
+                    request,
+                    mock_resp,
+                    {"error": str(invalid_err), "scenario_id": scenario_id},
+                    source=source,
+                    persist=persist,
+                    job_id=job_id,
+                    row_index=row_index,
+                )
                 return mock_resp
 
             resp = self._build_decision_response(request, final_state)
+            self._persist_decision(
+                request,
+                resp,
+                final_state,
+                source=source,
+                persist=persist,
+                job_id=job_id,
+                row_index=row_index,
+            )
             await self._try_audit_decision(request, prediction, final_state)
             return resp
         except HTTPException:
@@ -172,6 +199,15 @@ class PredictionService:
             logger.error("决策工作流执行失败，降级至 Mock: %s", exc)
             mock_resp = self._generate_mock_decision(request)
             mock_resp.mock = True
+            self._persist_decision(
+                request,
+                mock_resp,
+                {"error": str(exc), "scenario_id": scenario_id},
+                source=source,
+                persist=persist,
+                job_id=job_id,
+                row_index=row_index,
+            )
             return mock_resp
 
     async def decision_stream(
@@ -401,6 +437,39 @@ class PredictionService:
             node_status=final_state.get("node_status", []),
         )
 
+    def _persist_decision(
+        self,
+        request: DecisionRequest,
+        response: DecisionResponse,
+        final_state: Optional[Dict[str, Any]],
+        *,
+        source: str,
+        persist: bool = True,
+        job_id: Optional[str] = None,
+        row_index: Optional[int] = None,
+    ) -> Optional[Dict[str, str]]:
+        """将完整决策输出到配置目录；失败不影响主流程。"""
+
+        if not persist:
+            return None
+        try:
+            if not get_decision_settings().get("persist_enabled", True):
+                return None
+            output = DecisionStore().save_decision(
+                request=request,
+                response=response,
+                final_state=final_state,
+                source=source,
+                job_id=job_id,
+                row_index=row_index,
+            )
+            response.output_path = output.get("path")
+            response.output_display_path = output.get("display_path")
+            return output
+        except Exception as exc:
+            logger.warning("完整决策结果输出失败: %s", exc)
+            return None
+
     @staticmethod
     def _validate_workflow_state(final_state: Dict[str, Any]) -> None:
         """内部辅助方法 ``_validate_workflow_state``；参数与返回值见类型注解。"""
@@ -474,7 +543,10 @@ class PredictionService:
             prediction = final_state.get("prediction") or {}
             try:
                 self._validate_workflow_state(final_state)
-                decision_response = self._build_decision_response(request, final_state).model_dump()
+                decision_obj = self._build_decision_response(request, final_state)
+                self._persist_decision(request, decision_obj, final_state, source="stream")
+                await self._try_audit_decision(request, prediction, final_state)
+                decision_response = decision_obj.model_dump()
                 status = "completed"
                 error = None
             except RuntimeError as invalid_err:
@@ -511,6 +583,12 @@ class PredictionService:
         request = DecisionRequest(enterprise_id=enterprise_id, data=raw_data, scenario_id=scenario_id)
         mock_resp = self._generate_mock_decision(request)
         mock_resp.mock = True
+        self._persist_decision(
+            request,
+            mock_resp,
+            {"scenario_id": scenario_id, "memory_results": None},
+            source="stream",
+        )
         mock_nodes = [
             {"node": "data_ingestion", "status": "completed", "detail": "Mock: 特征工程完成（场景=%s）" % scenario_id},
             {"node": "risk_assessment", "status": "completed", "detail": "Mock: 预测等级已生成"},

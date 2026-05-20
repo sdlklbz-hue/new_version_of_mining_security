@@ -74,6 +74,8 @@ RAG_ENV_SWITCHES = (
     "RAG_ENABLED",
 )
 
+VALIDATION_EMBEDDING_ENV = "VALIDATION_RAG_EMBEDDING_BACKEND"
+
 
 # =============================================================================
 # Pydantic 模型
@@ -147,6 +149,22 @@ def _get_isolated_propositions(state: Dict[str, Any]) -> List[Dict[str, str]]:
 # =============================================================================
 # 证据检索层：正式 Chroma/RAG -> Markdown 扫描 -> builtin fallback
 # =============================================================================
+
+def _resolve_validation_embedding_backend() -> Optional[str]:
+    """
+    解析校验层向量检索使用的嵌入后端。
+
+    未设置 ``VALIDATION_RAG_EMBEDDING_BACKEND`` 时返回 ``None``，
+    由 ``VectorStore`` 与主 RAG 共用同一套配置（``RAG_EMBEDDING_BACKEND`` / ``config.yaml``）。
+
+    Returns:
+        Optional[str]: 显式覆盖的后端名称，或 ``None`` 表示继承主 RAG。
+    """
+    override = os.getenv(VALIDATION_EMBEDDING_ENV, "").strip()
+    if override:
+        return override.lower()
+    return None
+
 
 def _env_bool(names: Iterable[str]) -> Optional[bool]:
     """内部辅助方法 ``_env_bool``；参数与返回值见类型注解。"""
@@ -256,8 +274,9 @@ class EvidenceRetriever:
     校验证据检索器。
 
     优先读取正式 var/chroma / knowledge_base collection；当 RAG 关闭、
-    索引缺失或依赖不可用时，降级扫描 Markdown 文件。调用方仍可在没有
-    外部模型的 deterministic fallback embedding 环境下稳定运行。
+    索引缺失或依赖不可用时，降级扫描 Markdown 文件。
+    嵌入后端默认与主 RAG（``VectorStore``）一致，避免与 ``var/chroma`` 索引维度不一致；
+    仅当设置 ``VALIDATION_RAG_EMBEDDING_BACKEND`` 时才单独覆盖。
     """
 
 
@@ -396,7 +415,7 @@ class EvidenceRetriever:
             self._vector_store = VectorStore(
                 persist_directory=str(self.persist_directory),
                 collection_name=self.collection_name,
-                embedding_backend=os.getenv("VALIDATION_RAG_EMBEDDING_BACKEND", "fallback"),
+                embedding_backend=_resolve_validation_embedding_backend(),
             )
         except Exception as exc:
             logger.warning(f"校验证据 RAG 初始化失败，降级为 Markdown 扫描: {exc}")

@@ -175,13 +175,48 @@ python scripts/rebuild_rag_index.py --clear --embedding-backend auto
 
 重建报告写入 `reports/rag_index_rebuild_run.json`。知识库 Markdown 更新后需重新执行上述命令。
 
+**模型下载与缓存（启用真实 BGE 时必读）**
+
+| 项目 | 说明 |
+|------|------|
+| **何时会下载** | ① 执行 `rebuild_rag_index.py` 且 `--embedding-backend` 为 `auto` 或 `sentence_transformers`；② API 已安装 `sentence-transformers` 且 `RAG_EMBEDDING_BACKEND=auto`（默认）时，**首次**加载 RAG（长期记忆召回 / 精排）也会从 Hugging Face 拉取 |
+| **涉及模型** | 嵌入：`BAAI/bge-large-zh-v1.5`（权重约 **1.3GB**，含 tokenizer 等合计约 **2GB**）；精排：`BAAI/bge-reranker-large`（首次触发精排时另需下载） |
+| **默认缓存目录** | **不在项目仓库内**。macOS/Linux：`~/.cache/huggingface/hub/models--BAAI--bge-large-zh-v1.5/`，权重位于 `snapshots/<commit>/pytorch_model.bin` 或 `model.safetensors` |
+| **自定义缓存** | `export HF_HOME=/你的路径/huggingface` 或 `export HUGGINGFACE_HUB_CACHE=/你的路径/huggingface/hub`（设置后需重启进程；可手动迁移已有 `~/.cache/huggingface`） |
+| **离线 / CI** | 使用 `--embedding-backend fallback` 或 `.env` 中 `RAG_EMBEDDING_BACKEND=fallback`，**无需联网、无需下载** |
+
+**索引与运行时嵌入维度必须一致**（否则召回报错并降级为空）：
+
+| 嵌入后端 | 向量维度 | 典型场景 |
+|----------|----------|----------|
+| `fallback` / `deterministic` | **384** | 离线演示、`rebuild_rag_index.py --embedding-backend fallback` |
+| `BAAI/bge-large-zh-v1.5` | **1024** | 生产语义检索、`--embedding-backend auto` 或 `sentence_transformers` |
+
+若已用 `fallback` 构建过 `var/chroma/`，运行时不要切换到 BGE，除非 **`--clear` 重建索引**。常见错误：
+
+```text
+Embedding dimension 1024 does not match collection dimensionality 384
+```
+
+修复任选其一：
+
+```bash
+# 方案 A：与运行时 BGE 对齐，重建索引（推荐）
+python scripts/rebuild_rag_index.py --clear --embedding-backend sentence_transformers
+
+# 方案 B：保持现有 384 维索引，强制运行时也用 fallback
+# 在 .env 中：RAG_EMBEDDING_BACKEND=fallback
+```
+
 **4. 环境变量（可选）**
 
 | 变量 | 说明 |
 |------|------|
 | `RAG_ENABLED` / `MINING_RAG_ENABLED` / `HARNESS_RAG_ENABLED` | 设为 `false` 关闭长期记忆向量召回 |
-| `RAG_EMBEDDING_BACKEND` | `auto` / `fallback` / `sentence_transformers` |
+| `RAG_EMBEDDING_BACKEND` | `auto` / `fallback` / `sentence_transformers`（须与建索引时一致，见上文「模型下载与缓存」） |
 | `RAG_ALLOW_FALLBACK_EMBEDDING` | `auto` 模式下是否允许降级嵌入 |
+| `VALIDATION_RAG_EMBEDDING_BACKEND` | 可选；**未设置时校验层与主 RAG 共用同一嵌入后端**（避免 384/1024 维不一致） |
+| `HF_HOME` / `HUGGINGFACE_HUB_CACHE` | 可选，自定义 Hugging Face 模型缓存目录 |
 
 详见 `.env.example`。
 
@@ -214,9 +249,9 @@ export MINING_PROJECT_ROOT="$(pwd)"
 # 首次需安装 workspace 包（否则会出现 No module named 'mining_risk_serve'）
 uv pip install -e packages/mining_risk_common -e packages/mining_risk_train -e packages/mining_risk_serve
 
-uvicorn mining_risk_serve.api.main:app --host 0.0.0.0 --port 8000 --reload
-# 或使用封装脚本（缺包时会自动安装）：
-# bash scripts/run_api.sh --reload
+# 开发态推荐封装脚本：仅监视源码目录，避免 .venv / var / logs 触发无限重载
+bash scripts/run_api.sh --reload
+# 若直接 uvicorn --reload，需限制 reload-dir 并排除 .venv（见 scripts/run_api.sh）
 ```
 
 API 文档地址：`http://localhost:8000/docs`
@@ -597,11 +632,13 @@ POST /api/v1/agent/scenario/metallurgy
 - 元数据过滤：每个 chunk 携带 `source_file`、`risk_type`、`industry`、`publish_date`、`doc_type`
 - SelfQuery：`self_query_retrieve(query, filters, top_k)` 先按元数据预过滤，再执行向量相似度检索
 - 嵌入模型：默认 `BAAI/bge-large-zh-v1.5`（可通过 `config.yaml` 配置）
+- 首次使用真实嵌入时从 Hugging Face 下载至 `~/.cache/huggingface/hub/`；缓存路径、体积、与 `fallback` 的维度对齐要求见 [§4 启用 RAG — 模型下载与缓存](#4-启用-rag检索增强生成)
 
 ### 7.3 重排序（BGE-Reranker-large）
 
 - 使用 `CrossEncoder` 对向量检索的候选结果进行精排
 - 模型：`BAAI/bge-reranker-large`（可通过 `config.yaml` 配置）
+- 首次精排时同样下载至 Hugging Face 默认缓存目录（见 §4）
 - 模型加载失败时自动回退到原始顺序
 
 ### 7.4 知识库自动构建
@@ -1427,7 +1464,13 @@ pytest tests/ -v \
 **Q4：如何添加自定义企业数据？**
 > 在「企业风险预测」页左侧 JSON 输入框中直接编辑，或通过「上传 CSV/Excel」组件导入。系统会自动合并上传文件的第一行数据到预测请求中。
 
-**Q5：知识库文件显示乱码？**
+**Q5：完整决策结果会保存到哪里？**
+> 默认保存到服务端 `var/decisions`。可在「系统配置与 API」页修改输出目录（必须位于 `var/` 运行时目录下），或通过 `MINING_DECISION_OUTPUT_DIR` 覆盖。普通决策与 SSE 流式决策都会输出完整 JSON，包含请求、响应、RAG 召回结果摘要与 Mock 标记。
+
+**Q6：如何处理多家企业的完整决策？**
+> 在「企业风险预测」页使用「批量完整决策」上传 CSV/Excel。后端会创建任务、按受控并发逐行运行完整 Agent 工作流，并在输出目录的 `batches/<job_id>/` 下写入每家企业的 JSON 和 `manifest.json`；前端会轮询进度并支持下载 ZIP。默认并发为 3、单批最多 500 行，可在配置中调整。
+
+**Q7：知识库文件显示乱码？**
 > 知识库文件统一使用 UTF-8 编码。Windows 环境下如遇乱码，请确保编辑器/终端编码设置为 UTF-8。
 
 ## 十七、许可证

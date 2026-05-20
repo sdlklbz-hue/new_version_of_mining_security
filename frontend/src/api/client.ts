@@ -7,15 +7,22 @@
 
 import type {
   AuditLogEntry,
+  BatchDecisionResponse,
+  BatchJobStatus,
   DataUploadResponse,
   DatasetKind,
   DemoResetResponse,
   DecisionResponse,
+  DecisionSettingsResponse,
+  DecisionSettingsUpdate,
   DemoBatch,
   DemoIterationStepResponse,
   DemoReplayLoadResponse,
   HealthResponse,
   IterationRecord,
+  IterationAuditResponse,
+  IterationReportResponse,
+  IterationReportsResponse,
   IterationStatus,
   IterationTimelineResponse,
   IterationTriggerResponse,
@@ -26,6 +33,8 @@ import type {
   LLMProvider,
   LLMUpdateRequest,
   LongTermMemory,
+  MemoryStatisticsParams,
+  MemoryStatisticsResponse,
   ModelEvaluationReport,
   NodeStatus,
   ScenarioSwitchResponse,
@@ -179,6 +188,82 @@ export async function streamDecision(
   return finalDecision;
 }
 
+export async function fetchDecisionSettings(): Promise<DecisionSettingsResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/agent/decision/settings"), {
+      headers: adminHeaders(),
+    });
+    if (!resp.ok) return null;
+    return (await resp.json()) as DecisionSettingsResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function updateDecisionSettings(
+  payload: DecisionSettingsUpdate,
+): Promise<DecisionSettingsResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/agent/decision/settings"), {
+      method: "PUT",
+      headers: adminHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) return null;
+    return (await resp.json()) as DecisionSettingsResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function createDecisionBatch(
+  file: File,
+  scenarioId: string,
+): Promise<BatchDecisionResponse | null> {
+  try {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("scenario_id", scenarioId);
+    const resp = await fetch(url("/api/v1/agent/decision/batch"), {
+      method: "POST",
+      headers: adminHeaders(),
+      body: form,
+    });
+    if (!resp.ok) throw new Error(await responseError(resp));
+    return (await resp.json()) as BatchDecisionResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchDecisionBatchStatus(jobId: string): Promise<BatchJobStatus | null> {
+  try {
+    const resp = await fetch(url(`/api/v1/agent/decision/batch/${encodeURIComponent(jobId)}`), {
+      headers: adminHeaders(),
+    });
+    if (!resp.ok) return null;
+    return (await resp.json()) as BatchJobStatus;
+  } catch {
+    return null;
+  }
+}
+
+export function decisionBatchDownloadUrl(jobId: string): string {
+  return url(`/api/v1/agent/decision/batch/${encodeURIComponent(jobId)}/download`);
+}
+
+export async function downloadDecisionBatch(jobId: string): Promise<Blob | null> {
+  try {
+    const resp = await fetch(decisionBatchDownloadUrl(jobId), {
+      headers: adminHeaders(),
+    });
+    if (!resp.ok) return null;
+    return await resp.blob();
+  } catch {
+    return null;
+  }
+}
+
 export async function uploadDataFile(
   file: File,
   enterpriseId?: string,
@@ -191,10 +276,24 @@ export async function uploadDataFile(
       method: "POST",
       body: form,
     });
-    if (!resp.ok) return null;
+    if (!resp.ok) {
+      let message = `HTTP ${resp.status}`;
+      try {
+        const err = (await resp.json()) as { detail?: string; message?: string };
+        message =
+          typeof err.detail === "string"
+            ? err.detail
+            : err.message ?? message;
+      } catch {
+        /* 非 JSON 错误体 */
+      }
+      return { success: false, message, rows: 0, columns: 0 };
+    }
     return (await resp.json()) as DataUploadResponse;
-  } catch {
-    return null;
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "网络错误或后端未启动";
+    return { success: false, message, rows: 0, columns: 0 };
   }
 }
 

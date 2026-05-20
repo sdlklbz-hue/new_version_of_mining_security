@@ -6,12 +6,16 @@ Router 层仅负责 HTTP 绑定；业务逻辑见 ``api.services.prediction_serv
 
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse, StreamingResponse
 
 from mining_risk_serve.api.schemas.prediction import (
     DecisionRequest,
     DecisionResponse,
+    DecisionSettingsResponse,
+    DecisionSettingsUpdate,
+    BatchDecisionResponse,
+    BatchJobStatus,
     LLMConfigResponse,
     LLMUpdateRequest,
     PredictRequest,
@@ -20,6 +24,8 @@ from mining_risk_serve.api.schemas.prediction import (
     ScenarioSwitchResponse,
 )
 from mining_risk_serve.api.security import require_admin_token
+from mining_risk_serve.api.services.decision_batch_service import get_batch_service
+from mining_risk_serve.api.services.decision_store import get_decision_settings, update_decision_settings
 from mining_risk_serve.api.services.prediction_service import PredictionService, get_prediction_service
 from mining_risk_common.utils.logger import get_logger
 
@@ -79,6 +85,64 @@ async def decision_stream(
         service.decision_stream(request),
         media_type="text/event-stream",
     )
+
+
+@agent_router.post("/decision/batch", response_model=BatchDecisionResponse)
+async def create_decision_batch(
+    file: UploadFile = File(...),
+    scenario_id: str = Form("chemical"),
+    _: None = Depends(require_admin_token),
+    service: PredictionService = Depends(get_prediction_service),
+) -> BatchDecisionResponse:
+    """上传 CSV/Excel 并创建批量完整决策任务。"""
+
+    return await get_batch_service(service).create_job(file, scenario_id)
+
+
+@agent_router.get("/decision/batch/{job_id}", response_model=BatchJobStatus)
+async def decision_batch_status(
+    job_id: str,
+    _: None = Depends(require_admin_token),
+    service: PredictionService = Depends(get_prediction_service),
+) -> BatchJobStatus:
+    """查询批量完整决策任务状态。"""
+
+    return get_batch_service(service).get_status(job_id)
+
+
+@agent_router.get("/decision/batch/{job_id}/download")
+async def download_decision_batch(
+    job_id: str,
+    _: None = Depends(require_admin_token),
+    service: PredictionService = Depends(get_prediction_service),
+) -> FileResponse:
+    """下载批量完整决策任务输出 ZIP。"""
+
+    zip_path = get_batch_service(service).zip_path(job_id)
+    return FileResponse(path=zip_path, filename=zip_path.name, media_type="application/zip")
+
+
+@agent_router.get("/decision/settings", response_model=DecisionSettingsResponse)
+async def decision_settings(
+    _: None = Depends(require_admin_token),
+) -> DecisionSettingsResponse:
+    """返回完整决策结果输出设置。"""
+
+    return DecisionSettingsResponse(**get_decision_settings())
+
+
+@agent_router.put("/decision/settings", response_model=DecisionSettingsResponse)
+async def update_decision_output_settings(
+    request: DecisionSettingsUpdate,
+    _: None = Depends(require_admin_token),
+) -> DecisionSettingsResponse:
+    """更新完整决策结果输出设置。"""
+
+    try:
+        settings = update_decision_settings(request.model_dump(exclude_unset=True))
+        return DecisionSettingsResponse(**settings)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @agent_router.get("/llm", response_model=LLMConfigResponse)

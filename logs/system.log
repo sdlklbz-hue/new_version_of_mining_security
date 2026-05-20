@@ -8189,3 +8189,546 @@ json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 7680553 (ch
 2026-05-20 12:50:22,099 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
 2026-05-20 12:50:22,100 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
 2026-05-20 12:50:22,185 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:02:19,922 - __main__ - INFO - 开始初始化知识库，数据目录: datasets/raw/public, 输出目录: knowledge_base
+2026-05-20 13:02:19,924 - mining_risk_common.dataplane.loader - WARNING - 重复字段已追加 __dupN 后缀 in /Users/kita/Desktop/repo/language/python/mining_risk_agent/datasets/raw/public/数据补充/szs_enterprise_information_202603191751.csv: 创建人 -> 创建人__dup2; 创建时间 -> 创建时间__dup2; 企业规模 -> 企业规模__dup2
+2026-05-20 13:02:20,204 - mining_risk_common.dataplane.loader - INFO - 成功加载 /Users/kita/Desktop/repo/language/python/mining_risk_agent/datasets/raw/public/数据补充/szs_enterprise_information_202603191751.csv，形状: (500, 64)
+2026-05-20 13:02:20,204 - __main__ - INFO - 加载 szs_enterprise_information: (500, 64)
+2026-05-20 13:02:20,209 - mining_risk_common.dataplane.loader - INFO - 成功加载 /Users/kita/Desktop/repo/language/python/mining_risk_agent/datasets/raw/public/数据补充/szs_enterprise_industry_category_202603191748.csv，形状: (500, 44)
+2026-05-20 13:02:20,209 - __main__ - INFO - 加载 szs_enterprise_industry_category: (500, 44)
+2026-05-20 13:02:20,213 - mining_risk_common.dataplane.loader - INFO - 成功加载 /Users/kita/Desktop/repo/language/python/mining_risk_agent/datasets/raw/public/数据补充/szs_enterprise_safety_202603191748.csv，形状: (500, 37)
+2026-05-20 13:02:20,213 - __main__ - INFO - 加载 szs_enterprise_safety: (500, 37)
+2026-05-20 13:02:20,219 - mining_risk_common.dataplane.loader - INFO - 成功加载 /Users/kita/Desktop/repo/language/python/mining_risk_agent/datasets/raw/public/数据补充/szs_enterprise_risk_history_202603191750.csv，形状: (500, 46)
+2026-05-20 13:02:20,219 - __main__ - INFO - 加载 szs_enterprise_risk: (500, 46)
+2026-05-20 13:02:20,220 - mining_risk_common.dataplane.loader - WARNING - 重复字段已追加 __dupN 后缀 in /Users/kita/Desktop/repo/language/python/mining_risk_agent/datasets/raw/public/新数据/st_ds_aczf_enterprise_202603181755.csv: 是否是集团 -> 是否是集团__dup2; 注册安全工程师人员数量 -> 注册安全工程师人员数量__dup2
+2026-05-20 13:02:20,229 - mining_risk_common.dataplane.loader - INFO - 成功加载 /Users/kita/Desktop/repo/language/python/mining_risk_agent/datasets/raw/public/新数据/st_ds_aczf_enterprise_202603181755.csv，形状: (300, 188)
+2026-05-20 13:02:20,229 - __main__ - INFO - 加载 st_ds_aczf_enterprise: (300, 188)
+2026-05-20 13:02:20,229 - __main__ - INFO - 未找到特征汇总Excel文件，跳过字段元数据提取
+2026-05-20 13:02:20,230 - __main__ - INFO - 已生成知识库文件: knowledge_base/工矿风险预警智能体合规执行书.md (13887 字符)
+2026-05-20 13:02:20,231 - __main__ - INFO - 已生成知识库文件: knowledge_base/部门分级审核SOP.md (11726 字符)
+2026-05-20 13:02:20,232 - __main__ - INFO - 已生成知识库文件: knowledge_base/工业物理常识及传感器时间序列逻辑.md (13829 字符)
+2026-05-20 13:02:20,243 - __main__ - INFO - 已生成知识库文件: knowledge_base/企业已具备的执行条件.md (103068 字符)
+2026-05-20 13:02:20,244 - __main__ - INFO - 已生成知识库文件: knowledge_base/类似事故处理案例.md (41266 字符)
+2026-05-20 13:02:20,244 - __main__ - INFO - 已生成知识库文件: knowledge_base/预警历史经验与短期记忆摘要.md (723 字符)
+2026-05-20 13:02:20,244 - __main__ - INFO - 知识库初始化完成
+2026-05-20 13:02:20,244 - __main__ - INFO -   工矿风险预警智能体合规执行书.md: 29001 bytes
+2026-05-20 13:02:20,244 - __main__ - INFO -   部门分级审核SOP.md: 23174 bytes
+2026-05-20 13:02:20,244 - __main__ - INFO -   工业物理常识及传感器时间序列逻辑.md: 27949 bytes
+2026-05-20 13:02:20,244 - __main__ - INFO -   企业已具备的执行条件.md: 147494 bytes
+2026-05-20 13:02:20,244 - __main__ - INFO -   类似事故处理案例.md: 97118 bytes
+2026-05-20 13:02:20,244 - __main__ - INFO -   预警历史经验与短期记忆摘要.md: 1305 bytes
+2026-05-20 13:05:35,132 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:05:35,132 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:05:35,285 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:05:35,527 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:05:35,528 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:05:35,529 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:05:35,529 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:05:35,603 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:08,119 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:08,119 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:08,255 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:08,478 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:08,479 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:08,479 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:08,479 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:08,555 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:12,294 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:12,294 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:12,446 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:12,685 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:12,686 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:12,686 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:12,687 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:12,756 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:13,164 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:13,723 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:13,825 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:15,734 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:15,734 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:15,861 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:16,081 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:16,082 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:16,082 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:16,082 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:16,149 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:16,549 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:16,601 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:16,702 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:18,423 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:18,424 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:18,553 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:18,773 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:18,774 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:18,774 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:18,774 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:18,844 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:19,258 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:19,309 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:19,410 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:21,225 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:21,225 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:21,348 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:21,559 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:21,560 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:21,560 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:21,560 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:21,628 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:22,006 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:22,057 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:22,159 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:23,981 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:23,981 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:24,115 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:24,326 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:24,327 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:24,327 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:24,327 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:24,406 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:24,833 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:24,890 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:24,991 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:26,824 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:26,824 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:26,954 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:27,180 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:27,181 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:27,181 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:27,181 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:27,251 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:27,677 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:27,762 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:27,864 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:29,744 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:29,744 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:29,879 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:30,105 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:30,106 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:30,106 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:30,106 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:30,175 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:30,565 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:30,618 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:30,720 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:32,488 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:32,488 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:32,610 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:32,820 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:32,820 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:32,821 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:32,821 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:32,887 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:33,272 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:33,323 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:33,425 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:35,230 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:35,230 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:35,354 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:35,622 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:35,623 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:35,623 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:35,623 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:35,700 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:36,115 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:36,168 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:36,270 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:38,063 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:38,063 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:38,193 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:38,421 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:38,422 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:38,422 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:38,422 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:38,496 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:38,952 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:39,006 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:39,108 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:40,926 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:40,926 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:41,059 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:41,286 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:41,287 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:41,287 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:41,287 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:41,355 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:41,762 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:41,814 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:41,916 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:43,742 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:43,743 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:43,874 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:44,088 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:44,089 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:44,089 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:44,089 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:44,159 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:44,567 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:44,619 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:44,721 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:46,496 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:46,496 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:46,623 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:46,849 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:46,850 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:46,850 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:46,850 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:46,920 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:47,319 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:47,372 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:47,474 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:49,290 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:49,291 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:49,428 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:49,652 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:49,653 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:49,653 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:49,653 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:49,723 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:50,180 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:50,238 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:50,340 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:52,199 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:52,199 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:52,330 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:52,551 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:52,551 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:52,551 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:52,552 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:52,621 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:53,020 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:53,072 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:53,174 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:54,962 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:54,963 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:55,095 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:55,318 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:55,319 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:55,319 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:55,319 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:55,388 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:55,801 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:55,854 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:55,956 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:06:57,879 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:06:57,879 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:06:58,017 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:06:58,244 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:06:58,245 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:06:58,245 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:06:58,245 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:06:58,315 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:06:58,717 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:06:58,769 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:06:58,870 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:07:00,680 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:07:00,680 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:07:00,811 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:07:01,037 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:07:01,038 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:07:01,038 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:07:01,038 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:07:01,108 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:07:01,507 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:07:01,559 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:07:01,661 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:07:03,542 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:07:03,542 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:07:03,667 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:07:03,961 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:07:03,963 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:07:03,963 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:07:03,963 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:07:04,033 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:07:04,435 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:07:04,492 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:07:04,593 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:07:06,523 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:07:06,523 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:07:06,663 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:07:06,888 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:07:06,888 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:07:06,889 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:07:06,889 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:07:06,959 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:07:07,390 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:07:07,443 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:07:07,545 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:07:09,400 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:07:09,400 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:07:09,537 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:07:09,764 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:07:09,764 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:07:09,765 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:07:09,765 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:07:09,834 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:07:10,335 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:07:10,399 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:07:10,501 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:07:12,939 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:07:12,940 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:07:13,079 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:07:13,307 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:07:13,308 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:07:13,308 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:07:13,308 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:07:13,379 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:07:13,804 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:07:13,857 - mining_risk_serve.api.main - WARNING - RAG 启动检查失败（不影响 API 启动）: '_type'
+2026-05-20 13:10:09,125 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:10:09,125 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:10:09,280 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:10:09,533 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:10:09,534 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:10:09,534 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:10:09,534 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:10:09,610 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:10:10,214 - mining_risk_serve.api.main - INFO - RAG 索引已就绪: 791 chunks @ /Users/kita/Desktop/repo/language/python/mining_risk_agent/var/chroma
+2026-05-20 13:11:44,841 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:11:44,841 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:11:44,987 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:11:45,225 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:11:45,226 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:11:45,226 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:11:45,226 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:11:45,299 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:11:47,881 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:11:47,881 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:11:48,026 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:11:48,260 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:11:48,261 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:11:48,261 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:11:48,261 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:11:48,335 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:11:48,775 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:11:48,855 - mining_risk_serve.api.main - INFO - RAG 索引已就绪: 791 chunks @ /Users/kita/Desktop/repo/language/python/mining_risk_agent/var/chroma
+2026-05-20 13:11:48,956 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:11:50,884 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:11:50,884 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:11:51,031 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:11:51,265 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:11:51,266 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:11:51,266 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:11:51,266 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:11:51,339 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:11:51,753 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:11:51,809 - mining_risk_serve.api.main - INFO - RAG 索引已就绪: 791 chunks @ /Users/kita/Desktop/repo/language/python/mining_risk_agent/var/chroma
+2026-05-20 13:11:51,911 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:11:53,804 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:11:53,804 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:11:53,931 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:11:54,154 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:11:54,155 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:11:54,155 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:11:54,155 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:11:54,223 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:11:54,641 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:11:54,701 - mining_risk_serve.api.main - INFO - RAG 索引已就绪: 791 chunks @ /Users/kita/Desktop/repo/language/python/mining_risk_agent/var/chroma
+2026-05-20 13:12:04,167 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:12:04,167 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:12:04,308 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:12:04,535 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:12:04,536 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:12:04,536 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:12:04,536 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:12:04,607 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:12:05,096 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:12:05,160 - mining_risk_serve.api.main - INFO - RAG 索引已就绪: 791 chunks @ /Users/kita/Desktop/repo/language/python/mining_risk_agent/var/chroma
+2026-05-20 13:12:09,542 - mining_risk_common.dataplane.preprocessor - INFO - Pipeline 已从 artifacts/pipelines/preprocessing_pipeline.pkl 加载
+2026-05-20 13:12:09,542 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:12:09,570 - mining_risk_common.model.stacking - INFO - 基学习器 multinomial_lr (logistic_regression) 已初始化
+2026-05-20 13:12:09,570 - mining_risk_common.model.stacking - INFO - 基学习器 xgboost (xgboost) 已初始化
+2026-05-20 13:12:09,570 - mining_risk_common.model.stacking - INFO - 基学习器 lightgbm (lightgbm) 已初始化
+2026-05-20 13:12:09,571 - mining_risk_common.model.stacking - INFO - 基学习器 catboost (catboost) 已初始化
+2026-05-20 13:12:09,571 - mining_risk_common.model.stacking - INFO - 基学习器 random_forest (random_forest) 已初始化
+2026-05-20 13:12:09,571 - mining_risk_common.model.stacking - INFO - 元学习器已初始化
+2026-05-20 13:12:09,601 - mining_risk_common.model.stacking - INFO - 模型已从 artifacts/models/stacking_risk_v1_stable.pkl 加载 (meta_fitted=True, base_learners=[multinomial_lr=LogisticRegression, xgboost=XGBClassifier, lightgbm=LGBMClassifier, catboost=CatBoostClassifier, random_forest=RandomForestClassifier])
+2026-05-20 13:12:11,968 - mining_risk_serve.harness.agentfs - INFO - AgentFS 数据库已初始化
+2026-05-20 13:12:11,971 - mining_risk_serve.harness.vector_store - INFO - 加载嵌入模型: BAAI/bge-large-zh-v1.5
+2026-05-20 13:13:40,750 - mining_risk_serve.harness.memory - WARNING - 长期记忆 RAG 召回失败，降级为空结果: Embedding dimension 1024 does not match collection dimensionality 384
+2026-05-20 13:13:40,756 - mining_risk_serve.agent.workflow - ERROR - 决策生成失败: Missing credentials. Please pass an `api_key`, `workload_identity`, `admin_api_key`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+2026-05-20 13:13:40,770 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:13:41,191 - mining_risk_serve.harness.memory - WARNING - 长期记忆 RAG 召回失败，降级为空结果: Embedding dimension 1024 does not match collection dimensionality 384
+2026-05-20 13:13:41,193 - mining_risk_serve.agent.workflow - ERROR - 决策生成失败: Missing credentials. Please pass an `api_key`, `workload_identity`, `admin_api_key`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+2026-05-20 13:13:41,194 - mining_risk_serve.api.services.prediction_service - WARNING - Workflow 返回结果不完整，降级至 Mock: Missing credentials. Please pass an `api_key`, `workload_identity`, `admin_api_key`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+2026-05-20 13:22:21,902 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:22:38,636 - mining_risk_serve.harness.vector_store - INFO - 加载嵌入模型: BAAI/bge-large-zh-v1.5
+2026-05-20 13:22:53,987 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:23:01,775 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:23:09,506 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:23:17,387 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:23:27,575 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:23:38,533 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:23:50,083 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:24:08,288 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:24:30,606 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 100 个文档
+2026-05-20 13:24:37,846 - mining_risk_serve.harness.vector_store - INFO - 已向量化库添加 43 个文档
+2026-05-20 13:26:55,295 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:26:55,295 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:26:55,417 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:26:55,636 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:26:55,637 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:26:55,637 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:26:55,637 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:26:55,707 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:26:56,432 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:26:56,502 - mining_risk_serve.api.main - INFO - RAG 索引已就绪: 943 chunks @ /Users/kita/Desktop/repo/language/python/mining_risk_agent/var/chroma
+2026-05-20 13:27:05,209 - mining_risk_common.dataplane.preprocessor - INFO - Pipeline 已从 artifacts/pipelines/preprocessing_pipeline.pkl 加载
+2026-05-20 13:27:05,209 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:27:05,279 - mining_risk_common.model.stacking - INFO - 基学习器 multinomial_lr (logistic_regression) 已初始化
+2026-05-20 13:27:05,280 - mining_risk_common.model.stacking - INFO - 基学习器 xgboost (xgboost) 已初始化
+2026-05-20 13:27:05,280 - mining_risk_common.model.stacking - INFO - 基学习器 lightgbm (lightgbm) 已初始化
+2026-05-20 13:27:05,280 - mining_risk_common.model.stacking - INFO - 基学习器 catboost (catboost) 已初始化
+2026-05-20 13:27:05,281 - mining_risk_common.model.stacking - INFO - 基学习器 random_forest (random_forest) 已初始化
+2026-05-20 13:27:05,281 - mining_risk_common.model.stacking - INFO - 元学习器已初始化
+2026-05-20 13:27:05,337 - mining_risk_common.model.stacking - INFO - 模型已从 artifacts/models/stacking_risk_v1_stable.pkl 加载 (meta_fitted=True, base_learners=[multinomial_lr=LogisticRegression, xgboost=XGBClassifier, lightgbm=LGBMClassifier, catboost=CatBoostClassifier, random_forest=RandomForestClassifier])
+2026-05-20 13:27:05,412 - mining_risk_serve.harness.agentfs - INFO - AgentFS 数据库已初始化
+2026-05-20 13:27:05,415 - mining_risk_serve.harness.vector_store - INFO - 加载嵌入模型: BAAI/bge-large-zh-v1.5
+2026-05-20 13:27:11,548 - mining_risk_serve.harness.reranker - INFO - 加载重排序模型: BAAI/bge-reranker-large
+2026-05-20 13:32:09,668 - mining_risk_serve.llm.glm5_client - INFO - glm5 JSON 生成成功 (attempt 1)
+2026-05-20 13:32:09,683 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,691 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,710 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,728 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,733 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,738 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,742 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,758 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,777 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,781 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,786 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,822 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:09,988 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,167 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,211 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,248 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,252 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,255 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,291 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,294 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,297 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,333 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,337 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,340 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,375 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,379 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,383 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,420 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,423 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,428 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,465 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,469 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,472 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,508 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,511 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,515 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,551 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,555 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,558 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,596 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,601 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,604 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,642 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,646 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,651 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,689 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,693 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,697 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,737 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,741 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,745 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,784 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,788 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,793 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,832 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,836 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,840 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,877 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,881 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,885 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,923 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,927 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,930 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,967 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,970 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:10,974 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,011 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,014 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,019 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,056 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,059 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,063 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,103 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,106 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,109 - mining_risk_serve.harness.validation - WARNING - 校验证据 RAG 检索失败，降级为 Markdown 扫描: Embedding dimension 384 does not match collection dimensionality 1024
+2026-05-20 13:32:11,147 - mining_risk_serve.harness.monte_carlo - INFO - 蒙特卡洛采样完成: 20/20 通过, 置信度 1.0000, 阈值 0.9, 状态 APPROVE
+2026-05-20 13:33:40,026 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 13:34:37,549 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-20 13:34:37,549 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-20 13:34:37,685 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 34327 条
+2026-05-20 13:34:37,908 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 34327 条
+2026-05-20 13:34:37,909 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-20 13:34:37,909 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-20 13:34:37,909 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-20 13:34:37,982 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+2026-05-20 13:34:38,508 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-20 13:34:38,589 - mining_risk_serve.api.main - INFO - RAG 索引已就绪: 943 chunks @ /Users/kita/Desktop/repo/language/python/mining_risk_agent/var/chroma
+2026-05-20 13:34:55,163 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-20 13:34:55,170 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-20 13:34:56,551 - mining_risk_serve.harness.agentfs - INFO - AgentFS 数据库已初始化
+2026-05-20 13:34:56,556 - mining_risk_serve.harness.agentfs - INFO - AgentFS 数据库已初始化
+2026-05-20 13:35:30,462 - mining_risk_common.dataplane.preprocessor - INFO - Pipeline 已从 artifacts/pipelines/preprocessing_pipeline.pkl 加载
+2026-05-20 13:35:30,462 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:35:30,492 - mining_risk_common.model.stacking - INFO - 基学习器 multinomial_lr (logistic_regression) 已初始化
+2026-05-20 13:35:30,492 - mining_risk_common.model.stacking - INFO - 基学习器 xgboost (xgboost) 已初始化
+2026-05-20 13:35:30,492 - mining_risk_common.model.stacking - INFO - 基学习器 lightgbm (lightgbm) 已初始化
+2026-05-20 13:35:30,492 - mining_risk_common.model.stacking - INFO - 基学习器 catboost (catboost) 已初始化
+2026-05-20 13:35:30,492 - mining_risk_common.model.stacking - INFO - 基学习器 random_forest (random_forest) 已初始化
+2026-05-20 13:35:30,492 - mining_risk_common.model.stacking - INFO - 元学习器已初始化
+2026-05-20 13:35:30,516 - mining_risk_common.model.stacking - INFO - 模型已从 artifacts/models/stacking_risk_v1_stable.pkl 加载 (meta_fitted=True, base_learners=[multinomial_lr=LogisticRegression, xgboost=XGBClassifier, lightgbm=LGBMClassifier, catboost=CatBoostClassifier, random_forest=RandomForestClassifier])
+2026-05-20 13:35:30,582 - mining_risk_serve.harness.agentfs - INFO - AgentFS 数据库已初始化
+2026-05-20 13:35:30,586 - mining_risk_serve.harness.vector_store - INFO - 加载嵌入模型: BAAI/bge-large-zh-v1.5
+2026-05-20 13:35:37,187 - mining_risk_serve.harness.reranker - INFO - 加载重排序模型: BAAI/bge-reranker-large
+2026-05-20 13:36:39,904 - mining_risk_serve.llm.glm5_client - INFO - glm5 JSON 生成成功 (attempt 1)
+2026-05-20 13:36:39,912 - mining_risk_serve.harness.vector_store - INFO - 加载嵌入模型: BAAI/bge-large-zh-v1.5
+2026-05-20 13:36:52,368 - mining_risk_serve.harness.monte_carlo - INFO - 蒙特卡洛采样完成: 20/20 通过, 置信度 1.0000, 阈值 0.9, 状态 APPROVE
+2026-05-20 13:37:59,597 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:38:44,391 - mining_risk_serve.llm.glm5_client - INFO - glm5 JSON 生成成功 (attempt 1)
+2026-05-20 13:38:47,984 - mining_risk_serve.harness.monte_carlo - INFO - 蒙特卡洛采样完成: 20/20 通过, 置信度 1.0000, 阈值 0.9, 状态 APPROVE
+2026-05-20 13:40:29,725 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:41:25,186 - mining_risk_serve.llm.glm5_client - INFO - glm5 JSON 生成成功 (attempt 1)
+2026-05-20 13:41:28,682 - mining_risk_serve.harness.monte_carlo - INFO - 蒙特卡洛采样完成: 20/20 通过, 置信度 1.0000, 阈值 0.9, 状态 APPROVE
+2026-05-20 13:41:29,007 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:42:32,176 - mining_risk_serve.llm.glm5_client - INFO - glm5 JSON 生成成功 (attempt 1)
+2026-05-20 13:42:32,655 - mining_risk_serve.harness.monte_carlo - INFO - 蒙特卡洛采样完成: 20/20 通过, 置信度 1.0000, 阈值 0.9, 状态 APPROVE
+2026-05-20 13:42:51,583 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-20 13:42:51,590 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-20 13:44:56,727 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:45:57,500 - mining_risk_serve.llm.glm5_client - INFO - glm5 JSON 生成成功 (attempt 1)
+2026-05-20 13:45:57,965 - mining_risk_serve.harness.monte_carlo - INFO - 蒙特卡洛采样完成: 20/20 通过, 置信度 1.0000, 阈值 0.9, 状态 APPROVE
+2026-05-20 13:52:27,972 - mining_risk_common.dataplane.loader - INFO - API 数据加载成功，企业ID: ENT-DEMO-001, 形状: (147, 34)
+2026-05-20 13:52:27,976 - mining_risk_serve.api.routers.data - ERROR - 数据上传失败: No module named 'pandas.core.methods.to_dict'
+2026-05-20 13:52:29,870 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:52:30,888 - mining_risk_serve.agent.workflow - ERROR - 决策生成失败: [Errno 2] No such file or directory
+2026-05-20 13:52:30,900 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:52:31,703 - mining_risk_serve.agent.workflow - ERROR - 决策生成失败: [Errno 2] No such file or directory
+2026-05-20 13:52:31,706 - mining_risk_serve.api.services.prediction_service - WARNING - Workflow 返回结果不完整，降级至 Mock: [Errno 2] No such file or directory
+2026-05-20 13:54:32,547 - mining_risk_common.dataplane.loader - INFO - API 数据加载成功，企业ID: ENT-DEMO-001, 形状: (147, 34)
+2026-05-20 13:54:32,548 - mining_risk_serve.api.routers.data - ERROR - 数据上传失败: No module named 'pandas.core.methods.to_dict'
+2026-05-20 13:55:49,721 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-20 13:56:02,416 - mining_risk_common.dataplane.loader - INFO - API 数据加载成功，企业ID: ENT-DEMO-001, 形状: (147, 34)
+2026-05-20 13:56:02,417 - mining_risk_serve.api.routers.data - ERROR - 数据上传失败: No module named 'pandas.core.methods.to_dict'
+2026-05-20 13:56:39,649 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:56:40,795 - mining_risk_serve.agent.workflow - ERROR - 决策生成失败: [Errno 2] No such file or directory
+2026-05-20 13:56:40,800 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-20 13:56:41,607 - mining_risk_serve.agent.workflow - ERROR - 决策生成失败: [Errno 2] No such file or directory
+2026-05-20 13:56:41,610 - mining_risk_serve.api.services.prediction_service - WARNING - Workflow 返回结果不完整，降级至 Mock: [Errno 2] No such file or directory
+2026-05-20 13:56:57,673 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-20 14:04:33,799 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-0/test_decision_store_writes_jso0/var/decisions/ENT-1_chemical_20260520_140433_798716.json
+2026-05-20 14:04:54,397 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-1/test_decision_store_writes_jso0/var/decisions/ENT-1_chemical_20260520_140454_396466.json
+2026-05-20 14:04:54,405 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-1/test_batch_job_processes_rows_0/var/decisions/batches/d8e88ce642a2/0000_E001_chemical_20260520_140454_405464.json
+2026-05-20 14:04:54,407 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-1/test_batch_job_processes_rows_0/var/decisions/batches/d8e88ce642a2/0001_E002_chemical_20260520_140454_406776.json
+2026-05-20 14:05:11,540 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-2/test_decision_store_writes_jso0/var/decisions/ENT-1_chemical_20260520_140511_539681.json
+2026-05-20 14:05:11,548 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-2/test_batch_job_processes_rows_0/var/decisions/batches/30c6232a3932/0000_E001_chemical_20260520_140511_547860.json
+2026-05-20 14:05:11,550 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-2/test_batch_job_processes_rows_0/var/decisions/batches/30c6232a3932/0001_E002_chemical_20260520_140511_549576.json
+2026-05-20 14:05:50,898 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-3/test_decision_store_writes_jso0/var/decisions/ENT-1_chemical_20260520_140550_897766.json
+2026-05-20 14:05:50,905 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-3/test_batch_job_processes_rows_0/var/decisions/batches/402228a12113/0000_E001_chemical_20260520_140550_904958.json
+2026-05-20 14:05:50,906 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: /private/var/folders/dm/45_lppg54tg53bkg_5knc48h0000gn/T/pytest-of-kita/pytest-3/test_batch_job_processes_rows_0/var/decisions/batches/402228a12113/0001_E002_chemical_20260520_140550_906098.json
