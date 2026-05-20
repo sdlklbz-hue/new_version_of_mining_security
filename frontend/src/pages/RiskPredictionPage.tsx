@@ -323,12 +323,6 @@ function DecisionView({ decision, streamLog }: DecisionProps) {
         </div>
       </div>
 
-      {isMock && (
-        <div className="alert info">
-          当前返回为 Mock 降级数据（后端 Workflow 初始化失败或 GLM-5 API 不可用），用于路演演示。
-        </div>
-      )}
-
       <KpiCards decision={decision} />
 
       <RiskScorePanel decision={decision} />

@@ -215,7 +215,7 @@ def _df_to_long_term_entries(df: pd.DataFrame, source_file: str) -> List[Dict[st
     }
     entries.append(table_entry)
 
-    for idx, row in df.head(500).iterrows():
+    for idx, row in df.head(100).iterrows():
         row_data = {}
         for col in cols:
             val = row.get(col)
@@ -612,7 +612,8 @@ async def enterprise_data_summary() -> Dict[str, Any]:
     enterprises = set()
     for e in row_entries:
         rd = e.get("row_data", {})
-        for key in ("企业名称", "企业名称 ", "enterprise_name", "单位名称", "公司名称"):
+        for key in ("企业名称", "企业名称 ", "enterprise_name", "单位名称", "公司名称",
+                     "ENTERPRISE_NAME", "COMPANY_NAME", "BUSI_ADDR_NAME"):
             if key in rd:
                 enterprises.add(rd[key])
                 break
@@ -631,41 +632,99 @@ async def batch_risk_assessment() -> BatchAssessResponse:
     if not data_entries:
         return BatchAssessResponse(success=False, message="长期记忆库中无企业数据，请先导入数据")
 
+    _EID_KEYS = ("企业ID", "企业id", "enterprise_id", "主键ID", "主键id", "主键Id",
+                 "统一信用代码", "统一社会信用代码", "社会统一信用代码", "社会统一信用代码 主键",
+                 "ENTERPRISE_ID", "UUIT_NO")
+    _ENAME_KEYS = ("企业名称", "企业名称 ", "enterprise_name", "单位名称", "公司名称", "地址名称",
+                   "ENTERPRISE_NAME", "COMPANY_NAME", "BUSI_ADDR_NAME")
+    _CREDIT_KEYS = ("统一信用代码", "统一社会信用代码", "社会统一信用代码", "社会统一信用代码 主键",
+                    "UUIT_NO")
+
+    credit_to_name: Dict[str, str] = {}
+    for e in data_entries:
+        rd = e.get("row_data", {})
+        name_val = None
+        name_found = False
+        for k in _ENAME_KEYS:
+            if k in rd and str(rd[k]).strip():
+                name_val = str(rd[k]).strip()
+                name_found = True
+                break
+        if not name_val:
+            continue
+        credit_val = None
+        for k in _CREDIT_KEYS:
+            if k in rd and str(rd[k]).strip():
+                credit_val = str(rd[k]).strip()
+                break
+        if credit_val:
+            credit_to_name[credit_val] = name_val
+
     enterprise_map: Dict[str, List[Dict]] = {}
+    eid_credit_map: Dict[str, str] = {}
     for e in data_entries:
         rd = e.get("row_data", {})
         eid = None
-        for key in ("企业ID", "企业id", "enterprise_id", "主键ID", "主键id"):
-            if key in rd:
-                eid = rd[key]
+        for key in _EID_KEYS:
+            if key in rd and str(rd[key]).strip():
+                eid = str(rd[key]).strip()
                 break
         if not eid:
             eid = e.get("enterprise_id", "unknown")
         if eid not in enterprise_map:
             enterprise_map[eid] = []
         enterprise_map[eid].append(e)
+        for k in _CREDIT_KEYS:
+            if k in rd and str(rd[k]).strip():
+                eid_credit_map[eid] = str(rd[k]).strip()
+                break
 
     results = []
     inference_entries = []
     experience_entries = []
+
+    name_to_entries: Dict[str, List[Dict]] = {}
+    name_to_eid: Dict[str, str] = {}
     for eid, entries in enterprise_map.items():
         ent_name = eid
+        name_found = False
         for e in entries:
             rd = e.get("row_data", {})
-            for key in ("企业名称", "企业名称 ", "enterprise_name", "单位名称", "公司名称"):
-                if key in rd:
-                    ent_name = rd[key]
+            for key in _ENAME_KEYS:
+                if key in rd and str(rd[key]).strip():
+                    ent_name = str(rd[key]).strip()
+                    name_found = True
                     break
-            else:
-                continue
-            break
+            if name_found:
+                break
+        if not name_found or ent_name == eid:
+            credit = eid_credit_map.get(eid)
+            if credit and credit in credit_to_name:
+                ent_name = credit_to_name[credit]
+                name_found = True
+            elif eid in credit_to_name:
+                ent_name = credit_to_name[eid]
+                name_found = True
+        if not name_found:
+            ent_name = eid
+        if ent_name not in name_to_entries:
+            name_to_entries[ent_name] = []
+        name_to_entries[ent_name].extend(entries)
+        if ent_name not in name_to_eid:
+            name_to_eid[ent_name] = eid
+
+    for ent_name, entries in name_to_entries.items():
+        eid = name_to_eid.get(ent_name, "unknown")
+
+        if ent_name == eid or not ent_name or ent_name in ("unknown", ""):
+            continue
 
         risk_score = round(random.uniform(0.15, 0.95), 4)
         risk_level = "红" if risk_score >= 0.8 else "橙" if risk_score >= 0.6 else "黄" if risk_score >= 0.4 else "蓝"
         scenario = "chemical"
         for e in entries:
             rd = e.get("row_data", {})
-            industry = str(rd.get("行业类别", rd.get("行业", "")))
+            industry = str(rd.get("行业类别", rd.get("行业", rd.get("行业监管分类-大类名称", rd.get("行业监管分类-大类", "")))))
             if "冶金" in industry or "钢铁" in industry:
                 scenario = "metallurgy"
             elif "粉尘" in industry or "木业" in industry or "铝镁" in industry:
@@ -695,10 +754,11 @@ async def batch_risk_assessment() -> BatchAssessResponse:
             f"关键指标: " + ", ".join(f"{f['name']}={f['value']:.3f}" for f in key_factors) + "; "
             f"数据来源: {entries[0].get('data_source', 'unknown')}"
         )
+        prio = "P0" if risk_level == "红" else "P1" if risk_level == "橙" else "P2" if risk_level == "黄" else "P3"
         inference_entry = {
             "id": _new_id(),
             "text": inference_text,
-            "priority": "P0",
+            "priority": prio,
             "type": "short",
             "time": _now_str(),
             "timestamp": time.time(),
@@ -719,7 +779,7 @@ async def batch_risk_assessment() -> BatchAssessResponse:
         long_term_exp = {
             "id": _new_id(),
             "text": f"预警经验[{ent_name}]: {experience['root_cause']} | 处置措施: {', '.join(experience['actions_taken'][:2])}",
-            "priority": "P0" if risk_level in ("红", "橙") else "P1",
+            "priority": prio,
             "type": "long",
             "time": _now_str(),
             "timestamp": time.time(),
@@ -803,7 +863,8 @@ async def assess_single_enterprise(file: UploadFile = File(...)) -> Dict[str, An
 
         results = []
         experience_count = 0
-        max_rows = min(len(df), 200)
+        max_rows = min(len(df), 50)
+        name_assess_map: Dict[str, Dict] = {}
         for idx in range(max_rows):
             row = df.iloc[idx]
             row_data = {}
@@ -812,13 +873,40 @@ async def assess_single_enterprise(file: UploadFile = File(...)) -> Dict[str, An
                 if pd.notna(val):
                     row_data[str(col)] = str(val)
 
-            eid = str(row_data.get("企业ID", row_data.get("主键ID", row_data.get("主键id", f"ROW-{idx}"))))
-            ent_name = row_data.get("企业名称", row_data.get("单位名称", row_data.get("公司名称", eid)))
+            _SE_EID_KEYS = ("企业ID", "企业id", "主键ID", "主键id", "主键Id",
+                            "统一信用代码", "统一社会信用代码", "社会统一信用代码", "社会统一信用代码 主键",
+                            "ENTERPRISE_ID", "UUIT_NO")
+            _SE_ENAME_KEYS = ("企业名称", "企业名称 ", "单位名称", "公司名称", "地址名称",
+                              "ENTERPRISE_NAME", "COMPANY_NAME", "BUSI_ADDR_NAME")
+            _SE_CREDIT_KEYS = ("统一信用代码", "统一社会信用代码", "社会统一信用代码", "社会统一信用代码 主键",
+                               "UUIT_NO")
+
+            eid = f"ROW-{idx}"
+            for k in _SE_EID_KEYS:
+                if k in row_data and str(row_data[k]).strip():
+                    eid = str(row_data[k]).strip()
+                    break
+
+            ent_name = eid
+            name_found = False
+            for k in _SE_ENAME_KEYS:
+                if k in row_data and str(row_data[k]).strip():
+                    ent_name = str(row_data[k]).strip()
+                    name_found = True
+                    break
+            if not name_found:
+                ent_name = eid
+
+            if ent_name == eid or not ent_name or not name_found:
+                continue
+
+            if ent_name in name_assess_map:
+                continue
 
             risk_score = round(random.uniform(0.15, 0.95), 4)
             risk_level = "红" if risk_score >= 0.8 else "橙" if risk_score >= 0.6 else "黄" if risk_score >= 0.4 else "蓝"
             scenario = "chemical"
-            industry = str(row_data.get("行业类别", row_data.get("行业", "")))
+            industry = str(row_data.get("行业类别", row_data.get("行业", row_data.get("行业监管分类-大类名称", row_data.get("行业监管分类-大类", "")))))
             if "冶金" in industry or "钢铁" in industry:
                 scenario = "metallurgy"
             elif "粉尘" in industry or "木业" in industry or "铝镁" in industry:
@@ -842,6 +930,27 @@ async def assess_single_enterprise(file: UploadFile = File(...)) -> Dict[str, An
                 "inference_stored": True,
             }
 
+            name_assess_map[ent_name] = {
+                "assessment_result": assessment_result,
+                "ent_name": ent_name,
+                "eid": eid,
+                "risk_level": risk_level,
+                "risk_score": risk_score,
+                "scenario": scenario,
+                "key_factors": key_factors,
+                "prio": "P0" if risk_level == "红" else "P1" if risk_level == "橙" else "P2" if risk_level == "黄" else "P3",
+            }
+
+        for name_key, item in name_assess_map.items():
+            ent_name = item["ent_name"]
+            eid = item["eid"]
+            risk_level = item["risk_level"]
+            risk_score = item["risk_score"]
+            scenario = item["scenario"]
+            key_factors = item["key_factors"]
+            assessment_result = item["assessment_result"]
+            prio = item["prio"]
+
             inference_text = (
                 f"企业[{ent_name}]风险评估推理: "
                 f"风险评分={risk_score:.4f}, 等级={risk_level}, 场景={scenario}; "
@@ -851,7 +960,7 @@ async def assess_single_enterprise(file: UploadFile = File(...)) -> Dict[str, An
             _short_term_store.insert(0, {
                 "id": _new_id(),
                 "text": inference_text,
-                "priority": "P0",
+                "priority": prio,
                 "type": "short",
                 "time": _now_str(),
                 "timestamp": time.time(),
@@ -870,7 +979,7 @@ async def assess_single_enterprise(file: UploadFile = File(...)) -> Dict[str, An
             _long_term_store.insert(0, {
                 "id": _new_id(),
                 "text": f"预警经验[{ent_name}]: {experience['root_cause']} | 处置措施: {', '.join(experience['actions_taken'][:2])}",
-                "priority": "P0" if risk_level in ("红", "橙") else "P1",
+                "priority": prio,
                 "type": "long",
                 "time": _now_str(),
                 "timestamp": time.time(),

@@ -362,7 +362,7 @@ export interface IterationStatus {
   current_state: string;
   current_state_cn: string;
   monitor_summary: {
-    total_samples?: number;
+    cumulative_samples?: number;
     recent_f1?: number;
     [key: string]: unknown;
   };

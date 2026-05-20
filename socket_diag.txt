@@ -1,0 +1,5 @@
+Python 3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]
+socket.socket() FAIL: [WinError 10038] 在一个非套接字上尝试了一个操作。
+socket.socket(AF_INET, SOCK_STREAM, 0) FAIL: [WinError 10038] 在一个非套接字上尝试了一个操作。
+socket.socketpair() FAIL: [WinError 10038] 在一个非套接字上尝试了一个操作。
+_socket module: <module '_socket' from 'D:\\Python\\DLLs\\_socket.pyd'>

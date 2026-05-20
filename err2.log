@@ -1,0 +1,58 @@
+2026-05-15 20:00:45,769 - api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-15 20:00:46,541 - api.routers.memory - ERROR - 加载 long_term 失败: Expecting value: line 1 column 63488445 (char 63488444)
+Traceback (most recent call last):
+  File "c:\Users\sdlkl\Desktop\程序\mining_risk_agent-master\api\routers\memory.py", line 95, in _load_store
+    data = json.load(f)
+  File "D:\Python\Lib\json\__init__.py", line 298, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "D:\Python\Lib\json\__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "D:\Python\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Lib\json\decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 63488445 (char 63488444)
+2026-05-15 20:00:46,726 - api.routers.memory - INFO - 加载 short_term 成功: 42707 条
+2026-05-15 20:00:47,089 - api.routers.memory - INFO - 加载 warning_experience 成功: 42707 条
+2026-05-15 20:00:47,091 - api.routers.memory - INFO - 加载 iteration_history 成功: 5 条
+2026-05-15 20:00:47,092 - api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-15 20:00:47,093 - api.routers.memory - INFO - 加载 audit_log 成功: 19 条
+2026-05-15 20:00:47,259 - api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 8580 条
+Traceback (most recent call last):
+  File "C:\Users\sdlkl\Desktop\程序\mining_risk_agent-master\start_server.py", line 39, in <module>
+    loop = asyncio.new_event_loop()
+  File "D:\Python\Lib\asyncio\events.py", line 844, in new_event_loop
+    return _get_event_loop_policy().new_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\Python\Lib\asyncio\events.py", line 732, in new_event_loop
+    return self._loop_factory()
+           ~~~~~~~~~~~~~~~~~~^^
+  File "D:\Python\Lib\asyncio\windows_events.py", line 316, in __init__
+    super().__init__(proactor)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "D:\Python\Lib\asyncio\proactor_events.py", line 639, in __init__
+    self._make_self_pipe()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\Python\Lib\asyncio\proactor_events.py", line 786, in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ~~~~~~~~~~~~~~~~~^^
+  File "D:\Python\Lib\socket.py", line 619, in _fallback_socketpair
+    lsock = socket(family, type, proto)
+  File "C:\Users\sdlkl\Desktop\程序\mining_risk_agent-master\start_server.py", line 26, in _patched_socket_init
+    _orig_socket_init(self, family, type, proto)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Lib\socket.py", line 236, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [WinError 10038] 在一个非套接字上尝试了一个操作。
+Exception ignored while calling deallocator <function BaseEventLoop.__del__ at 0x00000269EC15D590>:
+Traceback (most recent call last):
+  File "D:\Python\Lib\asyncio\base_events.py", line 760, in __del__
+  File "D:\Python\Lib\asyncio\proactor_events.py", line 696, in close
+  File "D:\Python\Lib\asyncio\proactor_events.py", line 778, in _close_self_pipe
+AttributeError: 'ProactorEventLoop' object has no attribute '_ssock'

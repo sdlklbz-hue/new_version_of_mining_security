@@ -1,0 +1,17 @@
+C:\Users\sdlkl\Desktop\程序\mining_risk_agent-master\start_server.py:10: DeprecationWarning: 'asyncio.WindowsSelectorEventLoopPolicy' is deprecated and slated for removal in Python 3.16
+  asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+C:\Users\sdlkl\Desktop\程序\mining_risk_agent-master\start_server.py:10: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+  asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+INFO:     Will watch for changes in these directories: ['C:\\Users\\sdlkl\\Desktop\\程序\\mining_risk_agent-master']
+Traceback (most recent call last):
+  File "C:\Users\sdlkl\Desktop\程序\mining_risk_agent-master\start_server.py", line 15, in <module>
+    uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Lib\site-packages\uvicorn\main.py", line 611, in run
+    sock = config.bind_socket()
+  File "D:\Python\Lib\site-packages\uvicorn\config.py", line 541, in bind_socket
+    sock = socket.socket(family=family)
+  File "D:\Python\Lib\socket.py", line 236, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [WinError 10038] 在一个非套接字上尝试了一个操作。

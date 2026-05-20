@@ -1573,16 +1573,17 @@ def tab_iteration() -> None:
         status = {
             "current_state": "CANARY",
             "current_state_cn": "灰度发布中",
-            "monitor_summary": {"total_samples": 25000, "recent_f1": 0.878},
+            "monitor_summary": {"cumulative_samples": 25000, "recent_f1": 0.878},
             "pending_approvals": [
                 {"record_id": "approval_v2_001", "model_version": "v2.0.0", "status": "SECURITY_APPROVED"}
             ],
         }
 
     col1, col2, col3, col4 = st.columns(4)
-    total_samples = status.get("monitor_summary", {}).get("total_samples")
+    ms = status.get("monitor_summary", {})
+    total_samples = ms.get("cumulative_samples") or ms.get("total_samples")
     total_samples_str = f"{total_samples:,}" if isinstance(total_samples, (int, float)) else "N/A"
-    recent_f1 = status.get("monitor_summary", {}).get("recent_f1")
+    recent_f1 = ms.get("recent_f1")
     recent_f1_str = f"{recent_f1:.3f}" if isinstance(recent_f1, (int, float)) else "N/A"
     metrics = [
         (col1, "当前状态", status.get("current_state_cn", "未知")),

@@ -917,3 +917,193 @@ export async function promoteIteration(
 }
 
 export const apiBase = API_BASE || "(同源)";
+
+// ==================== 可视化数据 API ====================
+
+export interface TrendDataPoint {
+  date: string;
+  total: number;
+  high_risk: number;
+  medium_risk: number;
+  low_risk: number;
+}
+
+export interface TrendResponse {
+  success: boolean;
+  data: TrendDataPoint[];
+  title: string;
+  unit: string;
+}
+
+export interface ScatterDataPoint {
+  x: number;
+  y: number;
+  name?: string;
+}
+
+export interface ScatterResponse {
+  success: boolean;
+  data: ScatterDataPoint[];
+  x_label: string;
+  y_label: string;
+  correlation: number;
+}
+
+export interface CorrelationMatrix {
+  variables: string[];
+  matrix: number[][];
+}
+
+export interface HeatmapResponse {
+  success: boolean;
+  correlation: CorrelationMatrix;
+  strong_correlations: Array<{ var1: string; var2: string; correlation: number }>;
+}
+
+export async function fetchEarlyWarningTrend(): Promise<TrendResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/trend"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<TrendResponse>(resp);
+  } catch (e) {
+    console.error("获取预警趋势数据失败:", e);
+    return null;
+  }
+}
+
+export async function fetchCorrelationScatter(): Promise<ScatterResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/scatter"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<ScatterResponse>(resp);
+  } catch (e) {
+    console.error("获取散点图数据失败:", e);
+    return null;
+  }
+}
+
+export async function fetchCorrelationHeatmap(): Promise<HeatmapResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/heatmap"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<HeatmapResponse>(resp);
+  } catch (e) {
+    console.error("获取热力图数据失败:", e);
+    return null;
+  }
+}
+
+export async function fetchEnterpriseStats(): Promise<{
+  success: boolean;
+  industry_distribution: Array<{ name: string; value: number; color: string }>;
+  risk_level_distribution: { categories: string[]; series: Array<{ name: string; data: number[] }> };
+  scale_distribution: Array<{ range: string; count: number; percentage: number; color: string }>;
+  safety_score_distribution: Array<{ range: string; count: number; color: string }>;
+  regional_distribution: Array<{ name: string; value: number; coord: number[] }>;
+  monthly_trend: { months: string[]; enterprise_count: number[]; risk_incidents: number[]; inspections: number[]; violations: number[] };
+  top_risk_enterprises: Array<{ rank: number; name: string; risk_score: number; level: string; industry: string; incidents: number }>;
+  summary: { total_enterprises: number; high_risk_count: number; avg_safety_score: number; total_inspections_ytd: number; total_violations_ytd: number; compliance_rate: number; cumulative_samples?: number; f1_score?: number; model_accuracy?: number; recall_rate?: number; precision_rate?: number };
+} | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/enterprise-stats"));
+    if (!resp.ok) return null;
+    return jsonOrThrow(resp);
+  } catch (e) {
+    console.error("获取企业统计数据失败:", e);
+    return null;
+  }
+}
+
+// ==================== 新增可视化 API ====================
+
+export interface ModuleTrendPoint {
+  date: string;
+  early_warning: number;
+  storage_count: number;
+  classification_count: number;
+}
+
+export interface ModuleTrendResponse {
+  success: boolean;
+  data: ModuleTrendPoint[];
+  title: string;
+}
+
+export interface StorageTrendPoint {
+  date: string;
+  storage_count: number;
+  processed_count: number;
+  pending_count: number;
+}
+
+export interface StorageTrendResponse {
+  success: boolean;
+  data: StorageTrendPoint[];
+  title: string;
+  unit: string;
+}
+
+export interface CategoryPriorityPoint {
+  category: string;
+  priority: string;
+  value: number;
+}
+
+export interface CategoryPriorityResponse {
+  success: boolean;
+  categories: string[];
+  priorities: string[];
+  matrix: number[][];
+  data: CategoryPriorityPoint[];
+}
+
+export interface EnterpriseCategoryResponse {
+  success: boolean;
+  enterprises: string[];
+  categories: string[];
+  matrix: number[][];
+}
+
+export async function fetchModuleTrend(): Promise<ModuleTrendResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/module-trend"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<ModuleTrendResponse>(resp);
+  } catch (e) {
+    console.error("获取模块趋势数据失败:", e);
+    return null;
+  }
+}
+
+export async function fetchStorageTrend(): Promise<StorageTrendResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/storage-trend"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<StorageTrendResponse>(resp);
+  } catch (e) {
+    console.error("获取入库趋势数据失败:", e);
+    return null;
+  }
+}
+
+export async function fetchCategoryPriorityHeatmap(): Promise<CategoryPriorityResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/category-priority-heatmap"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<CategoryPriorityResponse>(resp);
+  } catch (e) {
+    console.error("获取分类×优先级热力图数据失败:", e);
+    return null;
+  }
+}
+
+export async function fetchEnterpriseCategoryHeatmap(): Promise<EnterpriseCategoryResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/enterprise-category-heatmap"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<EnterpriseCategoryResponse>(resp);
+  } catch (e) {
+    console.error("获取企业×分类热力图数据失败:", e);
+    return null;
+  }
+}

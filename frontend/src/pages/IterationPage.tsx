@@ -75,7 +75,7 @@ const DEMO_RECORDS: IterationRecord[] = [
 const FALLBACK_STATUS: IterationStatus = {
   current_state: "CANARY",
   current_state_cn: "灰度发布中",
-  monitor_summary: { total_samples: 25000, recent_f1: 0.878 },
+  monitor_summary: { cumulative_samples: 25000, recent_f1: 0.878 },
   pending_approvals: [
     { record_id: "approval_v2_001", model_version: "v2.0.0", status: "SECURITY_APPROVED" },
   ],
@@ -132,8 +132,9 @@ function DashboardSection() {
   }, []);
 
   const cur = status ?? FALLBACK_STATUS;
-  const totalSamples = cur.monitor_summary?.total_samples;
-  const recentF1 = cur.monitor_summary?.recent_f1;
+  const ms = cur.monitor_summary ?? {};
+  const totalSamples = ms.cumulative_samples ?? ms.total_samples;
+  const recentF1 = ms.recent_f1;
   const pending = cur.pending_approvals ?? [];
   const canaryRatio = cur.current_state === "CANARY" ? 0.5 : cur.current_state === "PRODUCTION" ? 1.0 : 0.0;
 
