@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 export interface TabDef {
   id: string;
   label: string;
+  icon?: string;
 }
 
 interface Props {
@@ -22,7 +23,8 @@ export default function Tabs({ tabs, active, onChange }: Props) {
           onClick={() => onChange(t.id)}
           type="button"
         >
-          {t.label}
+          {t.icon && <span className="tab-icon font-mono">{t.icon}</span>}
+          <span>{t.label}</span>
         </button>
       ))}
     </div>

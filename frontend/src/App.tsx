@@ -20,11 +20,11 @@ import SystemConfigPage from "./pages/SystemConfigPage";
 import VisualizationDashboard from "./pages/VisualizationPage";
 
 const TAB_DEFS = [
-  { id: "risk", label: "🎯 企业风险预测" },
-  { id: "visualization", label: "📈 数据可视化" },
-  { id: "knowledge", label: "📚 知识库与记忆系统" },
-  { id: "iteration", label: "🔄 模型迭代与CI/CD" },
-  { id: "config", label: "⚙️ 系统配置与API文档" },
+  { id: "risk", label: "企业风险预测", icon: "◎" },
+  { id: "visualization", label: "数据可视化", icon: "▥" },
+  { id: "knowledge", label: "知识与记忆系统", icon: "▧" },
+  { id: "iteration", label: "模型迭代 CI/CD", icon: "↻" },
+  { id: "config", label: "系统配置 API", icon: "⚙" },
 ];
 
 export default function App() {
@@ -59,20 +59,32 @@ export default function App() {
           iteration={iteration}
           demoMode={demoMode}
           onDemoToggle={setDemoMode}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          navItems={TAB_DEFS}
         />
         <main className="main-content">
-          <Tabs
-            tabs={TAB_DEFS}
-            active={activeTab}
-            onChange={setActiveTab}
-          />
-          {activeTab === "risk" && <RiskPredictionPage scenario={scenario} />}
-          {activeTab === "visualization" && <VisualizationDashboard />}
-          {activeTab === "knowledge" && <KnowledgeMemoryPage />}
-          {activeTab === "iteration" && <IterationPage />}
-          {activeTab === "config" && (
-            <SystemConfigPage scenario={scenario} health={health} />
-          )}
+          <div className="workspace-header">
+            <div>
+              <div className="workspace-eyebrow">INDUSTRIAL WARNING SYSTEM</div>
+              <h1 className="workspace-title">
+                {TAB_DEFS.find((tab) => tab.id === activeTab)?.label}
+              </h1>
+            </div>
+            <div className="workspace-scenario font-mono">
+              SCENE / {SCENARIO_NAMES[scenario]}
+            </div>
+          </div>
+          <Tabs tabs={TAB_DEFS} active={activeTab} onChange={setActiveTab} />
+          <section className="workspace-surface">
+            {activeTab === "risk" && <RiskPredictionPage scenario={scenario} />}
+            {activeTab === "visualization" && <VisualizationDashboard />}
+            {activeTab === "knowledge" && <KnowledgeMemoryPage />}
+            {activeTab === "iteration" && <IterationPage />}
+            {activeTab === "config" && (
+              <SystemConfigPage scenario={scenario} health={health} />
+            )}
+          </section>
         </main>
       </div>
     </div>
