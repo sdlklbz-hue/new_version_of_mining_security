@@ -18,13 +18,15 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from transformers import BertTokenizer
 
-# 将项目根目录加入 sys.path
-project_root = Path(__file__).resolve().parent.parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _bootstrap import setup_project_paths
 
-from harness.nlp_pipeline import BertBiLSTMCRF, LABEL2ID, ID2LABEL, bio_encode
-from utils.logger import get_logger
+setup_project_paths()
+
+from mining_risk_serve.harness.nlp_pipeline import BertBiLSTMCRF, LABEL2ID, ID2LABEL, bio_encode
+from mining_risk_common.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -46,6 +48,14 @@ class NERDataset(Dataset):
         tokenizer: BertTokenizer,
         max_length: int = 512,
     ):
+        """
+        内部  init  。
+
+            Args:
+                data (List[Dict]): 参数 ``data``。
+                tokenizer (BertTokenizer): 参数 ``tokenizer``。
+                max_length (int): 参数 ``max_length``。
+        """
         self.data = data
         self.tokenizer = tokenizer
         self.max_length = max_length
@@ -132,6 +142,18 @@ def train_epoch(
     optimizer: torch.optim.Optimizer,
     device: str,
 ) -> float:
+    """
+    train epoch。
+
+        Args:
+            model (BertBiLSTMCRF): 参数 ``model``。
+            dataloader (DataLoader): 参数 ``dataloader``。
+            optimizer (torch.optim.Optimizer): 参数 ``optimizer``。
+            device (str): 参数 ``device``。
+
+        Returns:
+            (float): 函数返回值。
+    """
     model.train()
     total_loss = 0.0
     for batch in tqdm(dataloader, desc="Training"):
@@ -150,6 +172,17 @@ def train_epoch(
 
 
 def evaluate(model: BertBiLSTMCRF, dataloader: DataLoader, device: str) -> Dict[str, float]:
+    """
+    evaluate。
+
+        Args:
+            model (BertBiLSTMCRF): 参数 ``model``。
+            dataloader (DataLoader): 参数 ``dataloader``。
+            device (str): 参数 ``device``。
+
+        Returns:
+            (Dict[str, float]): 函数返回值。
+    """
     model.eval()
     total_loss = 0.0
     correct = 0
@@ -178,9 +211,12 @@ def evaluate(model: BertBiLSTMCRF, dataloader: DataLoader, device: str) -> Dict[
 
 
 def main():
+    """
+    main。
+    """
     parser = argparse.ArgumentParser(description="训练 NER 模型")
     parser.add_argument("--data", type=str, required=True, help="训练数据 JSON 路径")
-    parser.add_argument("--output", type=str, default="models/ner_model.pt", help="模型输出路径")
+    parser.add_argument("--output", type=str, default="artifacts/models/ner_model.pt", help="模型输出路径")
     parser.add_argument("--bert", type=str, default="bert-base-chinese", help="预训练BERT模型名")
     parser.add_argument("--epochs", type=int, default=10, help="训练轮数")
     parser.add_argument("--batch-size", type=int, default=8, help="批次大小")

@@ -65,6 +65,9 @@ SOP_COLUMNS = [
 
 @dataclass(frozen=True)
 class Source:
+    """
+    Source 类。
+    """
     source_id: str
     name: str
     level: str
@@ -1283,6 +1286,15 @@ RESPONSIBLE_ROLES = [
 
 
 def esc(value: object) -> str:
+    """
+    esc。
+
+        Args:
+            value (object): 参数 ``value``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     text = str(value)
     text = text.replace("\n", "<br>")
     text = text.replace("|", "\\|")
@@ -1290,6 +1302,16 @@ def esc(value: object) -> str:
 
 
 def md_table(headers: list[str], rows: Iterable[Iterable[object]]) -> str:
+    """
+    md table。
+
+        Args:
+            headers (list[str]): 参数 ``headers``。
+            rows (Iterable[Iterable[object]]): 参数 ``rows``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     lines = [
         "| " + " | ".join(esc(h) for h in headers) + " |",
         "| " + " | ".join("---" for _ in headers) + " |",
@@ -1300,10 +1322,22 @@ def md_table(headers: list[str], rows: Iterable[Iterable[object]]) -> str:
 
 
 def source_rows() -> list[list[str]]:
+    """
+    source rows。
+
+        Returns:
+            (list[list[str]]): 函数返回值。
+    """
     return [[s.source_id, s.name, s.level, s.status, s.url, s.note] for s in SOURCES]
 
 
 def data_source_section() -> str:
+    """
+    data source section。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return "\n".join(
         [
             "## 2. 数据来源与事实边界",
@@ -1319,6 +1353,12 @@ def data_source_section() -> str:
 
 
 def source_section() -> str:
+    """
+    source section。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return "\n".join(
         [
             "## 3. 规则来源台账",
@@ -1332,6 +1372,12 @@ def source_section() -> str:
 
 
 def compliance_markdown() -> str:
+    """
+    compliance markdown。
+
+        Returns:
+            (str): 函数返回值。
+    """
     all_rules = COMPLIANCE_RULES + COMPLIANCE_ACTION_RULES
     validation_map = [
         ["合规红线 Checker", "COM-RED-001, COM-RED-003, COM-RED-005, COM-RED-018, COM-RED-019", "关键词/结构化字段：红线、无证上岗、关闭报警设备、销毁监控记录、瓦斯浓度超限", "命中即阻断或转人工"],
@@ -1398,6 +1444,12 @@ def compliance_markdown() -> str:
 
 
 def physics_markdown() -> str:
+    """
+    physics markdown。
+
+        Returns:
+            (str): 函数返回值。
+    """
     sections = [
         ["粉尘涉爆", "PHY-DUST", "粉尘浓度、除尘压差、风机电流、清扫记录、动火票、火花/温度、湿式除尘液位", "粉尘爆炸下限和积尘阈值必须按粉尘类型、检测报告和企业 SOP 校准"],
         ["冶金", "PHY-MET", "CO/可燃气体、煤气压力、阀位、氧含量、炉壳温度、冷却水流量/温升、液位、提升速度、联锁状态", "炉窑、熔融金属和煤气系统阈值必须按设计文件、设备报警值和历史基线校准"],
@@ -1471,6 +1523,12 @@ def physics_markdown() -> str:
 
 
 def sop_markdown() -> str:
+    """
+    sop markdown。
+
+        Returns:
+            (str): 函数返回值。
+    """
     workflow_rows = [
         ["risk_level", "红/橙/黄/蓝", "路由主键", "来自模型输出和人工复核"],
         ["compliance_red_line", "true/false", "红线阻断", "来自合规执行书 rule_id"],
@@ -1547,6 +1605,12 @@ def sop_markdown() -> str:
 
 
 def write_targets() -> dict[str, int]:
+    """
+    write targets。
+
+        Returns:
+            (dict[str, int]): 函数返回值。
+    """
     KB_DIR.mkdir(parents=True, exist_ok=True)
     contents = {
         COMPLIANCE_FILE: compliance_markdown(),
@@ -1562,22 +1626,54 @@ def write_targets() -> dict[str, int]:
 
 
 def _load_split_by_headers():
-    if str(PROJECT_ROOT) not in sys.path:
-        sys.path.insert(0, str(PROJECT_ROOT))
-    from harness.vector_store import split_by_headers
+    """
+    内部 load split by headers。
+    """
+    _scripts = PROJECT_ROOT / "scripts"
+    if str(_scripts) not in sys.path:
+        sys.path.insert(0, str(_scripts))
+    from _bootstrap import setup_project_paths
+
+    setup_project_paths()
+    from mining_risk_serve.harness.vector_store import split_by_headers
 
     return split_by_headers
 
 
 def count_ids(text: str, prefix: str) -> int:
+    """
+    count ids。
+
+        Args:
+            text (str): 参数 ``text``。
+            prefix (str): 参数 ``prefix``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     return len(set(re.findall(rf"\b{re.escape(prefix)}-[A-Z]+-[0-9]{{3}}\b", text)))
 
 
 def count_sop_ids(text: str) -> int:
+    """
+    count sop ids。
+
+        Args:
+            text (str): 参数 ``text``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     return len(set(re.findall(r"\bSOP-[A-Z]+-[A-Z0-9]+\b", text)))
 
 
 def quality_check() -> dict[str, object]:
+    """
+    quality check。
+
+        Returns:
+            (dict[str, object]): 函数返回值。
+    """
     split_by_headers = _load_split_by_headers()
     checks: list[dict[str, object]] = []
     for filename in TARGET_FILES:
@@ -1647,6 +1743,15 @@ def quality_check() -> dict[str, object]:
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """
+    parse args。
+
+        Args:
+            argv (list[str] | None): 参数 ``argv``。
+
+        Returns:
+            (argparse.Namespace): 函数返回值。
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="Only run quality checks; do not rewrite Markdown.")
     parser.add_argument("--report-json", default=str(RUN_REPORT), help="Path for the JSON run report.")
@@ -1654,6 +1759,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """
+    main。
+
+        Args:
+            argv (list[str] | None): 参数 ``argv``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     args = parse_args(argv)
     sizes: dict[str, int] = {}
     if not args.check:

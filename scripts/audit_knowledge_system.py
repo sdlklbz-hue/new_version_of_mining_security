@@ -25,17 +25,19 @@ from typing import Any, Callable, Iterable, Sequence
 from unittest.mock import patch
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _bootstrap import setup_project_paths
 
+PROJECT_ROOT = setup_project_paths()
 
-from data.loader import DataLoader
-from harness.agentfs import AgentFS
-from harness.knowledge_base import KnowledgeBaseManager
-from harness.memory import HybridMemoryManager, LongTermMemory, ShortTermMemory
-from harness.validation import EvidenceRetriever
-from harness.vector_store import VectorStore
+from mining_risk_common.dataplane.loader import DataLoader
+from mining_risk_serve.harness.agentfs import AgentFS
+from mining_risk_serve.harness.knowledge_base import KnowledgeBaseManager
+from mining_risk_serve.harness.memory import HybridMemoryManager, LongTermMemory, ShortTermMemory
+from mining_risk_serve.harness.validation import EvidenceRetriever
+from mining_risk_serve.harness.vector_store import VectorStore
 from scripts.sync_kb_to_agentfs import (
     agentfs_manifest,
     compare_manifests,
@@ -43,7 +45,7 @@ from scripts.sync_kb_to_agentfs import (
     get_paths,
     verify_agentfs_content,
 )
-from utils.config import get_config, resolve_project_path
+from mining_risk_common.utils.config import get_config, resolve_project_path
 
 
 PASS = "PASS"
@@ -53,6 +55,9 @@ FAIL = "FAIL"
 
 @dataclass
 class AuditResult:
+    """
+    AuditResult 类。
+    """
     name: str
     status: str
     summary: str
@@ -60,6 +65,15 @@ class AuditResult:
 
 
 def _rel(path: Path) -> str:
+    """
+    内部 rel。
+
+        Args:
+            path (Path): 参数 ``path``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     try:
         return path.resolve().relative_to(PROJECT_ROOT).as_posix()
     except ValueError:
@@ -67,18 +81,56 @@ def _rel(path: Path) -> str:
 
 
 def _read_text(path: Path) -> str:
+    """
+    内部 read text。
+
+        Args:
+            path (Path): 参数 ``path``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return path.read_text(encoding="utf-8")
 
 
 def _sha256(data: bytes) -> str:
+    """
+    内部 sha256。
+
+        Args:
+            data (bytes): 参数 ``data``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return hashlib.sha256(data).hexdigest()
 
 
 def _result(name: str, status: str, summary: str, **evidence: Any) -> AuditResult:
+    """
+    内部 result。
+
+        Args:
+            name (str): 名称标识
+            status (str): 参数 ``status``。
+            summary (str): 参数 ``summary``。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     return AuditResult(name=name, status=status, summary=summary, evidence=evidence)
 
 
 def _safe_json(path: Path) -> dict[str, Any]:
+    """
+    内部 safe json。
+
+        Args:
+            path (Path): 参数 ``path``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
@@ -86,6 +138,17 @@ def _safe_json(path: Path) -> dict[str, Any]:
 
 
 def _grep_number(pattern: str, text: str, default: int = 0) -> int:
+    """
+    内部 grep number。
+
+        Args:
+            pattern (str): 参数 ``pattern``。
+            text (str): 参数 ``text``。
+            default (int): 参数 ``default``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     match = re.search(pattern, text, flags=re.S)
     if not match:
         return default
@@ -96,10 +159,17 @@ def _grep_number(pattern: str, text: str, default: int = 0) -> int:
 
 
 def _kb_paths() -> list[Path]:
+        """私有辅助方法。"""
     return [PROJECT_ROOT / "knowledge_base" / name for name in KnowledgeBaseManager.KNOWLEDGE_FILES]
 
 
 def check_public_data_paths() -> AuditResult:
+    """
+    check public data paths。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     config = get_config()
     configured = list(config.data.all_public_data_paths or [])
     if config.data.public_data_root and config.data.public_data_root not in configured:
@@ -123,6 +193,15 @@ def check_public_data_paths() -> AuditResult:
 
 
 def _iter_public_data_files(paths: Sequence[Path]) -> list[Path]:
+    """
+    内部 iter public data files。
+
+        Args:
+            paths (Sequence[Path]): 参数 ``paths``。
+
+        Returns:
+            (list[Path]): 函数返回值。
+    """
     files: list[Path] = []
     suffixes = {".csv", ".xlsx", ".xls"}
     for root in paths:
@@ -132,6 +211,15 @@ def _iter_public_data_files(paths: Sequence[Path]) -> list[Path]:
 
 
 def check_dataloader_reads_public_data(sample_rows: int = 5) -> AuditResult:
+    """
+    check dataloader reads public data。
+
+        Args:
+            sample_rows (int): 参数 ``sample_rows``。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     config = get_config()
     roots = [resolve_project_path(path) for path in (config.data.all_public_data_paths or [config.data.public_data_root])]
     files = _iter_public_data_files([path for path in roots if path is not None])
@@ -162,6 +250,12 @@ def check_dataloader_reads_public_data(sample_rows: int = 5) -> AuditResult:
 
 
 def check_main_kb_files() -> AuditResult:
+    """
+    check main kb files。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     details = []
     missing_or_empty = []
     for path in _kb_paths():
@@ -183,6 +277,15 @@ def check_main_kb_files() -> AuditResult:
 
 
 def _incremental_sections(text: str) -> list[str]:
+    """
+    内部 incremental sections。
+
+        Args:
+            text (str): 参数 ``text``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     lines = text.splitlines()
     sections: list[str] = []
     current: list[str] = []
@@ -210,6 +313,12 @@ def _incremental_sections(text: str) -> list[str]:
 
 
 def check_no_duplicate_incremental_sections() -> AuditResult:
+    """
+    check no duplicate incremental sections。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     seen: dict[str, str] = {}
     duplicates = []
     section_count = 0
@@ -238,6 +347,15 @@ def check_no_duplicate_incremental_sections() -> AuditResult:
 
 
 def _is_empty_placeholder_row(line: str) -> bool:
+    """
+    内部 is empty placeholder row。
+
+        Args:
+            line (str): 参数 ``line``。
+
+        Returns:
+            (bool): 函数返回值。
+    """
     stripped = line.strip()
     if not stripped.startswith("|") or not stripped.endswith("|"):
         return False
@@ -246,6 +364,15 @@ def _is_empty_placeholder_row(line: str) -> bool:
 
 
 def check_no_large_empty_placeholders(max_allowed: int = 5) -> AuditResult:
+    """
+    check no large empty placeholders。
+
+        Args:
+            max_allowed (int): 参数 ``max_allowed``。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     hits = []
     for path in _kb_paths():
         if not path.exists():
@@ -265,6 +392,12 @@ def check_no_large_empty_placeholders(max_allowed: int = 5) -> AuditResult:
 
 
 def check_no_pending_placeholders() -> AuditResult:
+    """
+    check no pending placeholders。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     hits = []
     for path in _kb_paths():
         if not path.exists():
@@ -285,6 +418,12 @@ def check_no_pending_placeholders() -> AuditResult:
 
 
 def check_enterprise_conditions_public_stats() -> AuditResult:
+    """
+    check enterprise conditions public stats。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     path = PROJECT_ROOT / "knowledge_base" / "企业已具备的执行条件.md"
     text = _read_text(path) if path.exists() else ""
     required_terms = ["公开数据", "116798", "67", "2568"]
@@ -303,10 +442,26 @@ def check_enterprise_conditions_public_stats() -> AuditResult:
 
 
 def _case_count(prefix: str, text: str) -> int:
+    """
+    内部 case count。
+
+        Args:
+            prefix (str): 参数 ``prefix``。
+            text (str): 参数 ``text``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     return len(set(re.findall(rf"\b{prefix}-\d{{3}}\b", text)))
 
 
 def check_accident_cases_bcd() -> AuditResult:
+    """
+    check accident cases bcd。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     path = PROJECT_ROOT / "knowledge_base" / "类似事故处理案例.md"
     text = _read_text(path) if path.exists() else ""
     counts = {prefix: _case_count(prefix, text) for prefix in ("A", "B", "C", "D", "E")}
@@ -325,6 +480,12 @@ def check_accident_cases_bcd() -> AuditResult:
 
 
 def check_a_class_real_accident_gap() -> AuditResult:
+    """
+    check a class real accident gap。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     path = PROJECT_ROOT / "knowledge_base" / "类似事故处理案例.md"
     text = _read_text(path) if path.exists() else ""
     counts = {prefix: _case_count(prefix, text) for prefix in ("A", "B", "C", "D")}
@@ -344,6 +505,12 @@ def check_a_class_real_accident_gap() -> AuditResult:
 
 
 def check_rule_ids() -> AuditResult:
+    """
+    check rule ids。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     files = {
         "COM": PROJECT_ROOT / "knowledge_base" / "工矿风险预警智能体合规执行书.md",
         "PHY": PROJECT_ROOT / "knowledge_base" / "工业物理常识及传感器时间序列逻辑.md",
@@ -374,6 +541,12 @@ def check_rule_ids() -> AuditResult:
 
 
 def check_agentfs_main_kb_sync() -> AuditResult:
+    """
+    check agentfs main kb sync。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     db_path, _, _, kb_dir = get_paths()
     verification = verify_agentfs_content(db_path, kb_dir)
     comparison = compare_manifests(filesystem_manifest(kb_dir), agentfs_manifest(db_path))
@@ -392,6 +565,12 @@ def check_agentfs_main_kb_sync() -> AuditResult:
 
 
 def check_agentfs_deprecated_path_retained() -> AuditResult:
+    """
+    check agentfs deprecated path retained。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     db_path, _, _, _ = get_paths()
     extras = [asdict(entry) for entry in agentfs_manifest(db_path) if entry.status_note]
     status = WARN if extras else PASS
@@ -407,9 +586,15 @@ def check_agentfs_deprecated_path_retained() -> AuditResult:
 
 
 def check_chroma_index() -> AuditResult:
+    """
+    check chroma index。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     config = get_config()
     rag_config = config.harness.memory.long_term.rag
-    persist_dir = resolve_project_path(rag_config.get("persist_directory", "data/chroma_db"))
+    persist_dir = resolve_project_path(rag_config.get("persist_directory", "var/chroma"))
     report = _safe_json(PROJECT_ROOT / "reports" / "rag_index_rebuild_run.json")
     if not (persist_dir.exists() and (persist_dir / "chroma.sqlite3").exists()):
         return _result("rag.formal_chroma_index", FAIL, "Formal Chroma directory or sqlite file is missing", persist_dir=str(persist_dir))
@@ -447,6 +632,12 @@ def check_chroma_index() -> AuditResult:
 
 
 def check_bge_embedding_gap() -> AuditResult:
+    """
+    check bge embedding gap。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     report = _safe_json(PROJECT_ROOT / "reports" / "rag_index_rebuild_run.json")
     deps = report.get("dependencies", {})
     using_fallback = bool(report.get("fallback_embedding_used")) or report.get("embedding_backend") == "fallback"
@@ -465,10 +656,16 @@ def check_bge_embedding_gap() -> AuditResult:
 
 
 def check_rag_query_returns_evidence() -> AuditResult:
+    """
+    check rag query returns evidence。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     store = None
     try:
         store = VectorStore(
-            persist_directory=str(resolve_project_path("data/chroma_db")),
+            persist_directory=str(resolve_project_path("var/chroma")),
             collection_name="knowledge_base",
             embedding_backend="fallback",
         )
@@ -505,10 +702,26 @@ def check_rag_query_returns_evidence() -> AuditResult:
 
 
 def _has_evidence(items: Sequence[Any], field_name: str) -> bool:
+    """
+    内部 has evidence。
+
+        Args:
+            items (Sequence[Any]): 参数 ``items``。
+            field_name (str): 参数 ``field_name``。
+
+        Returns:
+            (bool): 函数返回值。
+    """
     return any(getattr(item, "source_file", "") and getattr(item, field_name, "") for item in items)
 
 
 def check_validation_evidence() -> AuditResult:
+    """
+    check validation evidence。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     retriever = EvidenceRetriever()
     rule_evidence = retriever.retrieve(
         "销毁监控记录 COM-RED-018",
@@ -554,10 +767,28 @@ def check_validation_evidence() -> AuditResult:
 
 
 def _char_tokens(text: str) -> int:
+    """
+    内部 char tokens。
+
+        Args:
+            text (str): 参数 ``text``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     return len(text)
 
 
 def _make_workspace_temp_dir(prefix: str) -> Path:
+    """
+    内部 make workspace temp dir。
+
+        Args:
+            prefix (str): 参数 ``prefix``。
+
+        Returns:
+            (Path): 函数返回值。
+    """
     parent = PROJECT_ROOT / "tmp_pytest" / "knowledge_system_audit"
     parent.mkdir(parents=True, exist_ok=True)
     for _ in range(10):
@@ -571,6 +802,7 @@ def _make_workspace_temp_dir(prefix: str) -> Path:
 
 
 async def _check_memory_archive_async() -> AuditResult:
+        """私有辅助方法。"""
     tmp = _make_workspace_temp_dir("memory_archive_")
     try:
         fs = AgentFS(db_path=str(tmp / "agentfs.db"), git_repo_path=str(tmp / "git"))
@@ -602,11 +834,18 @@ async def _check_memory_archive_async() -> AuditResult:
 
 
 def check_memory_archive() -> AuditResult:
+    """
+    check memory archive。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     return asyncio.run(_check_memory_archive_async())
 
 
 async def _check_workflow_light_e2e_async() -> AuditResult:
-    from agent.workflow import ScenarioConfig, node_decision_generation, node_memory_recall
+        """私有辅助方法。"""
+    from mining_risk_serve.agent.workflow import ScenarioConfig, node_decision_generation, node_memory_recall
 
     state = {
         "enterprise_id": "AUDIT-E001",
@@ -747,10 +986,22 @@ async def _check_workflow_light_e2e_async() -> AuditResult:
 
 
 def check_workflow_light_e2e() -> AuditResult:
+    """
+    check workflow light e2e。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     return asyncio.run(_check_workflow_light_e2e_async())
 
 
 def check_law_review_gap() -> AuditResult:
+    """
+    check law review gap。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     return _result(
         "gap.legal_article_number_review",
         WARN,
@@ -760,6 +1011,12 @@ def check_law_review_gap() -> AuditResult:
 
 
 def check_threshold_calibration_gap() -> AuditResult:
+    """
+    check threshold calibration gap。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     return _result(
         "gap.threshold_calibration",
         WARN,
@@ -769,6 +1026,12 @@ def check_threshold_calibration_gap() -> AuditResult:
 
 
 def check_department_contacts_gap() -> AuditResult:
+    """
+    check department contacts gap。
+
+        Returns:
+            (AuditResult): 函数返回值。
+    """
     config = get_config()
     approvers = config.iteration.approvers.model_dump()
     configured = {key: value for key, value in approvers.items() if value and "example.com" not in value}
@@ -783,6 +1046,15 @@ def check_department_contacts_gap() -> AuditResult:
 
 
 def run_audit(sample_rows: int = 5) -> dict[str, Any]:
+    """
+    run audit。
+
+        Args:
+            sample_rows (int): 参数 ``sample_rows``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     checks: list[Callable[[], AuditResult]] = [
         check_public_data_paths,
         lambda: check_dataloader_reads_public_data(sample_rows=sample_rows),
@@ -827,6 +1099,16 @@ def run_audit(sample_rows: int = 5) -> dict[str, Any]:
 
 
 def _result_by_name(summary: dict[str, Any], name: str) -> dict[str, Any]:
+    """
+    内部 result by name。
+
+        Args:
+            summary (dict[str, Any]): 参数 ``summary``。
+            name (str): 名称标识
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     for item in summary["results"]:
         if item["name"] == name:
             return item
@@ -834,6 +1116,15 @@ def _result_by_name(summary: dict[str, Any], name: str) -> dict[str, Any]:
 
 
 def render_markdown_report(summary: dict[str, Any]) -> str:
+    """
+    render markdown report。
+
+        Args:
+            summary (dict[str, Any]): 参数 ``summary``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     rows = [
         (
             "公开数据可追溯接入",
@@ -885,7 +1176,7 @@ def render_markdown_report(summary: dict[str, Any]) -> str:
         ),
         (
             "正式 RAG 索引和证据召回",
-            "data/chroma_db 存在，collection=knowledge_base，chunk 数合理；RAG 查询能返回 source_file 证据块。",
+            "var/chroma 存在，collection=knowledge_base，chunk 数合理；RAG 查询能返回 source_file 证据块。",
             "rag.formal_chroma_index；rag.query_returns_evidence_blocks。",
             "本地可用",
             "当前仍使用 deterministic fallback embedding/reranker，不是真实 BGE。",
@@ -969,6 +1260,15 @@ def render_markdown_report(summary: dict[str, Any]) -> str:
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    """
+    parse args。
+
+        Args:
+            argv (Sequence[str] | None): 参数 ``argv``。
+
+        Returns:
+            (argparse.Namespace): 函数返回值。
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sample-rows", type=int, default=5, help="Rows read from each public CSV/XLSX file during DataLoader readability checks.")
     parser.add_argument("--json", dest="json_path", default=None, help="Optional path to write the machine-readable audit summary.")
@@ -977,6 +1277,15 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """
+    main。
+
+        Args:
+            argv (Sequence[str] | None): 参数 ``argv``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     args = parse_args(argv)
     summary = run_audit(sample_rows=args.sample_rows)
 

@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from agent.workflow import (
+from mining_risk_serve.agent.workflow import (
     AgentState,
     DecisionWorkflow,
     ScenarioConfig,
@@ -70,6 +70,52 @@ def base_state(mock_raw_data, mock_prediction):
         "scenario_id": "chemical",
         "error": None,
     }
+
+
+# =============================================================================
+# 测试：memory_recall RAG 开关
+# =============================================================================
+
+@pytest.mark.asyncio
+class TestMemoryRecallNode:
+    """测试 memory_recall 对长期记忆 RAG 开关的处理。"""
+
+    @patch("agent.workflow._get_memory")
+    async def test_memory_recall_enabled_calls_rag(self, mock_get_memory, base_state):
+        mock_memory = MagicMock()
+        mock_memory.is_long_term_rag_enabled.return_value = True
+        mock_memory.recall_long_term = AsyncMock(return_value=[
+            {"text": "粉尘涉爆除尘系统异常处置证据", "metadata": {"source_file": "knowledge_base/test.md"}}
+        ])
+        mock_get_memory.return_value = mock_memory
+
+        state = base_state.copy()
+        state["node_status"] = []
+        result = await node_memory_recall(state)
+
+        assert result["memory_results"]
+        mock_memory.recall_long_term.assert_awaited_once()
+        status = result["node_status"][-1]
+        assert status["node"] == "memory_recall"
+        assert status["status"] == "completed"
+        assert "召回 1 条记忆" in status["detail"]
+
+    @patch("agent.workflow._get_memory")
+    async def test_memory_recall_disabled_skips_safely(self, mock_get_memory, base_state):
+        mock_memory = MagicMock()
+        mock_memory.is_long_term_rag_enabled.return_value = False
+        mock_memory.recall_long_term = AsyncMock(return_value=[])
+        mock_get_memory.return_value = mock_memory
+
+        state = base_state.copy()
+        state["node_status"] = []
+        result = await node_memory_recall(state)
+
+        assert result["memory_results"] == []
+        mock_memory.recall_long_term.assert_not_called()
+        status = result["node_status"][-1]
+        assert status["node"] == "memory_recall"
+        assert status["status"] == "skipped"
 
 
 # =============================================================================
@@ -481,7 +527,7 @@ class TestNodeStatus:
     def test_node_status_format(self, base_state):
         state = base_state.copy()
         state["node_status"] = []
-        from agent.workflow import _push_node_status
+        from mining_risk_serve.agent.workflow import _push_node_status
         _push_node_status(state, "risk_assessment", "completed", "预测等级: 红")
         
         assert len(state["node_status"]) == 1
@@ -523,3 +569,5 @@ class TestPromptTemplate:
         content = path.read_text(encoding="utf-8")
         assert "粉尘" in content
         assert "泄爆口" in content
+        assert "{{ risk_description }}" in content
+        assert "{{ table_column_names }}" in content

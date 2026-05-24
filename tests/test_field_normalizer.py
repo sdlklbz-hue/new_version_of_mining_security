@@ -1,6 +1,9 @@
 import os
 
-from data.field_normalizer import normalize_enterprise_record
+from mining_risk_common.dataplane.field_normalizer import (
+    extract_decision_upload_constraints,
+    normalize_enterprise_record,
+)
 
 
 os.environ.setdefault("GLM5_API_KEY", "test-key")
@@ -66,3 +69,62 @@ def test_normalize_fills_pipeline_required_columns():
     assert normalized["cf_source"] == "API输入"
     assert normalized["is_explosive_dust"] == 1
     assert "staff_num" in report.defaulted_fields
+
+
+def test_normalize_maps_demo_regulatory_chinese_columns():
+    normalized, report = normalize_enterprise_record(
+        {
+            "企业ID": "DUST-1-001",
+            "是否规上企业": 1,
+            "是否投保": 1,
+            "是否履行三同时手续": 1,
+            "厂中厂": 0,
+            "风险重点企业": 0,
+            "关键风险企业": 0,
+            "数据有效标识": 1,
+            "危化品企业标识": 0,
+            "危险化学品使用": 0,
+            "有限空间关键企业": 0,
+            "总风险数": 0,
+            "D级风险数": 0,
+            "风险等级": 1,
+        },
+        enterprise_id="DUST-1-001",
+        scenario_id="dust",
+    )
+    assert normalized["above_designated"] == 1
+    assert normalized["if_insure"] == 1
+    assert normalized["if_comply_formality"] == 1
+    assert normalized["factory_in_factory"] == 0
+    assert normalized["risk_company_flag"] == 0
+    assert normalized["risk_total_count"] == 0
+    assert normalized["risk_level_d_count"] == 0
+    assert "above_designated" not in report.defaulted_fields
+
+
+def test_risk_level_does_not_override_explicit_risk_counts():
+    normalized, _ = normalize_enterprise_record(
+        {
+            "风险等级": 1,
+            "总风险数": 0,
+            "D级风险数": 0,
+        },
+        scenario_id="dust",
+    )
+    assert normalized["risk_total_count"] == 0
+    assert normalized["risk_level_d_count"] == 0
+
+
+def test_extract_decision_upload_constraints_from_dust_demo_row():
+    row = {
+        "企业ID": "DUST-1-001",
+        "预测风险等级": "蓝",
+        "具体风险描述": "湿式除尘运行正常，粉尘清扫制度执行到位，电气防爆符合要求",
+        "湿式除尘器数量": 2,
+    }
+    ctx = extract_decision_upload_constraints(row)
+    assert ctx["risk_description"] == "湿式除尘运行正常，粉尘清扫制度执行到位，电气防爆符合要求"
+    assert ctx["uploaded_predicted_level"] == "蓝"
+    assert "企业ID" in ctx["table_column_names"]
+    assert "具体风险描述" in ctx["table_column_names"]
+    assert "湿式除尘器数量" in ctx["table_column_names"]

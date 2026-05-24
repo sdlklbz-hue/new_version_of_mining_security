@@ -10,18 +10,3 @@ __pycache__
 .DS_Store
 .env
 .env.local
-
-# 合并残留的重复文件
-**/*_1.py
-**/*_1.ts
-**/*_1.tsx
-**/*_1.css
-**/*_1.svg
-**/*_1.html
-**/*_1.json
-**/*_1.md
-**/*_1.conf
-**/*_1.gitignore
-**/*_1.dockerignore
-**/*_1.npmrc
-**/*_1.d.ts

@@ -20,12 +20,15 @@ from typing import Any, Iterable
 
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _bootstrap import setup_project_paths
 
-from data.loader import DataLoader  # noqa: E402
-from utils.config import get_config, resolve_project_path  # noqa: E402
+PROJECT_ROOT = setup_project_paths()
+
+from mining_risk_common.dataplane.loader import DataLoader  # noqa: E402
+from mining_risk_common.utils.config import get_config, resolve_project_path  # noqa: E402
 
 
 TARGET_KB = PROJECT_ROOT / "knowledge_base" / "企业已具备的执行条件.md"
@@ -79,6 +82,9 @@ FALSY = {
 
 @dataclass(frozen=True)
 class FieldDef:
+    """
+    FieldDef 类。
+    """
     key: str
     label: str
     category: str
@@ -90,6 +96,9 @@ class FieldDef:
 
 @dataclass
 class FieldAccumulator:
+    """
+    FieldAccumulator 类。
+    """
     values: Counter[str] = field(default_factory=Counter)
     sources: set[str] = field(default_factory=set)
     numeric_max: float | None = None
@@ -98,6 +107,14 @@ class FieldAccumulator:
     false_seen: bool = False
 
     def add(self, raw_value: Any, source: str, kind: str) -> None:
+        """
+        add。
+
+            Args:
+                raw_value (Any): 参数 ``raw_value``。
+                source (str): 参数 ``source``。
+                kind (str): 参数 ``kind``。
+        """
         value = clean_value(raw_value)
         if value is None:
             return
@@ -118,6 +135,9 @@ class FieldAccumulator:
 
 @dataclass
 class EnterpriseRecord:
+    """
+    EnterpriseRecord 类。
+    """
     key: str
     names: Counter[str] = field(default_factory=Counter)
     credit_codes: Counter[str] = field(default_factory=Counter)
@@ -126,12 +146,30 @@ class EnterpriseRecord:
     row_sources: Counter[str] = field(default_factory=Counter)
 
     def primary_name(self) -> str:
+        """
+        primary name。
+
+            Returns:
+                (str): 函数返回值。
+        """
         return most_common(self.names) or "未知企业"
 
     def primary_credit_code(self) -> str:
+        """
+        primary credit code。
+
+            Returns:
+                (str): 函数返回值。
+        """
         return most_common(self.credit_codes) or "未知"
 
     def primary_internal_id(self) -> str:
+        """
+        primary internal id。
+
+            Returns:
+                (str): 函数返回值。
+        """
         return most_common(self.internal_ids) or "未知"
 
 
@@ -783,6 +821,15 @@ INTERNAL_ID_ALIASES = (
 
 
 def clean_value(value: Any) -> str | None:
+    """
+    clean value。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     if value is None:
         return None
     if isinstance(value, float) and math.isnan(value):
@@ -802,10 +849,28 @@ def clean_value(value: Any) -> str | None:
 
 
 def normalize_column_name(name: Any) -> str:
+    """
+    normalize column name。
+
+        Args:
+            name (str): 名称标识
+
+        Returns:
+            (str): 函数返回值。
+    """
     return str(name).replace("\ufeff", "").strip().lower()
 
 
 def normalize_entity_name(value: str | None) -> str | None:
+    """
+    normalize entity name。
+
+        Args:
+            value (str | None): 参数 ``value``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     if not value:
         return None
     text = re.sub(r"\s+", "", value)
@@ -814,6 +879,15 @@ def normalize_entity_name(value: str | None) -> str | None:
 
 
 def normalize_credit(value: str | None) -> str | None:
+    """
+    normalize credit。
+
+        Args:
+            value (str | None): 参数 ``value``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     if not value:
         return None
     text = re.sub(r"[^0-9A-Za-z]", "", value).upper()
@@ -823,6 +897,15 @@ def normalize_credit(value: str | None) -> str | None:
 
 
 def parse_number(value: Any) -> float | None:
+    """
+    parse number。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (float | None): 函数返回值。
+    """
     text = clean_value(value)
     if text is None:
         return None
@@ -841,6 +924,15 @@ def parse_number(value: Any) -> float | None:
 
 
 def parse_flag(value: Any) -> bool | None:
+    """
+    parse flag。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (bool | None): 函数返回值。
+    """
     text = clean_value(value)
     if text is None:
         return None
@@ -856,6 +948,15 @@ def parse_flag(value: Any) -> bool | None:
 
 
 def format_number(value: float | None) -> str:
+    """
+    format number。
+
+        Args:
+            value (float | None): 参数 ``value``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     if value is None:
         return "未知"
     if abs(value - int(value)) < 1e-9:
@@ -864,18 +965,46 @@ def format_number(value: float | None) -> str:
 
 
 def most_common(counter: Counter[str]) -> str | None:
+    """
+    most common。
+
+        Args:
+            counter (Counter[str]): 参数 ``counter``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     if not counter:
         return None
     return counter.most_common(1)[0][0]
 
 
 def markdown_escape(value: Any) -> str:
+    """
+    markdown escape。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     text = str(value)
     text = text.replace("\n", "；").replace("\r", "；").replace("|", "\\|")
     return text
 
 
 def markdown_table(headers: list[str], rows: Iterable[Iterable[Any]]) -> str:
+    """
+    markdown table。
+
+        Args:
+            headers (list[str]): 参数 ``headers``。
+            rows (Iterable[Iterable[Any]]): 参数 ``rows``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     lines = [
         "| " + " | ".join(markdown_escape(item) for item in headers) + " |",
         "| " + " | ".join("---" for _ in headers) + " |",
@@ -889,6 +1018,16 @@ def markdown_table(headers: list[str], rows: Iterable[Iterable[Any]]) -> str:
 
 
 def compact_list(items: Iterable[str], limit: int = 4) -> str:
+    """
+    compact list。
+
+        Args:
+            items (Iterable[str]): 参数 ``items``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     unique = []
     for item in items:
         if item and item not in unique:
@@ -901,6 +1040,15 @@ def compact_list(items: Iterable[str], limit: int = 4) -> str:
 
 
 def source_key_from_inventory_path(source_file: str) -> str:
+    """
+    source key from inventory path。
+
+        Args:
+            source_file (str): 参数 ``source_file``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     path = source_file.replace("\\", "/")
     prefix = "公开数据/公开数据/"
     if path.startswith(prefix):
@@ -909,6 +1057,12 @@ def source_key_from_inventory_path(source_file: str) -> str:
 
 
 def read_inventory() -> dict[str, dict[str, Any]]:
+    """
+    read inventory。
+
+        Returns:
+            (dict[str, dict[str, Any]]): 函数返回值。
+    """
     if not INVENTORY_JSON.exists():
         return {}
     data = json.loads(INVENTORY_JSON.read_text(encoding="utf-8-sig"))
@@ -920,12 +1074,28 @@ def read_inventory() -> dict[str, dict[str, Any]]:
 
 
 def read_field_mapping() -> pd.DataFrame:
+    """
+    read field mapping。
+
+        Returns:
+            (pd.DataFrame): 函数返回值。
+    """
     if not FIELD_MAPPING_CSV.exists():
         return pd.DataFrame()
     return pd.read_csv(FIELD_MAPPING_CSV, encoding="utf-8-sig")
 
 
 def first_matching_column(columns: Iterable[str], aliases: Iterable[str]) -> str | None:
+    """
+    first matching column。
+
+        Args:
+            columns (Iterable[str]): 参数 ``columns``。
+            aliases (Iterable[str]): 参数 ``aliases``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     by_norm = {normalize_column_name(col): col for col in columns}
     for alias in aliases:
         found = by_norm.get(normalize_column_name(alias))
@@ -935,6 +1105,16 @@ def first_matching_column(columns: Iterable[str], aliases: Iterable[str]) -> str
 
 
 def all_matching_columns(columns: Iterable[str], aliases: Iterable[str]) -> list[str]:
+    """
+    all matching columns。
+
+        Args:
+            columns (Iterable[str]): 参数 ``columns``。
+            aliases (Iterable[str]): 参数 ``aliases``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     by_norm = {normalize_column_name(col): col for col in columns}
     found = []
     for alias in aliases:
@@ -945,6 +1125,15 @@ def all_matching_columns(columns: Iterable[str], aliases: Iterable[str]) -> list
 
 
 def table_kind(key: str) -> str:
+    """
+    table kind。
+
+        Args:
+            key (str): 参数 ``key``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     lowered = key.lower()
     if "dust_clear_record" in lowered:
         return "dust_clear_record"
@@ -971,6 +1160,20 @@ def get_or_create_record(
     credit: str | None,
     internal_id: str | None,
 ) -> EnterpriseRecord | None:
+    """
+    get or create record。
+
+        Args:
+            records (dict[str, EnterpriseRecord]): 参数 ``records``。
+            name_to_key (dict[str, str]): 参数 ``name_to_key``。
+            credit_to_key (dict[str, str]): 参数 ``credit_to_key``。
+            name (str): 名称标识
+            credit (str | None): 参数 ``credit``。
+            internal_id (str | None): 参数 ``internal_id``。
+
+        Returns:
+            (EnterpriseRecord | None): 函数返回值。
+    """
     normalized_credit = normalize_credit(credit)
     normalized_name = normalize_entity_name(name)
 
@@ -1008,6 +1211,15 @@ def get_or_create_record(
 
 
 def aggregate_tables(tables: dict[str, pd.DataFrame]) -> tuple[dict[str, EnterpriseRecord], dict[str, Any], list[dict[str, Any]]]:
+    """
+    aggregate tables。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+
+        Returns:
+            (tuple[dict[str, EnterpriseRecord], dict[str, Any], list[dict[str, Any]]]): 函数返回值。
+    """
     records: dict[str, EnterpriseRecord] = {}
     name_to_key: dict[str, str] = {}
     credit_to_key: dict[str, str] = {}
@@ -1096,6 +1308,19 @@ def aggregate_dust_clear_records(
     name_to_key: dict[str, str],
     credit_to_key: dict[str, str],
 ) -> None:
+    """
+    aggregate dust clear records。
+
+        Args:
+            key (str): 参数 ``key``。
+            df (pd.DataFrame): 输入数据表
+            name_col (str | None): 参数 ``name_col``。
+            credit_col (str | None): 参数 ``credit_col``。
+            internal_col (str | None): 参数 ``internal_col``。
+            records (dict[str, EnterpriseRecord]): 参数 ``records``。
+            name_to_key (dict[str, str]): 参数 ``name_to_key``。
+            credit_to_key (dict[str, str]): 参数 ``credit_to_key``。
+    """
     if df.empty:
         return
     clear_col = first_matching_column(df.columns, ("CLEAR_TIME", "dust_last_clear_time", "除尘时间"))
@@ -1122,6 +1347,16 @@ def aggregate_dust_clear_records(
 
 
 def display_value(record: EnterpriseRecord, field_key: str) -> str:
+    """
+    display value。
+
+        Args:
+            record (EnterpriseRecord): 参数 ``record``。
+            field_key (str): 参数 ``field_key``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     item = FIELD_BY_KEY[field_key]
     acc = record.fields.get(field_key)
     if not acc or not acc.values:
@@ -1142,6 +1377,16 @@ def display_value(record: EnterpriseRecord, field_key: str) -> str:
 
 
 def numeric_value(record: EnterpriseRecord, field_key: str) -> float:
+    """
+    numeric value。
+
+        Args:
+            record (EnterpriseRecord): 参数 ``record``。
+            field_key (str): 参数 ``field_key``。
+
+        Returns:
+            (float): 函数返回值。
+    """
     acc = record.fields.get(field_key)
     if not acc or acc.numeric_max is None:
         return 0.0
@@ -1149,11 +1394,32 @@ def numeric_value(record: EnterpriseRecord, field_key: str) -> float:
 
 
 def flag_value(record: EnterpriseRecord, field_key: str) -> bool:
+    """
+    flag value。
+
+        Args:
+            record (EnterpriseRecord): 参数 ``record``。
+            field_key (str): 参数 ``field_key``。
+
+        Returns:
+            (bool): 函数返回值。
+    """
     acc = record.fields.get(field_key)
     return bool(acc and acc.true_seen)
 
 
 def field_sources(record: EnterpriseRecord, field_keys: Iterable[str], limit: int = 4) -> str:
+    """
+    field sources。
+
+        Args:
+            record (EnterpriseRecord): 参数 ``record``。
+            field_keys (Iterable[str]): 参数 ``field_keys``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     sources: list[str] = []
     for key in field_keys:
         acc = record.fields.get(key)
@@ -1164,6 +1430,16 @@ def field_sources(record: EnterpriseRecord, field_keys: Iterable[str], limit: in
 
 
 def scenario_score(record: EnterpriseRecord, scenario: str) -> float:
+    """
+    scenario score。
+
+        Args:
+            record (EnterpriseRecord): 参数 ``record``。
+            scenario (str): 参数 ``scenario``。
+
+        Returns:
+            (float): 函数返回值。
+    """
     if scenario == "dust":
         return (
             12 * flag_value(record, "is_explosive_dust")
@@ -1197,6 +1473,16 @@ def scenario_score(record: EnterpriseRecord, scenario: str) -> float:
 
 
 def scenario_applicable(record: EnterpriseRecord, scenario: str) -> bool:
+    """
+    scenario applicable。
+
+        Args:
+            record (EnterpriseRecord): 参数 ``record``。
+            scenario (str): 参数 ``scenario``。
+
+        Returns:
+            (bool): 函数返回值。
+    """
     if scenario == "dust":
         return (
             flag_value(record, "is_explosive_dust")
@@ -1234,6 +1520,15 @@ def scenario_applicable(record: EnterpriseRecord, scenario: str) -> bool:
 
 
 def risk_level_points(value: str) -> float:
+    """
+    risk level points。
+
+        Args:
+            value (str): 参数 ``value``。
+
+        Returns:
+            (float): 函数返回值。
+    """
     text = (value or "").upper()
     if text.startswith("A") or "重大" in text or "红" in text:
         return 40
@@ -1247,6 +1542,15 @@ def risk_level_points(value: str) -> float:
 
 
 def high_risk_score(record: EnterpriseRecord) -> float:
+    """
+    high risk score。
+
+        Args:
+            record (EnterpriseRecord): 参数 ``record``。
+
+        Returns:
+            (float): 函数返回值。
+    """
     score = risk_level_points(display_value(record, "latest_risk_level"))
     score += min(numeric_value(record, "risk_level_a_count") * 10, 50)
     score += min(numeric_value(record, "risk_level_b_count") * 5, 40)
@@ -1271,6 +1575,15 @@ def high_risk_score(record: EnterpriseRecord) -> float:
 
 
 def evidence_summary(record: EnterpriseRecord) -> str:
+    """
+    evidence summary。
+
+        Args:
+            record (EnterpriseRecord): 参数 ``record``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     items = []
     for key in (
         "latest_risk_level",
@@ -1300,6 +1613,16 @@ def evidence_summary(record: EnterpriseRecord) -> str:
 
 
 def build_source_table(source_summaries: list[dict[str, Any]], inventory: dict[str, dict[str, Any]]) -> list[list[Any]]:
+    """
+    build source table。
+
+        Args:
+            source_summaries (list[dict[str, Any]]): 参数 ``source_summaries``。
+            inventory (dict[str, dict[str, Any]]): 参数 ``inventory``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     for item in sorted(source_summaries, key=lambda x: x["key"]):
         inv = inventory.get(item["key"], {})
@@ -1319,6 +1642,15 @@ def build_source_table(source_summaries: list[dict[str, Any]], inventory: dict[s
 
 
 def field_coverage_rows(field_stats: dict[str, Any]) -> list[list[Any]]:
+    """
+    field coverage rows。
+
+        Args:
+            field_stats (dict[str, Any]): 参数 ``field_stats``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     for item in FIELD_DEFS:
         stat = field_stats[item.key]
@@ -1342,6 +1674,15 @@ def field_coverage_rows(field_stats: dict[str, Any]) -> list[list[Any]]:
 
 
 def missing_rows(field_stats: dict[str, Any]) -> list[list[Any]]:
+    """
+    missing rows。
+
+        Args:
+            field_stats (dict[str, Any]): 参数 ``field_stats``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     for item in FIELD_DEFS:
         stat = field_stats[item.key]
@@ -1373,6 +1714,17 @@ def missing_rows(field_stats: dict[str, Any]) -> list[list[Any]]:
 
 
 def top_records(records: Iterable[EnterpriseRecord], scenario: str | None = None, limit: int = 20) -> list[EnterpriseRecord]:
+    """
+    top records。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+            scenario (str | None): 参数 ``scenario``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (list[EnterpriseRecord]): 函数返回值。
+    """
     selected = [
         rec
         for rec in records
@@ -1386,6 +1738,15 @@ def top_records(records: Iterable[EnterpriseRecord], scenario: str | None = None
 
 
 def top_industry_rows(records: Iterable[EnterpriseRecord]) -> list[list[Any]]:
+    """
+    top industry rows。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     buckets: dict[str, dict[str, Any]] = defaultdict(lambda: {"count": 0, "dust": 0, "metal": 0, "hazchem": 0, "finite": 0, "score": 0.0})
     for rec in records:
         category = display_value(rec, "supervision_category")
@@ -1416,6 +1777,18 @@ def top_industry_rows(records: Iterable[EnterpriseRecord]) -> list[list[Any]]:
 
 
 def source_metric_rows(records: dict[str, EnterpriseRecord], source_summaries: list[dict[str, Any]], inventory: dict[str, dict[str, Any]], mapping: pd.DataFrame) -> list[list[Any]]:
+    """
+    source metric rows。
+
+        Args:
+            records (dict[str, EnterpriseRecord]): 参数 ``records``。
+            source_summaries (list[dict[str, Any]]): 参数 ``source_summaries``。
+            inventory (dict[str, dict[str, Any]]): 参数 ``inventory``。
+            mapping (pd.DataFrame): 参数 ``mapping``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     readable_tables = len(source_summaries)
     readable_rows = sum(item["rows"] for item in source_summaries)
     readable_columns = sum(item["columns"] for item in source_summaries)
@@ -1432,6 +1805,16 @@ def source_metric_rows(records: dict[str, EnterpriseRecord], source_summaries: l
 
 
 def build_top_high_risk_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[list[Any]]:
+    """
+    build top high risk rows。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     for idx, rec in enumerate(top_records(records, limit=limit), start=1):
         rows.append(
@@ -1461,6 +1844,16 @@ def build_top_high_risk_rows(records: Iterable[EnterpriseRecord], limit: int) ->
 
 
 def build_dust_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[list[Any]]:
+    """
+    build dust rows。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     for rec in top_records(records, scenario="dust", limit=limit):
         rows.append(
@@ -1490,6 +1883,16 @@ def build_dust_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[lis
 
 
 def build_metallurgy_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[list[Any]]:
+    """
+    build metallurgy rows。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     for rec in top_records(records, scenario="metallurgy", limit=limit):
         rows.append(
@@ -1528,6 +1931,16 @@ def build_metallurgy_rows(records: Iterable[EnterpriseRecord], limit: int) -> li
 
 
 def build_hazchem_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[list[Any]]:
+    """
+    build hazchem rows。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     for rec in top_records(records, scenario="hazchem", limit=limit):
         rows.append(
@@ -1563,6 +1976,16 @@ def build_hazchem_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[
 
 
 def build_finite_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[list[Any]]:
+    """
+    build finite rows。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     for rec in top_records(records, scenario="finite", limit=limit):
         rows.append(
@@ -1596,6 +2019,16 @@ def build_finite_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[l
 
 
 def build_management_rows(records: Iterable[EnterpriseRecord], limit: int) -> list[list[Any]]:
+    """
+    build management rows。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     ranked = sorted(
         [rec for rec in records if rec.primary_name() != "未知企业"],
         key=lambda rec: (
@@ -1646,6 +2079,16 @@ def build_management_rows(records: Iterable[EnterpriseRecord], limit: int) -> li
 
 
 def build_location_rows(records: Iterable[EnterpriseRecord], limit: int = 20) -> list[list[Any]]:
+    """
+    build location rows。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     rows = []
     candidates = [
         rec
@@ -1669,6 +2112,15 @@ def build_location_rows(records: Iterable[EnterpriseRecord], limit: int = 20) ->
 
 
 def summary_counts(records: Iterable[EnterpriseRecord]) -> dict[str, Any]:
+    """
+    summary counts。
+
+        Args:
+            records (Iterable[EnterpriseRecord]): 参数 ``records``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     recs = list(records)
     named = [rec for rec in recs if rec.primary_name() != "未知企业"]
     with_credit = [rec for rec in recs if rec.primary_credit_code() != "未知"]
@@ -1695,6 +2147,21 @@ def build_markdown(
     top_n: int,
     scene_n: int,
 ) -> str:
+    """
+    build markdown。
+
+        Args:
+            records (dict[str, EnterpriseRecord]): 参数 ``records``。
+            field_stats (dict[str, Any]): 参数 ``field_stats``。
+            source_summaries (list[dict[str, Any]]): 参数 ``source_summaries``。
+            inventory (dict[str, dict[str, Any]]): 参数 ``inventory``。
+            mapping (pd.DataFrame): 参数 ``mapping``。
+            top_n (int): 参数 ``top_n``。
+            scene_n (int): 参数 ``scene_n``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     config = get_config()
     counts = summary_counts(records.values())
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -1877,7 +2344,7 @@ def build_markdown(
     parts.append(
         "\n".join(
             [
-                "本轮已先更新文件系统知识库 Markdown，未直接写入 `data/agentfs.db`，避免覆盖 AgentFS 中可能存在的版本链和权限元数据。",
+                "本轮已先更新文件系统知识库 Markdown，未直接写入 `var/agentfs/agentfs.db`，避免覆盖 AgentFS 中可能存在的版本链和权限元数据。",
                 "建议同步流程：",
                 "1. 运行 `venv\\Scripts\\python.exe scripts\\check_knowledge_env.py` 对比文件系统与 AgentFS 中的知识库条目。",
                 "2. 人工确认本文件内容后，通过项目现有 AgentFS 写入接口将 `knowledge_base/企业已具备的执行条件.md` 同步为同名路径。",
@@ -1906,6 +2373,15 @@ def build_markdown(
 
 
 def validate_markdown(text: str) -> list[str]:
+    """
+    validate markdown。
+
+        Args:
+            text (str): 参数 ``text``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     issues = []
     if len(text.strip()) < 5000:
         issues.append("文件内容过短")
@@ -1929,6 +2405,17 @@ def validate_markdown(text: str) -> list[str]:
 
 
 def rebuild(output: Path = TARGET_KB, top_n: int = 25, scene_n: int = 15) -> dict[str, Any]:
+    """
+    rebuild。
+
+        Args:
+            output (Path): 参数 ``output``。
+            top_n (int): 参数 ``top_n``。
+            scene_n (int): 参数 ``scene_n``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     logging.getLogger("data.loader").setLevel(logging.WARNING)
     loader = DataLoader()
     tables = loader.load_public_data(skip_errors=True)
@@ -1952,6 +2439,12 @@ def rebuild(output: Path = TARGET_KB, top_n: int = 25, scene_n: int = 15) -> dic
 
 
 def parse_args() -> argparse.Namespace:
+    """
+    parse args。
+
+        Returns:
+            (argparse.Namespace): 函数返回值。
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=TARGET_KB, help="Markdown output path")
     parser.add_argument("--top-n", type=int, default=25, help="High-risk enterprise top N")
@@ -1960,6 +2453,9 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """
+    main。
+    """
     args = parse_args()
     output = args.output
     if not output.is_absolute():

@@ -1,0 +1,87 @@
+/**
+ * 训练特征英文名 → 中文展示名。
+ * 与 config.yaml features 注释、field_normalizer.FIELD_ALIASES、知识库 FieldDef 对齐。
+ */
+export const FEATURE_LABELS: Record<string, string> = {
+  above_designated: "是否规上企业",
+  if_insure: "是否投保",
+  if_comply_formality: "是否履行三同时手续",
+  factory_in_factory: "厂中厂",
+  has_risk_item: "有风险项",
+  is_explosive_dust: "爆炸性粉尘企业",
+  is_ammonia_refrigerating: "氨制冷企业",
+  is_finite_space: "有限空间企业",
+  is_major_hazards: "重大危险源",
+  is_metal_smelter: "金属冶炼企业",
+  is_gas_company: "燃气企业",
+  confined_spaces_enterprise: "有限空间作业企业",
+  dangerous_chemical_enterprise: "危化品企业",
+  risk_accident_flag: "曾发生事故",
+  risk_company_flag: "风险重点企业",
+  risk_company_key_flag: "关键风险企业",
+  if_valid: "数据有效标识",
+  staff_num: "企业职工总人数",
+  safety_num: "安全管理人员数量",
+  fulltime_safety_num: "专职安全管理人员数",
+  parttime_safety_num: "兼职安全管理人员数",
+  safety_dept_num: "部门安全管理人员数量",
+  fulltime_cert_num: "专职安全管理人持证员数",
+  parttime_cert_num: "兼职安全管理人持证员数",
+  special_work_cert_num: "特种作业持证人数",
+  last_year_income: "上一年经营收入",
+  fixed_assets: "固定资产",
+  insure_money: "投保金额",
+  injury_insurance: "工伤保险支出（万元）",
+  insure_num: "投保人数",
+  last_year_turnover: "上一年人员流动率",
+  risk_total_count: "总风险数",
+  risk_level_a_count: "A级风险数",
+  risk_level_b_count: "B级风险数",
+  risk_level_c_count: "C级风险数",
+  risk_level_d_count: "D级风险数",
+  risk_with_accident_count: "曾发事故的风险数",
+  check_total_count: "检查总次数",
+  check_trouble_count: "检查发现问题次数",
+  trouble_total_count: "隐患总数",
+  trouble_level_1_count: "一般隐患数",
+  trouble_level_2_count: "重大隐患数",
+  trouble_unrectified_count: "未整改隐患数",
+  writ_total_count: "文书总数",
+  writ_from_case_count: "立案文书数",
+  writ_from_check_count: "检查文书数",
+  total_penalty_money: "处罚金额",
+  dust_ganshi_num: "干式除尘系统数量",
+  dust_shishi_num: "湿式除尘系统数量",
+  gaolu_num: "高炉数量",
+  zhuanlu_num: "转炉数量",
+  dianlu_num: "电炉数量",
+  dust_clear_count: "除尘作业次数",
+  supervision_large: "行业监管大类",
+  safety_build: "安全生产标准化建设情况",
+  rh_production_status: "生产状态",
+  business_status: "经营状态",
+  indus_type_class: "国民经济门类",
+  indus_type_large: "国民经济大类",
+  indus_type_middle: "国民经济中类",
+  indus_type_small: "国民经济小类",
+  enterprise_id: "企业ID",
+  enterprise_name: "企业名称",
+  report_time: "报告时间",
+  dir_longitude: "经度",
+  dir_latitude: "纬度",
+  cf_source: "数据来源",
+  risk_whp_flag: "危化品企业标识",
+  risk_whp_use_flag: "危险化学品使用",
+  risk_finite_key_flag: "有限空间关键企业",
+  risk_finite10_flag: "有限空间企业",
+};
+
+const CJK_RE = /[\u4e00-\u9fff]/;
+
+/** 将 SHAP/特征贡献中的字段名转为中文展示标签；已是中文则原样返回。 */
+export function formatFeatureLabel(feature: string): string {
+  const key = feature?.trim();
+  if (!key) return feature;
+  if (CJK_RE.test(key)) return key;
+  return FEATURE_LABELS[key] ?? key;
+}

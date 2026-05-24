@@ -6,7 +6,6 @@ import react from "@vitejs/plugin-react";
 const backendTarget = process.env.VITE_DEV_API_TARGET ?? "http://localhost:8000";
 
 export default defineConfig({
-  cacheDir: ".vite-cache",
   plugins: [react()],
   server: {
     host: "0.0.0.0",

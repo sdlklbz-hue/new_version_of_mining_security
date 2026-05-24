@@ -1,12 +1,13 @@
 import {
   apiBase,
+  fetchDecisionSettings,
   fetchHealth,
+  listKnowledge,
+  readKnowledge,
+  updateDecisionSettings,
 } from "../api/client";
 import { SCENARIO_CONFIG, SCENARIO_NAMES } from "../data/demoData";
-import type {
-  HealthResponse,
-  ScenarioId,
-} from "../api/types";
+import type { DecisionSettingsResponse, HealthResponse, ScenarioId } from "../api/types";
 import { useEffect, useMemo, useState } from "react";
 import JsonView from "../components/JsonView";
 
@@ -18,32 +19,38 @@ interface Props {
 const WORKFLOW_NODES = [
   {
     name: "数据接入",
-    tag: "HTTP / CSV / Excel",
+    tags: ["HTTP", "CSV", "Excel"],
+    tagColor: "cyan" as const,
     desc: "接收政府监管平台推送的企业动态数据，并读取 Harness 挂载的 Markdown 静态知识库。",
   },
   {
     name: "风险评估",
-    tag: "Stacking + SHAP",
+    tags: ["Stacking", "SHAP"],
+    tagColor: "blue" as const,
     desc: "加载序列化预警模型，输出红橙黄蓝四分类概率、置信度与 Top3 特征归因。",
   },
   {
     name: "记忆召回",
-    tag: "AgentFS + RAG",
+    tags: ["AgentFS", "RAG"],
+    tagColor: "violet" as const,
     desc: "从 SQLite/Git 快照与长期知识库召回相似案例，经重排序后压缩为决策上下文。",
   },
   {
     name: "决策生成",
-    tag: "LangGraph DAG",
+    tags: ["LangGraph", "DAG"],
+    tagColor: "amber" as const,
     desc: "按风险等级生成结构化处置建议，覆盖核心归因、政府协同干预与企业设施管控。",
   },
   {
     name: "合规校验",
-    tag: "MARCH + Monte Carlo",
+    tags: ["MARCH", "Monte Carlo"],
+    tagColor: "emerald" as const,
     desc: "执行合规红线、工况逻辑、处置可行性三重审核，并用置信度采样拦截高风险输出。",
   },
   {
     name: "结果推送",
-    tag: "Audit Trail",
+    tags: ["Audit Trail"],
+    tagColor: "orange" as const,
     desc: "将最终 Payload 写入审计链路；触发人工审核、驳回或准入等闭环状态。",
   },
 ];
@@ -165,10 +172,64 @@ const API_TABLE = [
 
 export default function SystemConfigPage({ scenario, health }: Props) {
   const [latestHealth, setLatestHealth] = useState<HealthResponse | null>(health);
+  const [knowledgeFiles, setKnowledgeFiles] = useState<string[]>(KNOWLEDGE_FILES);
+  const [previewFile, setPreviewFile] = useState<string | null>(null);
+  const [previewContent, setPreviewContent] = useState<string>("");
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [decisionSettings, setDecisionSettings] = useState<DecisionSettingsResponse | null>(null);
+  const [decisionOutputDir, setDecisionOutputDir] = useState("var/decisions");
+  const [decisionPersistEnabled, setDecisionPersistEnabled] = useState(true);
+  const [decisionSettingsStatus, setDecisionSettingsStatus] = useState("");
 
   useEffect(() => {
     fetchHealth().then(setLatestHealth);
+    listKnowledge().then((files) => {
+      if (files.length > 0) setKnowledgeFiles(files);
+    });
+    fetchDecisionSettings().then((settings) => {
+      if (!settings) return;
+      setDecisionSettings(settings);
+      setDecisionOutputDir(settings.output_dir);
+      setDecisionPersistEnabled(settings.persist_enabled);
+    });
   }, []);
+
+  async function saveDecisionSettings() {
+    setDecisionSettingsStatus("正在保存完整决策输出设置...");
+    const updated = await updateDecisionSettings({
+      output_dir: decisionOutputDir,
+      persist_enabled: decisionPersistEnabled,
+    });
+    if (!updated) {
+      setDecisionSettingsStatus("保存失败，请确认后端已启动且目录位于 var 运行时目录下。");
+      return;
+    }
+    setDecisionSettings(updated);
+    setDecisionOutputDir(updated.output_dir);
+    setDecisionPersistEnabled(updated.persist_enabled);
+    setDecisionSettingsStatus("完整决策输出设置已保存。");
+  }
+
+  async function openKnowledgePreview(filename: string) {
+    setPreviewFile(filename);
+    setPreviewLoading(true);
+    setPreviewError(null);
+    setPreviewContent("");
+    const content = await readKnowledge(filename);
+    setPreviewLoading(false);
+    if (content === null) {
+      setPreviewError("无法读取该文件，请确认后端已启动且文件存在。");
+      return;
+    }
+    setPreviewContent(content);
+  }
+
+  function closeKnowledgePreview() {
+    setPreviewFile(null);
+    setPreviewContent("");
+    setPreviewError(null);
+  }
 
   const cfg = SCENARIO_CONFIG[scenario];
   const online = latestHealth?.status === "healthy";
@@ -246,6 +307,50 @@ export default function SystemConfigPage({ scenario, health }: Props) {
         </div>
       </div>
 
+      <div className="scada-card" style={{ marginTop: 14 }}>
+        <div className="risk-report-header">
+          <div className="scada-card-title">完整决策输出目录</div>
+          <button className="scada-btn secondary" type="button" onClick={saveDecisionSettings}>
+            保存设置
+          </button>
+        </div>
+        <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
+          <label className="scada-label" htmlFor="decision-output-dir">
+            服务端相对目录
+          </label>
+          <input
+            id="decision-output-dir"
+            className="scada-input"
+            value={decisionOutputDir}
+            onChange={(e) => setDecisionOutputDir(e.target.value)}
+            placeholder="var/decisions"
+          />
+          <label style={{ display: "flex", gap: 8, alignItems: "center", color: "#9ca3af", fontSize: 12 }}>
+            <input
+              type="checkbox"
+              checked={decisionPersistEnabled}
+              onChange={(e) => setDecisionPersistEnabled(e.target.checked)}
+            />
+            自动保存单次与批量完整决策 JSON
+          </label>
+          <div style={{ color: "#94a3b8", fontSize: 12 }}>
+            解析路径：
+            <span className="font-mono" style={{ color: "#e5e7eb" }}>
+              {decisionSettings?.resolved_path || "等待后端返回"}
+            </span>
+          </div>
+          <div style={{ color: "#94a3b8", fontSize: 12 }}>
+            批量限制：并发 {decisionSettings?.batch_max_concurrency ?? "-"}，单批最多{" "}
+            {decisionSettings?.batch_max_rows ?? "-"} 行。目录必须位于服务端 var 运行时目录下。
+          </div>
+          {decisionSettingsStatus && (
+            <div className={`alert ${decisionSettingsStatus.includes("失败") ? "error" : "success"}`}>
+              {decisionSettingsStatus}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="subtitle">方案映射的系统能力</div>
       <table className="scada-table">
         <thead>
@@ -267,18 +372,34 @@ export default function SystemConfigPage({ scenario, health }: Props) {
       </table>
 
       <div className="subtitle">智能体后端工作流</div>
-      <div className="workflow-strip">
-        {WORKFLOW_NODES.map((node, index) => (
-          <div className="workflow-node-card" key={node.name}>
-            <div className="workflow-node-index font-mono">{index + 1}</div>
-            <div>
-              <div className="workflow-node-title">{node.name}</div>
-              <div className="workflow-node-tag">{node.tag}</div>
-              <div className="workflow-node-desc">{node.desc}</div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <section className="agent-workflow-panel" aria-label="智能体后端工作流">
+        <p className="agent-workflow-intro">
+          LangGraph 编排的六段式决策链路：多源接入 → 风险预测 → 记忆增强 → 结构化生成 → 三重校验 → 审计闭环。
+        </p>
+        <ol className="agent-workflow-grid">
+          {WORKFLOW_NODES.map((node, index) => (
+            <li
+              className={`agent-workflow-step agent-workflow-step--${node.tagColor}`}
+              key={node.name}
+            >
+              <div className="agent-workflow-step-head">
+                <span className="agent-workflow-step-num font-mono" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3 className="agent-workflow-step-title">{node.name}</h3>
+              </div>
+              <div className="agent-workflow-step-tags">
+                {node.tags.map((t) => (
+                  <span key={t} className={`tag tag-${node.tagColor}`}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <p className="agent-workflow-step-desc">{node.desc}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
 
       <div className="row cols-2" style={{ marginTop: 12 }}>
         <div>
@@ -287,12 +408,20 @@ export default function SystemConfigPage({ scenario, health }: Props) {
         </div>
         <div>
           <div className="subtitle">核心知识库矩阵</div>
+          <p className="knowledge-matrix-hint">
+            点击文件名可预览 Markdown 内容（需后端在线）。
+          </p>
           <div className="knowledge-matrix">
-            {KNOWLEDGE_FILES.map((file) => (
-              <div className="knowledge-file" key={file}>
-                <span className="knowledge-file-dot" />
+            {knowledgeFiles.map((file) => (
+              <button
+                type="button"
+                key={file}
+                className="knowledge-file"
+                onClick={() => openKnowledgePreview(file)}
+              >
+                <span className="knowledge-file-dot" aria-hidden="true" />
                 <span>{file}</span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -338,6 +467,39 @@ export default function SystemConfigPage({ scenario, health }: Props) {
 
       <div className="divider" />
       <div className="subtitle">系统运行信息</div>
+      {previewFile && (
+        <div
+          className="knowledge-preview-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="knowledge-preview-title"
+        >
+          <div className="knowledge-preview-panel">
+            <div className="knowledge-preview-header">
+              <h3 id="knowledge-preview-title" className="knowledge-preview-title">
+                {previewFile}
+              </h3>
+              <button
+                type="button"
+                className="scada-btn secondary"
+                onClick={closeKnowledgePreview}
+              >
+                关闭
+              </button>
+            </div>
+            {previewLoading && (
+              <div className="empty-state">正在加载知识库内容…</div>
+            )}
+            {previewError && (
+              <div className="alert error">{previewError}</div>
+            )}
+            {!previewLoading && !previewError && (
+              <pre className="knowledge-preview-body">{previewContent}</pre>
+            )}
+          </div>
+        </div>
+      )}
+
       <JsonView
         data={{
           backend_status: latestHealth?.status ?? "unknown",

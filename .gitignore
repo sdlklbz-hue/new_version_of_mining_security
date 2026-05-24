@@ -5,27 +5,59 @@ __pycache__/
 .coverage
 htmlcov/
 .mypy_cache/
+tmp_pytest/
+.python*_nuget/
+*.nupkg
 
 # Local environment and secrets
 .env
 .env.*
 !.env.example
+.venv/
 
-# Runtime data
+# Runtime data（统一存放 Agent 运行状态、记忆库、向量库、上传、审计 DB 等）
+var/**
+!var/.gitkeep
+!var/**/.gitkeep
+
+# Logs
+*.log
 logs/*.log
-/data/*
-!/data/
-!/data/*.py
+
 # Training intermediates
 catboost_info/
+
+# Reports outputs（保留目录结构，不入库具体报告）
+reports/approval/
+reports/canary/
+reports/ci/
+reports/demo_replay/
+reports/drift/
+reports/pr/
+reports/regression/
+reports/staging/
+reports/uploads/
+reports/*_run.json
+reports/*_inventory.json
+reports/*_inventory_report.md
+reports/*_field_mapping.csv
+reports/*_report.md
+reports/KNOWLEDGE_SYSTEM_FINAL_AUDIT.md
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
 
 # Frontend build artifacts
 frontend/node_modules/
 frontend/dist/
 frontend/dist-tsbuild-node/
 frontend/.vite/
-frontend/.vite-cache/
 frontend/*.tsbuildinfo
 
 # OS files
 .DS_Store
+
+# Editor
+.vscode

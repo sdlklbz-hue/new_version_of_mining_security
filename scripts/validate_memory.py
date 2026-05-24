@@ -8,15 +8,20 @@
 """
 
 import asyncio
-import os
 import sys
 import tempfile
 import time
+from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _bootstrap import setup_project_paths
 
-from harness.agentfs import AgentFS
-from harness.memory import HybridMemoryManager, ShortTermMemory, LongTermMemory
+setup_project_paths()
+
+from mining_risk_serve.harness.agentfs import AgentFS
+from mining_risk_serve.harness.memory import HybridMemoryManager, ShortTermMemory, LongTermMemory
 
 
 def short_term_validation():
@@ -109,7 +114,7 @@ async def long_term_recall_validation():
     print("=" * 60)
 
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
-        from harness.vector_store import VectorStore
+        from mining_risk_serve.harness.vector_store import VectorStore
 
         def _mock_embed(texts):
             def _vec(t):
@@ -160,6 +165,9 @@ async def long_term_recall_validation():
 
 
 async def main():
+    """
+    main。
+    """
     print("开始 Step 4 长短期混合记忆系统手动验证\n")
     mem = short_term_validation()
     await archive_validation(mem)

@@ -19,13 +19,16 @@ from pathlib import Path
 from typing import Any
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _bootstrap import setup_project_paths
 
-from harness.agentfs import AgentFS
-from harness.knowledge_base import KnowledgeBaseManager
-from utils.config import get_config, resolve_project_path
+PROJECT_ROOT = setup_project_paths()
+
+from mining_risk_serve.harness.agentfs import AgentFS
+from mining_risk_serve.harness.knowledge_base import KnowledgeBaseManager
+from mining_risk_common.utils.config import get_config, resolve_project_path
 
 
 DEFAULT_AGENT_ID = "kb_sync"
@@ -35,6 +38,9 @@ MAIN_KB_FILES = tuple(KnowledgeBaseManager.KNOWLEDGE_FILES)
 
 @dataclass(frozen=True)
 class FsEntry:
+    """
+    FsEntry 类。
+    """
     path: str
     size: int
     sha256: str
@@ -43,6 +49,9 @@ class FsEntry:
 
 @dataclass(frozen=True)
 class AgentEntry:
+    """
+    AgentEntry 类。
+    """
     path: str
     size: int | None
     checksum: str | None
@@ -55,6 +64,9 @@ class AgentEntry:
 
 @dataclass(frozen=True)
 class BackupInfo:
+    """
+    BackupInfo 类。
+    """
     path: str
     size: int
     copied_at: str
@@ -62,16 +74,40 @@ class BackupInfo:
 
 
 def _iso_from_timestamp(value: float | None) -> str | None:
+    """
+    内部 iso from timestamp。
+
+        Args:
+            value (float | None): 参数 ``value``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     if value is None:
         return None
     return datetime.fromtimestamp(value).isoformat(timespec="seconds")
 
 
 def _sha256(data: bytes) -> str:
+    """
+    内部 sha256。
+
+        Args:
+            data (bytes): 参数 ``data``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return hashlib.sha256(data).hexdigest()
 
 
 def get_paths() -> tuple[Path, Path, Path, Path]:
+    """
+    get paths。
+
+        Returns:
+            (tuple[Path, Path, Path, Path]): 函数返回值。
+    """
     config = get_config()
     db_path = resolve_project_path(config.harness.agentfs.db_path)
     git_repo_path = resolve_project_path(config.harness.agentfs.git_repo_path)
@@ -81,6 +117,16 @@ def get_paths() -> tuple[Path, Path, Path, Path]:
 
 
 def filesystem_manifest(kb_dir: Path, filenames: tuple[str, ...] = MAIN_KB_FILES) -> list[FsEntry]:
+    """
+    filesystem manifest。
+
+        Args:
+            kb_dir (Path): 参数 ``kb_dir``。
+            filenames (tuple[str, ...]): 参数 ``filenames``。
+
+        Returns:
+            (list[FsEntry]): 函数返回值。
+    """
     entries: list[FsEntry] = []
     for filename in filenames:
         file_path = kb_dir / filename
@@ -98,6 +144,15 @@ def filesystem_manifest(kb_dir: Path, filenames: tuple[str, ...] = MAIN_KB_FILES
 
 
 def agentfs_manifest(db_path: Path) -> list[AgentEntry]:
+    """
+    agentfs manifest。
+
+        Args:
+            db_path (Path): 参数 ``db_path``。
+
+        Returns:
+            (list[AgentEntry]): 函数返回值。
+    """
     conn = sqlite3.connect(db_path)
     try:
         cursor = conn.cursor()
@@ -150,6 +205,16 @@ def agentfs_manifest(db_path: Path) -> list[AgentEntry]:
 
 
 def compare_manifests(fs_entries: list[FsEntry], agent_entries: list[AgentEntry]) -> dict[str, Any]:
+    """
+    compare manifests。
+
+        Args:
+            fs_entries (list[FsEntry]): 参数 ``fs_entries``。
+            agent_entries (list[AgentEntry]): 参数 ``agent_entries``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     by_agent = {entry.path: entry for entry in agent_entries}
     main_paths = {entry.path for entry in fs_entries}
     comparison = []
@@ -187,6 +252,17 @@ def compare_manifests(fs_entries: list[FsEntry], agent_entries: list[AgentEntry]
 
 
 def backup_agentfs_db(db_path: Path, snapshots_dir: Path, label: str = "pre_kb_sync") -> BackupInfo:
+    """
+    backup agentfs db。
+
+        Args:
+            db_path (Path): 参数 ``db_path``。
+            snapshots_dir (Path): 参数 ``snapshots_dir``。
+            label (str): 参数 ``label``。
+
+        Returns:
+            (BackupInfo): 函数返回值。
+    """
     snapshots_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     backup_path = snapshots_dir / f"agentfs_{label}_{timestamp}.db"
@@ -206,6 +282,18 @@ def sync_files_to_agentfs(
     filenames: tuple[str, ...] = MAIN_KB_FILES,
     agent_id: str = DEFAULT_AGENT_ID,
 ) -> list[dict[str, Any]]:
+    """
+    sync files to agentfs。
+
+        Args:
+            agentfs (AgentFS): 参数 ``agentfs``。
+            kb_dir (Path): 参数 ``kb_dir``。
+            filenames (tuple[str, ...]): 参数 ``filenames``。
+            agent_id (str): 参数 ``agent_id``。
+
+        Returns:
+            (list[dict[str, Any]]): 函数返回值。
+    """
     synced = []
     for filename in filenames:
         file_path = kb_dir / filename
@@ -227,6 +315,17 @@ def verify_agentfs_content(
     kb_dir: Path,
     filenames: tuple[str, ...] = MAIN_KB_FILES,
 ) -> list[dict[str, Any]]:
+    """
+    verify agentfs content。
+
+        Args:
+            db_path (Path): 参数 ``db_path``。
+            kb_dir (Path): 参数 ``kb_dir``。
+            filenames (tuple[str, ...]): 参数 ``filenames``。
+
+        Returns:
+            (list[dict[str, Any]]): 函数返回值。
+    """
     conn = sqlite3.connect(db_path)
     try:
         cursor = conn.cursor()
@@ -253,6 +352,15 @@ def verify_agentfs_content(
 
 
 def build_summary(args: argparse.Namespace) -> dict[str, Any]:
+    """
+    build summary。
+
+        Args:
+            args (argparse.Namespace): 参数 ``args``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     db_path, git_repo_path, snapshots_dir, kb_dir = get_paths()
     agentfs = AgentFS(db_path=str(db_path), git_repo_path=str(git_repo_path))
 
@@ -297,9 +405,18 @@ def build_summary(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """
+    parse args。
+
+        Args:
+            argv (list[str] | None): 参数 ``argv``。
+
+        Returns:
+            (argparse.Namespace): 函数返回值。
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true", help="Compare only; do not write AgentFS.")
-    parser.add_argument("--backup", action="store_true", help="Copy data/agentfs.db into snapshots first.")
+    parser.add_argument("--backup", action="store_true", help="Copy var/agentfs/agentfs.db into snapshots first.")
     parser.add_argument("--sync", action="store_true", help="Write the six Markdown KB files into AgentFS.")
     parser.add_argument("--verify", action="store_true", help="Verify AgentFS byte content against filesystem.")
     parser.add_argument("--snapshot", action="store_true", help="Create an AgentFS Git snapshot after sync.")
@@ -316,6 +433,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """
+    main。
+
+        Args:
+            argv (list[str] | None): 参数 ``argv``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     args = parse_args(argv)
     summary = build_summary(args)
 

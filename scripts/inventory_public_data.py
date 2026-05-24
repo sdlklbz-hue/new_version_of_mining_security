@@ -1,7 +1,7 @@
 """Inventory public enterprise data and produce a knowledge-base field map.
 
 This script is intentionally read-only for source data and project code. It
-scans ``公开数据`` recursively, reads every .csv/.xlsx table, profiles schemas,
+scans ``datasets/raw/public`` recursively, reads every .csv/.xlsx table, profiles schemas,
 infers field themes, maps raw columns to canonical fields, and writes report
 artifacts under ``mining_risk_agent/reports``.
 """
@@ -22,9 +22,10 @@ from typing import Any
 import pandas as pd
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-PUBLIC_DATA_ROOT = REPO_ROOT / "公开数据"
-REPORT_DIR = REPO_ROOT / "mining_risk_agent" / "reports"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = PROJECT_ROOT.parent
+PUBLIC_DATA_ROOT = PROJECT_ROOT / "datasets" / "raw" / "public"
+REPORT_DIR = PROJECT_ROOT / "reports"
 REPORT_PATH = REPORT_DIR / "public_data_inventory_report.md"
 MAPPING_CSV_PATH = REPORT_DIR / "public_data_field_mapping.csv"
 INVENTORY_JSON_PATH = REPORT_DIR / "public_data_inventory.json"
@@ -221,6 +222,9 @@ THEME_KEYWORDS = {
 
 @dataclass(frozen=True)
 class FieldRule:
+    """
+    FieldRule 类。
+    """
     standard_field: str
     topic: str
     kbs: tuple[str, ...]
@@ -235,6 +239,19 @@ def rule(
     keywords: list[str],
     note: str = "",
 ) -> FieldRule:
+    """
+    rule。
+
+        Args:
+            standard_field (str): 参数 ``standard_field``。
+            topic (str): 参数 ``topic``。
+            kbs (list[str]): 参数 ``kbs``。
+            keywords (list[str]): 参数 ``keywords``。
+            note (str): 参数 ``note``。
+
+        Returns:
+            (FieldRule): 函数返回值。
+    """
     return FieldRule(standard_field, topic, tuple(kbs), tuple(keywords), note)
 
 
@@ -477,6 +494,15 @@ ACCIDENT_CASE_FIELDS = {
 
 
 def clean_for_match(text: Any) -> str:
+    """
+    clean for match。
+
+        Args:
+            text (Any): 参数 ``text``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     value = "" if text is None else str(text)
     value = value.strip()
     value = re.sub(r"\.\d+$", "", value)
@@ -485,6 +511,16 @@ def clean_for_match(text: Any) -> str:
 
 
 def safe_cell(text: Any, limit: int | None = None) -> str:
+    """
+    safe cell。
+
+        Args:
+            text (Any): 参数 ``text``。
+            limit (int | None): 参数 ``limit``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     value = "" if text is None else str(text)
     value = value.replace("\r", " ").replace("\n", " ").replace("|", "\\|")
     value = re.sub(r"\s+", " ", value).strip()
@@ -494,6 +530,15 @@ def safe_cell(text: Any, limit: int | None = None) -> str:
 
 
 def make_unique_columns(columns: list[str]) -> tuple[list[str], list[str]]:
+    """
+    make unique columns。
+
+        Args:
+            columns (list[str]): 参数 ``columns``。
+
+        Returns:
+            (tuple[list[str], list[str]]): 函数返回值。
+    """
     seen: Counter[str] = Counter()
     unique_columns: list[str] = []
     duplicates: list[str] = []
@@ -509,16 +554,43 @@ def make_unique_columns(columns: list[str]) -> tuple[list[str], list[str]]:
 
 
 def pct(value: float | int | None) -> str:
+    """
+    pct。
+
+        Args:
+            value (float | int | None): 参数 ``value``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     if value is None or (isinstance(value, float) and math.isnan(value)):
         return "-"
     return f"{float(value) * 100:.1f}%"
 
 
 def rel(path: Path) -> str:
+    """
+    rel。
+
+        Args:
+            path (Path): 参数 ``path``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
 
 
 def read_csv_robust(path: Path) -> tuple[pd.DataFrame, str, str | None]:
+    """
+    read csv robust。
+
+        Args:
+            path (Path): 参数 ``path``。
+
+        Returns:
+            (tuple[pd.DataFrame, str, str | None]): 函数返回值。
+    """
     encodings = ["utf-8-sig", "utf-8", "gb18030", "gbk"]
     last_error: Exception | None = None
     for encoding in encodings:
@@ -559,6 +631,15 @@ def read_csv_robust(path: Path) -> tuple[pd.DataFrame, str, str | None]:
 
 
 def read_xlsx_sheets(path: Path) -> list[tuple[str, pd.DataFrame, str | None]]:
+    """
+    read xlsx sheets。
+
+        Args:
+            path (Path): 参数 ``path``。
+
+        Returns:
+            (list[tuple[str, pd.DataFrame, str | None]]): 函数返回值。
+    """
     sheets: list[tuple[str, pd.DataFrame, str | None]] = []
     excel = pd.ExcelFile(path)
     for sheet_name in excel.sheet_names:
@@ -571,6 +652,15 @@ def read_xlsx_sheets(path: Path) -> list[tuple[str, pd.DataFrame, str | None]]:
 
 
 def missing_profile(df: pd.DataFrame) -> dict[str, Any]:
+    """
+    missing profile。
+
+        Args:
+            df (pd.DataFrame): 输入数据表
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     rows, cols = df.shape
     column_rates: dict[str, float] = {}
     missing_cells = 0
@@ -604,6 +694,16 @@ def missing_profile(df: pd.DataFrame) -> dict[str, Any]:
 
 
 def normalized_values(series: pd.Series, cap: int | None = None) -> list[str]:
+    """
+    normalized values。
+
+        Args:
+            series (pd.Series): 参数 ``series``。
+            cap (int | None): 参数 ``cap``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     values: list[str] = []
     for item in series.dropna():
         value = str(item).strip()
@@ -620,6 +720,15 @@ def normalized_values(series: pd.Series, cap: int | None = None) -> list[str]:
 
 
 def credit_like_ratio(values: list[str]) -> float:
+    """
+    credit like ratio。
+
+        Args:
+            values (list[str]): 参数 ``values``。
+
+        Returns:
+            (float): 函数返回值。
+    """
     if not values:
         return 0.0
     sample = values[:500]
@@ -628,6 +737,16 @@ def credit_like_ratio(values: list[str]) -> float:
 
 
 def map_source_field(column: str, values: list[str]) -> tuple[str, str, list[str], str]:
+    """
+    map source field。
+
+        Args:
+            column (str): 参数 ``column``。
+            values (list[str]): 参数 ``values``。
+
+        Returns:
+            (tuple[str, str, list[str], str]): 函数返回值。
+    """
     norm = clean_for_match(column)
     credit_ratio = credit_like_ratio(values)
 
@@ -658,6 +777,15 @@ def map_source_field(column: str, values: list[str]) -> tuple[str, str, list[str
 
 
 def classify_field_theme(column: str) -> str:
+    """
+    classify field theme。
+
+        Args:
+            column (str): 参数 ``column``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     norm = clean_for_match(column)
     scores: Counter[str] = Counter()
     for theme, keywords in THEME_KEYWORDS.items():
@@ -670,6 +798,16 @@ def classify_field_theme(column: str) -> str:
 
 
 def classify_table(path: Path, columns: list[str]) -> list[str]:
+    """
+    classify table。
+
+        Args:
+            path (Path): 参数 ``path``。
+            columns (list[str]): 参数 ``columns``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     haystack = " ".join([rel(path), path.stem] + columns)
     norm = clean_for_match(haystack)
     scores: Counter[str] = Counter()
@@ -685,6 +823,15 @@ def classify_table(path: Path, columns: list[str]) -> list[str]:
 
 
 def is_key_candidate(column: str) -> bool:
+    """
+    is key candidate。
+
+        Args:
+            column (str): 参数 ``column``。
+
+        Returns:
+            (bool): 函数返回值。
+    """
     norm = clean_for_match(column)
     tokens = [
         "id",
@@ -707,6 +854,16 @@ def is_key_candidate(column: str) -> bool:
 
 
 def infer_key_type(column: str, values: list[str]) -> str:
+    """
+    infer key type。
+
+        Args:
+            column (str): 参数 ``column``。
+            values (list[str]): 参数 ``values``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     norm = clean_for_match(column)
     if credit_like_ratio(values) >= 0.6 or any(token in norm for token in ["统一社会信用", "社会信用代码", "信用代码", "credit"]):
         return "统一社会信用代码"
@@ -738,6 +895,18 @@ def infer_key_type(column: str, values: list[str]) -> str:
 
 
 def profile_key_column(path: Path, sheet: str, column: str, series: pd.Series) -> tuple[dict[str, Any], set[str]]:
+    """
+    profile key column。
+
+        Args:
+            path (Path): 参数 ``path``。
+            sheet (str): 参数 ``sheet``。
+            column (str): 参数 ``column``。
+            series (pd.Series): 参数 ``series``。
+
+        Returns:
+            (tuple[dict[str, Any], set[str]]): 函数返回值。
+    """
     values = normalized_values(series)
     value_set = set(values)
     non_null = len(values)
@@ -757,6 +926,16 @@ def profile_key_column(path: Path, sheet: str, column: str, series: pd.Series) -
 
 
 def compare_key_sets(key_sets: dict[str, set[str]], key_profiles: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    compare key sets。
+
+        Args:
+            key_sets (dict[str, set[str]]): 参数 ``key_sets``。
+            key_profiles (list[dict[str, Any]]): 参数 ``key_profiles``。
+
+        Returns:
+            (list[dict[str, Any]]): 函数返回值。
+    """
     by_id = {profile["key_id"]: profile for profile in key_profiles}
     grouped: dict[str, list[str]] = defaultdict(list)
     for profile in key_profiles:
@@ -810,6 +989,16 @@ def compare_key_sets(key_sets: dict[str, set[str]], key_profiles: list[dict[str,
 
 
 def markdown_table(headers: list[str], rows: list[list[Any]]) -> str:
+    """
+    markdown table。
+
+        Args:
+            headers (list[str]): 参数 ``headers``。
+            rows (list[list[Any]]): 参数 ``rows``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     if not rows:
         return "_无_"
     lines = [
@@ -822,6 +1011,16 @@ def markdown_table(headers: list[str], rows: list[list[Any]]) -> str:
 
 
 def summarize_sources(records: list[dict[str, Any]], standard_fields: set[str]) -> list[list[Any]]:
+    """
+    summarize sources。
+
+        Args:
+            records (list[dict[str, Any]]): 参数 ``records``。
+            standard_fields (set[str]): 参数 ``standard_fields``。
+
+        Returns:
+            (list[list[Any]]): 函数返回值。
+    """
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for record in records:
         if record["standard_field"] in standard_fields:
@@ -849,6 +1048,15 @@ def summarize_sources(records: list[dict[str, Any]], standard_fields: set[str]) 
 
 
 def aggregation_hint(standard_field: str) -> str:
+    """
+    aggregation hint。
+
+        Args:
+            standard_field (str): 参数 ``standard_field``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     if standard_field.endswith("_count") or standard_field.endswith("_num") or standard_field in {
         "penalty_amount",
         "insurance_amount",
@@ -868,6 +1076,12 @@ def aggregation_hint(standard_field: str) -> str:
 
 
 def write_mapping_csv(records: list[dict[str, Any]]) -> None:
+    """
+    write mapping csv。
+
+        Args:
+            records (list[dict[str, Any]]): 参数 ``records``。
+    """
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     headers = [
         "source_file",
@@ -894,6 +1108,19 @@ def build_report(
     join_candidates: list[dict[str, Any]],
     errors: list[dict[str, str]],
 ) -> str:
+    """
+    build report。
+
+        Args:
+            table_records (list[dict[str, Any]]): 参数 ``table_records``。
+            mapping_records (list[dict[str, Any]]): 参数 ``mapping_records``。
+            key_profiles (list[dict[str, Any]]): 参数 ``key_profiles``。
+            join_candidates (list[dict[str, Any]]): 参数 ``join_candidates``。
+            errors (list[dict[str, str]]): 参数 ``errors``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     total_files = len({record["source_file"] for record in table_records})
     total_sheets = len(table_records)
@@ -1115,6 +1342,9 @@ def build_report(
 
 
 def main() -> None:
+    """
+    main。
+    """
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     files = sorted(
         [

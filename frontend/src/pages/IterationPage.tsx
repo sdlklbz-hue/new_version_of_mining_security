@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchIterationStatus, triggerIteration, fetchIterationTracking } from "../api/client";
 import type { IterationStatus, IterationRecord } from "../api/types";
 import ReactECharts from "echarts-for-react";
-import "echarts-gl";
+import SubTabs from "../components/SubTabs";
 
 const STATUS_MAP: Record<IterationRecord["status"], { label: string; color: string; bg: string }> = {
   draft: { label: "草稿", color: "#64748b", bg: "rgba(100,116,139,0.12)" },
@@ -75,39 +75,51 @@ const DEMO_RECORDS: IterationRecord[] = [
 const FALLBACK_STATUS: IterationStatus = {
   current_state: "CANARY",
   current_state_cn: "灰度发布中",
-  monitor_summary: { cumulative_samples: 25000, recent_f1: 0.878 },
+  monitor_summary: { total_samples: 25000, recent_f1: 0.878 },
   pending_approvals: [
     { record_id: "approval_v2_001", model_version: "v2.0.0", status: "SECURITY_APPROVED" },
   ],
 };
 
+const ITERATION_SECTIONS = [
+  { id: "dashboard", label: "迭代仪表盘" },
+  { id: "tracking", label: "准确性追踪" },
+  { id: "lifecycle", label: "生命周期管理" },
+  { id: "approval", label: "审批工作流" },
+  { id: "compare", label: "版本对比" },
+  { id: "changelog", label: "变更日志" },
+] as const;
+
+type IterationSection = (typeof ITERATION_SECTIONS)[number]["id"];
+
 export default function IterationPage() {
-  const [activeSection, setActiveSection] = useState<"dashboard" | "tracking" | "lifecycle" | "approval" | "compare" | "changelog">("dashboard");
+  const [activeSection, setActiveSection] = useState<IterationSection>("dashboard");
 
   return (
     <div>
-      <div className="section-title">🔄 模型迭代全生命周期管理</div>
-      <div className="sub-tab-bar">
-        {[
-          { key: "dashboard" as const, label: "📊 迭代仪表盘" },
-          { key: "tracking" as const, label: "📈 准确性追踪" },
-          { key: "lifecycle" as const, label: "🔧 生命周期管理" },
-          { key: "approval" as const, label: "📋 审批工作流" },
-          { key: "compare" as const, label: "📑 版本对比" },
-          { key: "changelog" as const, label: "📝 变更日志" },
-        ].map((t) => (
-          <button key={t.key} type="button" className={`sub-tab ${activeSection === t.key ? "active" : ""}`} onClick={() => setActiveSection(t.key)}>
-            {t.label}
-          </button>
-        ))}
+      <div className="alert info demo-data-banner" role="note">
+        版本时间线与部分图表使用本地演示数据；连接后端后迭代状态与追踪数据将来自 API。
       </div>
+      <div className="section-title">模型迭代全生命周期管理</div>
+      <SubTabs
+        tabs={[...ITERATION_SECTIONS]}
+        active={activeSection}
+        onChange={(id) => setActiveSection(id as IterationSection)}
+        ariaLabel="模型迭代子模块"
+      />
       <div className="divider" />
-      {activeSection === "dashboard" && <DashboardSection />}
-      {activeSection === "tracking" && <AccuracyTrackingSection />}
-      {activeSection === "lifecycle" && <LifecycleSection />}
-      {activeSection === "approval" && <ApprovalWorkflowSection />}
-      {activeSection === "compare" && <CompareSection />}
-      {activeSection === "changelog" && <ChangelogSection />}
+      <div
+        role="tabpanel"
+        id={`subtab-panel-${activeSection}`}
+        aria-labelledby={`subtab-${activeSection}`}
+      >
+        {activeSection === "dashboard" && <DashboardSection />}
+        {activeSection === "tracking" && <AccuracyTrackingSection />}
+        {activeSection === "lifecycle" && <LifecycleSection />}
+        {activeSection === "approval" && <ApprovalWorkflowSection />}
+        {activeSection === "compare" && <CompareSection />}
+        {activeSection === "changelog" && <ChangelogSection />}
+      </div>
     </div>
   );
 }
@@ -132,9 +144,8 @@ function DashboardSection() {
   }, []);
 
   const cur = status ?? FALLBACK_STATUS;
-  const ms = cur.monitor_summary ?? {};
-  const totalSamples = ms.cumulative_samples ?? ms.total_samples;
-  const recentF1 = ms.recent_f1;
+  const totalSamples = cur.monitor_summary?.total_samples;
+  const recentF1 = cur.monitor_summary?.recent_f1;
   const pending = cur.pending_approvals ?? [];
   const canaryRatio = cur.current_state === "CANARY" ? 0.5 : cur.current_state === "PRODUCTION" ? 1.0 : 0.0;
 
@@ -575,89 +586,14 @@ function CompareSection() {
 
   const radarOption = useMemo(() => {
     if (selectedRecords.length === 0) return { backgroundColor: "transparent" };
+    const indicators = [{ name: "F1分数", max: 1.0 }, { name: "样本量(归一化)", max: 1.0 }, { name: "稳定性", max: 1.0 }, { name: "场景覆盖", max: 1.0 }, { name: "推理速度(归一化)", max: 1.0 }];
     const maxSamples = Math.max(...records.map((r) => r.samples), 1);
-    const dims = ["F1分数", "样本量", "稳定性", "场景覆盖", "推理速度"];
-    const colors3d = ["#3b82f6", "#8b5cf6", "#10b981"];
-    const barData = selectedRecords.map((r, idx) => ({
-      name: r.version,
-      data: [
-        r.f1,
-        r.samples / maxSamples,
-        0.7 + r.f1 * 0.3,
-        r.improvements ? Math.min(r.improvements.length / 5, 1) : 0.3,
-        0.6 + idx * 0.1,
-      ],
-      color: colors3d[idx % 3],
-    }));
-    const N = 30;
-    const series: any[] = [];
-    barData.forEach((item, idx) => {
-      const vals = item.data;
-      const offset = idx * 0.3;
-      series.push({
-        type: "surface" as const,
-        name: item.name,
-        wireframe: { show: false },
-        shading: "realistic" as const,
-        realisticMaterial: { roughness: 0.5, metalness: 0.1 },
-        equation: {
-          x: { min: 0, max: 1, step: 1 / N },
-          y: { min: 0, max: 1, step: 1 / N },
-          z: (x: number, y: number) => {
-            let z = 0;
-            vals.forEach((v, vi) => {
-              const cx = (vi + 0.5) / vals.length;
-              const cy = 0.5;
-              z += v * Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) * 12);
-            });
-            z += offset * 0.1;
-            return Math.max(0, z);
-          },
-        },
-        itemStyle: { opacity: 0.85 },
-      });
-      vals.forEach((v, vi) => {
-        series.push({
-          type: "scatter3D" as const,
-          name: `${item.name}-${dims[vi]}`,
-          data: [[(vi + 0.5) / vals.length, 0.5, v + offset * 0.1]],
-          symbolSize: 10,
-          itemStyle: { color: item.color },
-          label: {
-            show: true,
-            formatter: () => `${dims[vi]}: ${v.toFixed(2)}`,
-            color: "#e5e7eb",
-            fontSize: 10,
-            distance: 5,
-          },
-        });
-      });
-    });
+    const series = selectedRecords.map((r) => ({ value: [r.f1, r.samples / maxSamples, 0.7 + r.f1 * 0.3, r.improvements ? Math.min(r.improvements.length / 5, 1) : 0.3, 0.6 + Math.random() * 0.3], name: r.version }));
     return {
-      backgroundColor: "transparent",
-      tooltip: {},
-      legend: { data: barData.map((d) => d.name), textStyle: { color: "#94a3b8", fontSize: 11 }, bottom: 0 },
-      visualMap: {
-        show: true,
-        min: 0,
-        max: 1.2,
-        dimension: 2,
-        orient: "horizontal" as const,
-        left: "center",
-        bottom: 30,
-        textStyle: { color: "#9ca3af", fontSize: 10 },
-        inRange: { color: ["#0d1b2a", "#1b4965", "#3b82f6", "#06b6d4", "#10b981", "#eab308", "#f97316", "#ef4444"] },
-      },
-      xAxis3D: { type: "value" as const, name: "", min: 0, max: 1, nameTextStyle: { color: "#94a3b8" }, axisLine: { lineStyle: { color: "#374151" } }, axisLabel: { color: "#6b7280", fontSize: 9 } },
-      yAxis3D: { type: "value" as const, name: "", min: 0, max: 1, nameTextStyle: { color: "#94a3b8" }, axisLine: { lineStyle: { color: "#374151" } }, axisLabel: { color: "#6b7280", fontSize: 9 } },
-      zAxis3D: { type: "value" as const, name: "指标值", min: 0, max: 1.2, nameTextStyle: { color: "#94a3b8" }, axisLine: { lineStyle: { color: "#374151" } }, axisLabel: { color: "#6b7280", fontSize: 9 } },
-      grid3D: {
-        viewControl: { autoRotate: true, autoRotateSpeed: 4, distance: 220, alpha: 25, beta: 40 },
-        light: { main: { intensity: 1.2, shadow: true, shadowQuality: "high" as const, alpha: 30, beta: 40 }, ambient: { intensity: 0.4 } },
-        postEffect: { enable: true, bloom: { enable: true, bloomIntensity: 0.08 }, SSAO: { enable: true, radius: 2, intensity: 1 } },
-        boxWidth: 100, boxHeight: 100, boxDepth: 100,
-      },
-      series,
+      backgroundColor: "transparent", tooltip: {},
+      legend: { data: selectedRecords.map((r) => r.version), textStyle: { color: "#94a3b8", fontSize: 11 }, bottom: 0 },
+      radar: { indicator: indicators, shape: "polygon" as const, splitNumber: 4, axisName: { color: "#94a3b8", fontSize: 11 }, splitLine: { lineStyle: { color: "#1e293b" } }, splitArea: { areaStyle: { color: ["rgba(15,23,42,0.3)", "rgba(15,23,42,0.6)"] } } },
+      series: [{ type: "radar" as const, data: series, lineStyle: { width: 2 }, areaStyle: { opacity: 0.15 } }],
     };
   }, [selectedRecords, records]);
 
@@ -704,7 +640,7 @@ function CompareSection() {
       {selectedRecords.length >= 2 && (
         <>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 3D版本对比曲面</div><ReactECharts option={radarOption} style={{ height: 380 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 雷达图对比</div><ReactECharts option={radarOption} style={{ height: 320 }} /></div>
             <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📊 柱状图对比</div><ReactECharts option={barCompareOption} style={{ height: 320 }} /></div>
           </div>
           <div className="scada-card">

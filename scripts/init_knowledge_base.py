@@ -2,7 +2,7 @@
 企业CSV数据融合脚本：一键生成/增量填充6个核心Markdown知识库文件
 
 用法：
-    python scripts/init_knowledge_base.py --data-dir ../公开数据/
+    python scripts/init_knowledge_base.py --data-dir datasets/raw/public
 """
 
 import argparse
@@ -14,13 +14,15 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-# 将项目根目录加入 sys.path
-project_root = Path(__file__).resolve().parent.parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _bootstrap import setup_project_paths
 
-from data.loader import DataLoader
-from utils.logger import get_logger
+setup_project_paths()
+
+from mining_risk_common.dataplane.loader import DataLoader
+from mining_risk_common.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -112,11 +114,25 @@ def load_dataframes(files: Dict[str, str]) -> Dict[str, pd.DataFrame]:
 
 
 def _ensure_kb_dir(kb_dir: str) -> None:
+    """
+    内部 ensure kb dir。
+
+        Args:
+            kb_dir (str): 参数 ``kb_dir``。
+    """
     os.makedirs(kb_dir, exist_ok=True)
     os.makedirs(os.path.join(kb_dir, "raw_texts"), exist_ok=True)
 
 
 def _write_md(kb_dir: str, filename: str, content: str) -> None:
+    """
+    内部 write md。
+
+        Args:
+            kb_dir (str): 参数 ``kb_dir``。
+            filename (str): 参数 ``filename``。
+            content (str): 参数 ``content``。
+    """
     path = os.path.join(kb_dir, filename)
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
@@ -124,6 +140,16 @@ def _write_md(kb_dir: str, filename: str, content: str) -> None:
 
 
 def _read_existing_md(kb_dir: str, filename: str) -> str:
+    """
+    内部 read existing md。
+
+        Args:
+            kb_dir (str): 参数 ``kb_dir``。
+            filename (str): 参数 ``filename``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     path = os.path.join(kb_dir, filename)
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -697,8 +723,11 @@ def extract_feature_metadata(data_dir: str) -> str:
 
 
 def main():
+    """
+    main。
+    """
     parser = argparse.ArgumentParser(description="初始化/增量更新知识库")
-    parser.add_argument("--data-dir", type=str, default="../公开数据/", help="企业CSV数据根目录")
+    parser.add_argument("--data-dir", type=str, default="datasets/raw/public", help="企业CSV数据根目录")
     parser.add_argument("--kb-dir", type=str, default="knowledge_base", help="知识库输出目录")
     parser.add_argument("--incremental", action="store_true", help="增量模式")
     args = parser.parse_args()

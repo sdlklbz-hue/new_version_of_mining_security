@@ -7,46 +7,55 @@
 
 import type {
   AuditLogEntry,
+  BatchDecisionResponse,
+  BatchJobStatus,
   DataUploadResponse,
+  DatasetKind,
+  DemoResetResponse,
   DecisionResponse,
+  DecisionApprovalSyncResponse,
+  DecisionRecordDetail,
+  DecisionRecordListResponse,
+  DecisionSettingsResponse,
+  DecisionSettingsUpdate,
+  DemoBatch,
+  DemoIterationStepResponse,
+  DemoReplayLoadResponse,
   HealthResponse,
   IterationRecord,
+  IterationAuditResponse,
+  IterationReportResponse,
+  IterationReportsResponse,
   IterationStatus,
+  IterationTimelineResponse,
   IterationTriggerResponse,
+  KnowledgeRagSearchResponse,
+  KnowledgeSystemOverview,
+  IterationUploadBatchResponse,
   LLMConfigResponse,
   LLMProvider,
   LLMUpdateRequest,
   LongTermMemory,
+  MemoryStatisticsParams,
+  MemoryStatisticsResponse,
   ModelEvaluationReport,
   NodeStatus,
   ScenarioSwitchResponse,
   ShortTermMemory,
   WarningLog,
 } from "./types";
+import {
+  adminHeaders,
+  API_BASE,
+  apiBaseLabel,
+  buildUrl,
+  fetchJsonNullable404,
+  fetchJsonStrict,
+  parseJsonOrThrow as jsonOrThrow,
+  responseError,
+} from "./http";
 
-const RAW_BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? "";
-// 去掉末尾斜杠以保证拼接稳定
-const API_BASE = RAW_BASE.replace(/\/$/, "");
-const ADMIN_TOKEN = (import.meta.env.VITE_ADMIN_API_TOKEN as string | undefined) ?? "";
-
-function url(path: string): string {
-  if (path.startsWith("http")) return path;
-  return `${API_BASE}${path}`;
-}
-
-function adminHeaders(extra?: HeadersInit): HeadersInit {
-  return ADMIN_TOKEN
-    ? { ...extra, "X-Admin-Token": ADMIN_TOKEN }
-    : { ...extra };
-}
-
-async function jsonOrThrow<T>(resp: Response): Promise<T> {
-  if (!resp.ok) {
-    const text = await resp.text().catch(() => "");
-    throw new Error(`HTTP ${resp.status} ${resp.statusText} ${text}`);
-  }
-  return (await resp.json()) as T;
-}
+const url = buildUrl;
 
 export async function fetchHealth(): Promise<HealthResponse> {
   try {
@@ -121,12 +130,14 @@ export async function postDecision(
   enterpriseId: string,
   data: Record<string, unknown>,
   scenarioId?: string,
+  signal?: AbortSignal,
 ): Promise<DecisionResponse | null> {
   try {
     const resp = await fetch(url("/api/v1/agent/decision"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ enterprise_id: enterpriseId, data, scenario_id: scenarioId }),
+      signal,
     });
     if (!resp.ok) return null;
     return (await resp.json()) as DecisionResponse;
@@ -182,6 +193,140 @@ export async function streamDecision(
   return finalDecision;
 }
 
+export async function fetchDecisionSettings(): Promise<DecisionSettingsResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/agent/decision/settings"), {
+      headers: adminHeaders(),
+    });
+    if (!resp.ok) return null;
+    return (await resp.json()) as DecisionSettingsResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function updateDecisionSettings(
+  payload: DecisionSettingsUpdate,
+): Promise<DecisionSettingsResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/agent/decision/settings"), {
+      method: "PUT",
+      headers: adminHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) return null;
+    return (await resp.json()) as DecisionSettingsResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function createDecisionBatch(
+  file: File,
+  scenarioId: string,
+): Promise<BatchDecisionResponse | null> {
+  try {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("scenario_id", scenarioId);
+    const resp = await fetch(url("/api/v1/agent/decision/batch"), {
+      method: "POST",
+      headers: adminHeaders(),
+      body: form,
+    });
+    if (!resp.ok) throw new Error(await responseError(resp));
+    return (await resp.json()) as BatchDecisionResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchDecisionBatchStatus(jobId: string): Promise<BatchJobStatus | null> {
+  try {
+    const resp = await fetch(url(`/api/v1/agent/decision/batch/${encodeURIComponent(jobId)}`), {
+      headers: adminHeaders(),
+    });
+    if (!resp.ok) return null;
+    return (await resp.json()) as BatchJobStatus;
+  } catch {
+    return null;
+  }
+}
+
+export async function cancelDecisionBatch(jobId: string): Promise<BatchJobStatus | null> {
+  try {
+    const resp = await fetch(
+      url(`/api/v1/agent/decision/batch/${encodeURIComponent(jobId)}/cancel`),
+      { method: "POST", headers: adminHeaders() },
+    );
+    if (!resp.ok) return null;
+    return (await resp.json()) as BatchJobStatus;
+  } catch {
+    return null;
+  }
+}
+
+export function decisionBatchDownloadUrl(jobId: string): string {
+  return url(`/api/v1/agent/decision/batch/${encodeURIComponent(jobId)}/download`);
+}
+
+export async function downloadDecisionBatch(jobId: string): Promise<Blob | null> {
+  try {
+    const resp = await fetch(decisionBatchDownloadUrl(jobId), {
+      headers: adminHeaders(),
+    });
+    if (!resp.ok) return null;
+    return await resp.blob();
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchDecisionRecords(params: Partial<{
+  enterprise_id: string;
+  final_status: string;
+  source: string;
+  job_id: string;
+  limit: number;
+  offset: number;
+}> = {}): Promise<DecisionRecordListResponse | null> {
+  try {
+    const usp = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
+    });
+    const suffix = usp.toString();
+    const resp = await fetch(url(`/api/v1/agent/decision/records${suffix ? `?${suffix}` : ""}`));
+    if (!resp.ok) return null;
+    return (await resp.json()) as DecisionRecordListResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchDecisionRecord(recordId: string): Promise<DecisionRecordDetail | null> {
+  try {
+    const resp = await fetch(url(`/api/v1/agent/decision/records/${encodeURIComponent(recordId)}`));
+    if (!resp.ok) return null;
+    return (await resp.json()) as DecisionRecordDetail;
+  } catch {
+    return null;
+  }
+}
+
+export async function syncDecisionApprovalsFromDisk(): Promise<DecisionApprovalSyncResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/agent/decision/approvals/sync-from-disk"), {
+      method: "POST",
+      headers: adminHeaders(),
+    });
+    if (!resp.ok) return null;
+    return (await resp.json()) as DecisionApprovalSyncResponse;
+  } catch {
+    return null;
+  }
+}
+
 export async function uploadDataFile(
   file: File,
   enterpriseId?: string,
@@ -194,10 +339,24 @@ export async function uploadDataFile(
       method: "POST",
       body: form,
     });
-    if (!resp.ok) return null;
+    if (!resp.ok) {
+      let message = `HTTP ${resp.status}`;
+      try {
+        const err = (await resp.json()) as { detail?: string; message?: string };
+        message =
+          typeof err.detail === "string"
+            ? err.detail
+            : err.message ?? message;
+      } catch {
+        /* 非 JSON 错误体 */
+      }
+      return { success: false, message, rows: 0, columns: 0 };
+    }
     return (await resp.json()) as DataUploadResponse;
-  } catch {
-    return null;
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "网络错误或后端未启动";
+    return { success: false, message, rows: 0, columns: 0 };
   }
 }
 
@@ -226,6 +385,78 @@ export async function readKnowledge(
   }
 }
 
+export async function fetchKnowledgeSystemOverview(): Promise<KnowledgeSystemOverview | null> {
+  try {
+    const resp = await fetch(url("/api/v1/knowledge/system/overview"));
+    if (!resp.ok) return null;
+    return (await resp.json()) as KnowledgeSystemOverview;
+  } catch {
+    return null;
+  }
+}
+
+export async function searchKnowledgeRag(
+  query: string,
+  topK = 6,
+): Promise<KnowledgeRagSearchResponse | null> {
+  try {
+    const usp = new URLSearchParams();
+    usp.set("q", query);
+    usp.set("top_k", String(topK));
+    const resp = await fetch(url(`/api/v1/knowledge/rag/search?${usp.toString()}`));
+    if (!resp.ok) return null;
+    return (await resp.json()) as KnowledgeRagSearchResponse;
+  } catch {
+    return null;
+  }
+}
+
+function appendParams(usp: URLSearchParams, params: Record<string, unknown>) {
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      usp.set(key, String(value));
+    }
+  });
+}
+
+export async function fetchMemoryStatistics(
+  params: MemoryStatisticsParams = {},
+): Promise<MemoryStatisticsResponse | null> {
+  try {
+    const usp = new URLSearchParams();
+    appendParams(usp, params as Record<string, unknown>);
+    const suffix = usp.toString();
+    const resp = await fetch(url(`/api/v1/memory/statistics${suffix ? `?${suffix}` : ""}`));
+    if (!resp.ok) return null;
+    return (await resp.json()) as MemoryStatisticsResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function downloadMemoryExport(
+  params: MemoryStatisticsParams = {},
+  format: "csv" | "xlsx" | "pdf" = "csv",
+): Promise<void> {
+  const usp = new URLSearchParams();
+  appendParams(usp, { ...params, format });
+  const resp = await fetch(url(`/api/v1/memory/export?${usp.toString()}`));
+  if (!resp.ok) {
+    throw new Error(await responseError(resp));
+  }
+  const blob = await resp.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  const disposition = resp.headers.get("Content-Disposition") || "";
+  const encoded = disposition.match(/filename\*=UTF-8''([^;]+)/)?.[1];
+  anchor.href = objectUrl;
+  anchor.download = encoded ? decodeURIComponent(encoded) : `memory_${params.module || "all"}.${format}`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(objectUrl);
+}
+
 export async function fetchIterationStatus(): Promise<IterationStatus | null> {
   try {
     const resp = await fetch(url("/api/v1/iteration/status"));
@@ -234,6 +465,152 @@ export async function fetchIterationStatus(): Promise<IterationStatus | null> {
   } catch {
     return null;
   }
+}
+
+export async function fetchDemoBatches(): Promise<DemoBatch[]> {
+  return fetchJsonStrict<DemoBatch[]>("/api/v1/iteration/demo-batches");
+}
+
+export async function loadDemoBatch(
+  batchId: string,
+): Promise<DemoReplayLoadResponse | null> {
+  return fetchJsonStrict<DemoReplayLoadResponse>(
+    `/api/v1/iteration/demo-batches/${encodeURIComponent(batchId)}/load`,
+    { method: "POST" },
+  );
+}
+
+export async function fetchLatestIteration(): Promise<IterationRecord | null> {
+  return fetchJsonNullable404<IterationRecord>("/api/v1/iteration/latest");
+}
+
+export async function fetchIterationRecord(
+  iterationId: string,
+): Promise<IterationRecord | null> {
+  return fetchJsonNullable404<IterationRecord>(
+    `/api/v1/iteration/${encodeURIComponent(iterationId)}`,
+  );
+}
+
+export async function fetchIterationTimeline(
+  iterationId: string,
+): Promise<IterationTimelineResponse | null> {
+  return fetchJsonNullable404<IterationTimelineResponse>(
+    `/api/v1/iteration/${encodeURIComponent(iterationId)}/timeline`,
+  );
+}
+
+export async function fetchBatchLatestIteration(
+  batchId: string,
+): Promise<IterationRecord | null> {
+  return fetchJsonNullable404<IterationRecord>(
+    `/api/v1/iteration/batches/${encodeURIComponent(batchId)}/latest-run`,
+  );
+}
+
+export async function uploadIterationBatch(
+  file: File,
+  datasetKind: DatasetKind = "auto",
+  recentF1Override?: string,
+): Promise<IterationUploadBatchResponse> {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("dataset_kind", datasetKind);
+  if (recentF1Override?.trim()) {
+    form.append("recent_f1_override", recentF1Override.trim());
+  }
+  return fetchJsonStrict<IterationUploadBatchResponse>(
+    "/api/v1/iteration/upload-batch",
+    {
+      method: "POST",
+      body: form,
+    },
+  );
+}
+
+export async function resetIterationDemoState(): Promise<DemoResetResponse> {
+  return fetchJsonStrict<DemoResetResponse>("/api/v1/iteration/demo/reset", {
+    method: "POST",
+  });
+}
+
+export type DemoIterationAction =
+  | "train"
+  | "regression-test"
+  | "drift-analysis"
+  | "pr/create"
+  | "ci/run"
+  | "approve/safety"
+  | "approve/tech"
+  | "staging/start"
+  | "staging/complete-demo"
+  | "canary/advance"
+  | "demo/run-next-step"
+  | "demo/run-to-end";
+
+export async function runDemoIterationAction(
+  iterationId: string,
+  action: DemoIterationAction,
+  body?: Record<string, unknown>,
+): Promise<DemoIterationStepResponse> {
+  return fetchJsonStrict<DemoIterationStepResponse>(
+    `/api/v1/iteration/${encodeURIComponent(iterationId)}/${action}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+    },
+  );
+}
+
+export async function fetchIterationAudit(
+  iterationId: string,
+): Promise<IterationAuditResponse | null> {
+  return fetchJsonNullable404<IterationAuditResponse>(
+    `/api/v1/iteration/${encodeURIComponent(iterationId)}/audit`,
+  );
+}
+
+export async function fetchIterationReports(
+  iterationId: string,
+): Promise<IterationReportsResponse | null> {
+  return fetchJsonNullable404<IterationReportsResponse>(
+    `/api/v1/iteration/${encodeURIComponent(iterationId)}/reports`,
+  );
+}
+
+export async function fetchIterationReport(
+  iterationId: string,
+  reportType: string,
+): Promise<IterationReportResponse | null> {
+  return fetchJsonNullable404<IterationReportResponse>(
+    `/api/v1/iteration/${encodeURIComponent(iterationId)}/reports/${encodeURIComponent(reportType)}`,
+  );
+}
+
+export async function downloadIterationReport(
+  iterationId: string,
+  reportType: string,
+): Promise<void> {
+  const resp = await fetch(
+    url(
+      `/api/v1/iteration/${encodeURIComponent(iterationId)}/reports/${encodeURIComponent(
+        reportType,
+      )}/download`,
+    ),
+  );
+  if (!resp.ok) {
+    throw new Error(await responseError(resp));
+  }
+  const blob = await resp.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = objectUrl;
+  anchor.download = `${iterationId}_${reportType}.json`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(objectUrl);
 }
 
 export async function triggerIteration(): Promise<IterationTriggerResponse | null> {
@@ -274,105 +651,51 @@ export async function queryAudit(
   }
 }
 
-export async function queryShortTermMemory(
-  params: Partial<{
-    enterprise_id: string;
-    category: string;
-    priority: string;
-    search: string;
-    time_from: number;
-    time_to: number;
-    limit: number;
-    offset: number;
-  }>,
-): Promise<ShortTermMemory[]> {
-  try {
-    const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
-    });
-    const resp = await fetch(url(`/api/v1/memory/short-term?${usp.toString()}`), {
-      headers: adminHeaders(),
-    });
-    if (!resp.ok) return [];
-    return jsonOrThrow<ShortTermMemory[]>(resp);
-  } catch {
-    return [];
-  }
-}
-
-export async function addShortTermMemory(
-  payload: Omit<ShortTermMemory, "id" | "time" | "timestamp">,
-): Promise<ShortTermMemory | null> {
-  try {
-    const resp = await fetch(url("/api/v1/memory/short-term"), {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify(payload),
-    });
-    if (!resp.ok) return null;
-    return jsonOrThrow<ShortTermMemory>(resp);
-  } catch {
-    return null;
-  }
-}
-
 export async function deleteShortTermMemory(id: string): Promise<boolean> {
   try {
     const resp = await fetch(url(`/api/v1/memory/short-term/${encodeURIComponent(id)}`), {
       method: "DELETE",
       headers: adminHeaders(),
     });
-    return resp.ok;
+    if (!resp.ok) return false;
+    const data = await resp.json();
+    return data?.success ?? true;
   } catch {
     return false;
   }
 }
 
-export async function queryLongTermMemory(
-  params: Partial<{
-    enterprise_id: string;
-    category: string;
-    priority: string;
-    search: string;
-    limit: number;
-    offset: number;
-  }>,
-): Promise<LongTermMemory[]> {
+export async function deleteLongTermMemory(id: string): Promise<boolean> {
   try {
-    const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
-    });
-    const resp = await fetch(url(`/api/v1/memory/long-term?${usp.toString()}`), {
+    const resp = await fetch(url(`/api/v1/memory/long-term/${encodeURIComponent(id)}`), {
+      method: "DELETE",
       headers: adminHeaders(),
     });
-    if (!resp.ok) return [];
-    return jsonOrThrow<LongTermMemory[]>(resp);
+    if (!resp.ok) return false;
+    const data = await resp.json();
+    return data?.success ?? true;
   } catch {
-    return [];
+    return false;
   }
 }
 
-export async function addLongTermMemory(
-  payload: Omit<LongTermMemory, "id" | "time" | "timestamp">,
-): Promise<LongTermMemory | null> {
+export async function deleteEnterpriseDataBySource(
+  source: string,
+): Promise<{ success: boolean; deleted_count?: number }> {
   try {
-    const resp = await fetch(url("/api/v1/memory/long-term"), {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify(payload),
+    const usp = new URLSearchParams({ source });
+    const resp = await fetch(url(`/api/v1/memory/enterprise-data?${usp.toString()}`), {
+      method: "DELETE",
+      headers: adminHeaders(),
     });
-    if (!resp.ok) return null;
-    return jsonOrThrow<LongTermMemory>(resp);
+    if (!resp.ok) return { success: false };
+    return jsonOrThrow<{ success: boolean; deleted_count?: number }>(resp);
   } catch {
-    return null;
+    return { success: false };
   }
 }
 
-export async function migrateToLongTerm(
-  shortTermIds: string[],
-): Promise<LongTermMemory[]> {
+export async function migrateToLongTerm(shortTermIds: string[]): Promise<any[]> {
   try {
     const resp = await fetch(url("/api/v1/memory/migrate"), {
       method: "POST",
@@ -380,64 +703,19 @@ export async function migrateToLongTerm(
       body: JSON.stringify({ short_term_ids: shortTermIds }),
     });
     if (!resp.ok) return [];
-    return jsonOrThrow<LongTermMemory[]>(resp);
+    return jsonOrThrow<any[]>(resp);
   } catch {
     return [];
-  }
-}
-
-export async function queryWarningLogs(
-  params: Partial<{
-    enterprise_id: string;
-    risk_level: string;
-    status: string;
-    time_from: number;
-    time_to: number;
-    limit: number;
-    offset: number;
-  }>,
-): Promise<WarningLog[]> {
-  try {
-    const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
-    });
-    const resp = await fetch(url(`/api/v1/warning/logs?${usp.toString()}`), {
-      headers: adminHeaders(),
-    });
-    if (!resp.ok) return [];
-    return jsonOrThrow<WarningLog[]>(resp);
-  } catch {
-    return [];
-  }
-}
-
-export async function resolveWarningLog(
-  id: string,
-  resolution: string,
-): Promise<WarningLog | null> {
-  try {
-    const resp = await fetch(url(`/api/v1/warning/logs/${encodeURIComponent(id)}/resolve`), {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ resolution }),
-    });
-    if (!resp.ok) return null;
-    return jsonOrThrow<WarningLog>(resp);
-  } catch {
-    return null;
   }
 }
 
 export async function importEnterpriseData(
   source: "folder" | "file",
-  path?: string,
+  _path?: string,
   file?: File,
 ): Promise<DataUploadResponse | null> {
   try {
-    if (source === "file" && file) {
-      return importExcelFile(file);
-    }
+    if (source === "file" && file) return importExcelFile(file);
     const resp = await fetch(url("/api/v1/memory/import-new-data"), {
       method: "POST",
       headers: adminHeaders({ "Content-Type": "application/json" }),
@@ -446,10 +724,8 @@ export async function importEnterpriseData(
     const data = await jsonOrThrow<{
       success: boolean;
       message: string;
-      files_scanned: number;
       files_imported: number;
       total_rows: number;
-      total_entries: number;
       details: Array<Record<string, unknown>>;
     }>(resp);
     return {
@@ -457,112 +733,53 @@ export async function importEnterpriseData(
       message: data.message,
       rows: data.total_rows,
       columns: data.files_imported,
-      preview: data.details as unknown as Array<Record<string, unknown>>,
+      preview: data.details,
     };
   } catch {
     return null;
   }
 }
 
-export async function importExcelFile(
-  file: File,
-  enterpriseId?: string,
-): Promise<DataUploadResponse | null> {
-  try {
-    const form = new FormData();
-    form.append("file", file);
-    if (enterpriseId) form.append("enterprise_id", enterpriseId);
-    const resp = await fetch(url("/api/v1/memory/import-excel"), {
-      method: "POST",
-      body: form,
-    });
-    
-    const text = await resp.text();
-    if (!resp.ok) {
-      console.error("Excel导入失败:", resp.status, text);
-      throw new Error(`HTTP ${resp.status}: ${text}`);
-    }
-    
-    const data = JSON.parse(text) as {
-      success: boolean;
-      message: string;
-      filename: string;
-      rows: number;
-      columns: number;
-      entries_stored: number;
-      preview?: Array<Record<string, unknown>>;
-    };
-    
-    return {
-      success: data.success,
-      message: data.message,
-      rows: data.rows,
-      columns: data.columns,
-      preview: data.preview,
-    };
-  } catch (e) {
-    console.error("importExcelFile异常:", e);
-    throw e;
-  }
+export async function importExcelFile(file: File, enterpriseId?: string): Promise<DataUploadResponse | null> {
+  const form = new FormData();
+  form.append("file", file);
+  if (enterpriseId) form.append("enterprise_id", enterpriseId);
+  const resp = await fetch(url("/api/v1/memory/import-excel"), { method: "POST", body: form });
+  if (!resp.ok) throw new Error(await responseError(resp));
+  const data = await resp.json() as {
+    success: boolean;
+    message: string;
+    rows: number;
+    columns: number;
+    preview?: Array<Record<string, unknown>>;
+  };
+  return { success: data.success, message: data.message, rows: data.rows, columns: data.columns, preview: data.preview };
 }
 
-export async function assessEnterpriseFile(
-  file: File,
-): Promise<{
+export async function assessEnterpriseFile(file: File): Promise<{
   success: boolean;
   message: string;
   filename: string;
   total_rows: number;
-  analyzed_rows?: number;
-  skipped_rows?: number;
-  experience_count?: number;
-  header_row_index?: number | null;
-  detected_columns?: string[];
-  results: Array<{
-    enterprise_id: string;
-    enterprise_name: string;
-    risk_score: number;
-    risk_level: string;
-    scenario: string;
-    assessment_time: string;
-    key_factors: Array<{ name: string; value: number; color: string }>;
-    inference_stored: boolean;
-  }>;
+  results: any[];
 } | null> {
-  try {
-    const form = new FormData();
-    form.append("file", file);
-    const resp = await fetch(url("/api/v1/memory/assess-enterprise"), {
-      method: "POST",
-      body: form,
-    });
-    
-    const text = await resp.text();
-    if (!resp.ok) {
-      console.error("预测分析失败:", resp.status, text);
-      throw new Error(`HTTP ${resp.status}: ${text}`);
-    }
-    
-    return JSON.parse(text);
-  } catch (e) {
-    console.error("assessEnterpriseFile异常:", e);
-    throw e;
-  }
+  const form = new FormData();
+  form.append("file", file);
+  const resp = await fetch(url("/api/v1/memory/assess-enterprise"), { method: "POST", body: form });
+  if (!resp.ok) throw new Error(await responseError(resp));
+  return (await resp.json()) as {
+    success: boolean;
+    message: string;
+    filename: string;
+    total_rows: number;
+    results: any[];
+  };
 }
 
 export async function batchRiskAssessment(): Promise<{
   success: boolean;
   message: string;
-  results: Array<{
-    enterprise_id: string;
-    enterprise_name: string;
-    risk_score: number;
-    risk_level: string;
-    scenario: string;
-    assessment_time: string;
-    key_factors: Array<{ name: string; value: number; color: string }>;
-    inference_stored: boolean;
-  }>;
+  results: any[];
   inference_count: number;
 } | null> {
   try {
@@ -585,9 +802,7 @@ export async function fetchEnterpriseDataSummary(): Promise<{
   enterprise_count: number;
 } | null> {
   try {
-    const resp = await fetch(url("/api/v1/memory/enterprise-data-summary"), {
-      headers: adminHeaders(),
-    });
+    const resp = await fetch(url("/api/v1/memory/enterprise-data-summary"), { headers: adminHeaders() });
     if (!resp.ok) return null;
     return jsonOrThrow(resp);
   } catch {
@@ -601,12 +816,11 @@ export async function fetchMemoryStats(): Promise<{
   warning_experiences: { total: number; by_level: Record<string, number>; by_scenario: Record<string, number>; financial_total: number; timeline: Record<string, number> };
   iteration_count: number;
   pending_approvals: number;
+  decision_pending_reviews?: number;
   audit_log_count: number;
 } | null> {
   try {
-    const resp = await fetch(url("/api/v1/memory/stats"), {
-      headers: adminHeaders(),
-    });
+    const resp = await fetch(url("/api/v1/memory/stats"), { headers: adminHeaders() });
     if (!resp.ok) return null;
     return jsonOrThrow(resp);
   } catch {
@@ -625,12 +839,8 @@ export async function fetchWarningExperiences(params: Partial<{
 }> = {}): Promise<{ total: number; items: any[]; offset: number; limit: number } | null> {
   try {
     const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
-    });
-    const resp = await fetch(url(`/api/v1/memory/warning-experiences?${usp.toString()}`), {
-      headers: adminHeaders(),
-    });
+    appendParams(usp, params);
+    const resp = await fetch(url(`/api/v1/memory/warning-experiences?${usp.toString()}`), { headers: adminHeaders() });
     if (!resp.ok) return null;
     return jsonOrThrow(resp);
   } catch {
@@ -640,14 +850,7 @@ export async function fetchWarningExperiences(params: Partial<{
 
 export async function fetchEnterpriseRiskHistory(enterpriseId: string): Promise<{
   enterprise_id: string;
-  history: Array<{
-    time: string;
-    timestamp: number;
-    risk_score: number;
-    risk_level: string;
-    scenario: string;
-    key_factors: Array<{ name: string; value: number; color: string }>;
-  }>;
+  history: Array<Record<string, unknown>>;
   total: number;
 } | null> {
   try {
@@ -680,9 +883,7 @@ export async function fetchIterationTracking(): Promise<{
   total_iterations: number;
 } | null> {
   try {
-    const resp = await fetch(url("/api/v1/memory/iteration-tracking"), {
-      headers: adminHeaders(),
-    });
+    const resp = await fetch(url("/api/v1/memory/iteration-tracking"), { headers: adminHeaders() });
     if (!resp.ok) return null;
     return jsonOrThrow(resp);
   } catch {
@@ -690,38 +891,16 @@ export async function fetchIterationTracking(): Promise<{
   }
 }
 
-export async function fetchApprovals(params: Partial<{
-  status: string;
-  limit: number;
+export async function fetchApprovals(params: Partial<{ status: string; limit: number; offset: number }> = {}): Promise<{
+  total: number;
+  items: any[];
   offset: number;
-}> = {}): Promise<{ total: number; items: any[]; offset: number; limit: number } | null> {
+  limit: number;
+} | null> {
   try {
     const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
-    });
-    const resp = await fetch(url(`/api/v1/memory/approvals?${usp.toString()}`), {
-      headers: adminHeaders(),
-    });
-    if (!resp.ok) return null;
-    return jsonOrThrow(resp);
-  } catch {
-    return null;
-  }
-}
-
-export async function createApproval(payload: {
-  target_id: string;
-  action: string;
-  actor?: string;
-  comment?: string;
-}): Promise<any | null> {
-  try {
-    const resp = await fetch(url("/api/v1/memory/approvals"), {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify(payload),
-    });
+    appendParams(usp, params);
+    const resp = await fetch(url(`/api/v1/memory/approvals?${usp.toString()}`), { headers: adminHeaders() });
     if (!resp.ok) return null;
     return jsonOrThrow(resp);
   } catch {
@@ -732,8 +911,8 @@ export async function createApproval(payload: {
 export async function decideApproval(
   approvalId: string,
   decision: string,
-  actor: string = "admin",
-  comment: string = "",
+  actor = "admin",
+  comment = "",
 ): Promise<any | null> {
   try {
     const usp = new URLSearchParams({ decision, actor, comment });
@@ -757,12 +936,8 @@ export async function fetchAuditLogs(params: Partial<{
 }> = {}): Promise<{ total: number; items: any[]; offset: number; limit: number } | null> {
   try {
     const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
-    });
-    const resp = await fetch(url(`/api/v1/memory/audit-logs?${usp.toString()}`), {
-      headers: adminHeaders(),
-    });
+    appendParams(usp, params);
+    const resp = await fetch(url(`/api/v1/memory/audit-logs?${usp.toString()}`), { headers: adminHeaders() });
     if (!resp.ok) return null;
     return jsonOrThrow(resp);
   } catch {
@@ -804,12 +979,8 @@ export async function queryShortTermMemoryPaginated(params: Partial<{
 }> = {}): Promise<{ total: number; items: any[]; offset: number; limit: number } | null> {
   try {
     const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
-    });
-    const resp = await fetch(url(`/api/v1/memory/short-term?${usp.toString()}`), {
-      headers: adminHeaders(),
-    });
+    appendParams(usp, params);
+    const resp = await fetch(url(`/api/v1/memory/short-term?${usp.toString()}`), { headers: adminHeaders() });
     if (!resp.ok) return null;
     return jsonOrThrow(resp);
   } catch {
@@ -831,12 +1002,8 @@ export async function queryLongTermMemoryPaginated(params: Partial<{
 }> = {}): Promise<{ total: number; items: any[]; offset: number; limit: number } | null> {
   try {
     const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
-    });
-    const resp = await fetch(url(`/api/v1/memory/long-term?${usp.toString()}`), {
-      headers: adminHeaders(),
-    });
+    appendParams(usp, params);
+    const resp = await fetch(url(`/api/v1/memory/long-term?${usp.toString()}`), { headers: adminHeaders() });
     if (!resp.ok) return null;
     return jsonOrThrow(resp);
   } catch {
@@ -844,85 +1011,7 @@ export async function queryLongTermMemoryPaginated(params: Partial<{
   }
 }
 
-export async function generateModelEvaluation(): Promise<ModelEvaluationReport | null> {
-  try {
-    const resp = await fetch(url("/api/v1/model/evaluate"), {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": "application/json" }),
-    });
-    if (!resp.ok) return null;
-    return jsonOrThrow<ModelEvaluationReport>(resp);
-  } catch {
-    return null;
-  }
-}
-
-export async function listIterationRecords(): Promise<IterationRecord[]> {
-  try {
-    const resp = await fetch(url("/api/v1/iteration/records"), {
-      headers: adminHeaders(),
-    });
-    if (!resp.ok) return [];
-    return jsonOrThrow<IterationRecord[]>(resp);
-  } catch {
-    return [];
-  }
-}
-
-export async function createIterationRecord(
-  payload: Partial<IterationRecord>,
-): Promise<IterationRecord | null> {
-  try {
-    const resp = await fetch(url("/api/v1/iteration/records"), {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify(payload),
-    });
-    if (!resp.ok) return null;
-    return jsonOrThrow<IterationRecord>(resp);
-  } catch {
-    return null;
-  }
-}
-
-export async function approveIteration(
-  id: string,
-  approver: string,
-  comment: string,
-  approved: boolean,
-): Promise<IterationRecord | null> {
-  try {
-    const resp = await fetch(url(`/api/v1/iteration/records/${encodeURIComponent(id)}/approve`), {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ approver, comment, approved }),
-    });
-    if (!resp.ok) return null;
-    return jsonOrThrow<IterationRecord>(resp);
-  } catch {
-    return null;
-  }
-}
-
-export async function promoteIteration(
-  id: string,
-  targetStatus: IterationRecord["status"],
-): Promise<IterationRecord | null> {
-  try {
-    const resp = await fetch(url(`/api/v1/iteration/records/${encodeURIComponent(id)}/promote`), {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ target_status: targetStatus }),
-    });
-    if (!resp.ok) return null;
-    return jsonOrThrow<IterationRecord>(resp);
-  } catch {
-    return null;
-  }
-}
-
 export const apiBase = API_BASE || "(同源)";
-
 // ==================== 可视化数据 API ====================
 
 export interface TrendDataPoint {

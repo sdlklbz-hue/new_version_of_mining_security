@@ -1,0 +1,5 @@
+# 本地 / 容器：API + Agent + RAG/NLP 长期记忆与校验证据检索
+# 在 requirements-serve.txt 基础上补齐 ChromaDB、sentence-transformers 等可选依赖。
+
+-r requirements-serve.txt
+-r requirements-rag.txt

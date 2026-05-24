@@ -23,12 +23,15 @@ from typing import Any, Iterable
 
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _bootstrap import setup_project_paths
 
-from data.loader import DataLoader  # noqa: E402
-from utils.config import resolve_project_path  # noqa: E402
+PROJECT_ROOT = setup_project_paths()
+
+from mining_risk_common.dataplane.loader import DataLoader  # noqa: E402
+from mining_risk_common.utils.config import resolve_project_path  # noqa: E402
 
 
 TARGET_KB = PROJECT_ROOT / "knowledge_base" / "类似事故处理案例.md"
@@ -63,6 +66,9 @@ TEMPLATE_COUNT = 3
 
 @dataclass
 class SourceInfo:
+    """
+    SourceInfo 类。
+    """
     key: str
     source_file: str
     sheet: str
@@ -73,6 +79,9 @@ class SourceInfo:
 
 @dataclass
 class EnterpriseProfile:
+    """
+    EnterpriseProfile 类。
+    """
     name: str | None = None
     credit_code: str | None = None
     internal_id: str | None = None
@@ -107,6 +116,9 @@ class EnterpriseProfile:
 
 @dataclass
 class RiskHistoryInfo:
+    """
+    RiskHistoryInfo 类。
+    """
     report_id: str
     enterprise_name: str | None = None
     enterprise_id: str | None = None
@@ -122,6 +134,9 @@ class RiskHistoryInfo:
 
 @dataclass
 class WritInfo:
+    """
+    WritInfo 类。
+    """
     writ_ids: list[str] = field(default_factory=list)
     writ_nos: list[str] = field(default_factory=list)
     writ_types: list[str] = field(default_factory=list)
@@ -133,6 +148,9 @@ class WritInfo:
 
 @dataclass
 class CaseCard:
+    """
+    CaseCard 类。
+    """
     case_id: str
     class_code: str
     class_name: str
@@ -153,6 +171,15 @@ class CaseCard:
 
 
 def clean_value(value: Any) -> str | None:
+    """
+    clean value。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     if value is None:
         return None
     if isinstance(value, float) and math.isnan(value):
@@ -172,6 +199,16 @@ def clean_value(value: Any) -> str | None:
 
 
 def shorten(text: Any, limit: int = 120) -> str:
+    """
+    shorten。
+
+        Args:
+            text (Any): 参数 ``text``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     value = clean_value(text) or "未知"
     if len(value) <= limit:
         return value
@@ -179,10 +216,28 @@ def shorten(text: Any, limit: int = 120) -> str:
 
 
 def md_cell(value: Any) -> str:
+    """
+    md cell。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return shorten(value, 180).replace("|", "\\|")
 
 
 def parse_number(value: Any) -> float | None:
+    """
+    parse number。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (float | None): 函数返回值。
+    """
     text = clean_value(value)
     if text is None:
         return None
@@ -197,6 +252,15 @@ def parse_number(value: Any) -> float | None:
 
 
 def parse_flag(value: Any) -> bool | None:
+    """
+    parse flag。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (bool | None): 函数返回值。
+    """
     text = clean_value(value)
     if text is None:
         return None
@@ -215,6 +279,15 @@ def parse_flag(value: Any) -> bool | None:
 
 
 def mask_id(value: Any) -> str:
+    """
+    mask id。
+
+        Args:
+            value (Any): 参数 ``value``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     text = clean_value(value)
     if text is None:
         return "未知"
@@ -224,6 +297,15 @@ def mask_id(value: Any) -> str:
 
 
 def looks_like_credit_code(value: str | None) -> bool:
+    """
+    looks like credit code。
+
+        Args:
+            value (str | None): 参数 ``value``。
+
+        Returns:
+            (bool): 函数返回值。
+    """
     if not value:
         return False
     text = re.sub(r"[^0-9A-Z]", "", value.upper())
@@ -231,11 +313,28 @@ def looks_like_credit_code(value: str | None) -> bool:
 
 
 def stable_hash(*parts: Any, length: int = 10) -> str:
+    """
+    stable hash。
+
+        Returns:
+            (str): 函数返回值。
+    """
     raw = "|".join(clean_value(part) or "" for part in parts)
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:length]
 
 
 def find_col(df: pd.DataFrame, aliases: Iterable[str], contains: bool = False) -> str | None:
+    """
+    find col。
+
+        Args:
+            df (pd.DataFrame): 输入数据表
+            aliases (Iterable[str]): 参数 ``aliases``。
+            contains (bool): 参数 ``contains``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     columns = [str(col) for col in df.columns]
     for alias in aliases:
         if alias in df.columns:
@@ -252,6 +351,16 @@ def find_col(df: pd.DataFrame, aliases: Iterable[str], contains: bool = False) -
 
 
 def first_row_value(row: pd.Series, columns: Iterable[str | None]) -> str | None:
+    """
+    first row value。
+
+        Args:
+            row (pd.Series): 参数 ``row``。
+            columns (Iterable[str | None]): 参数 ``columns``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     for col in columns:
         if col and col in row.index:
             value = clean_value(row[col])
@@ -261,6 +370,15 @@ def first_row_value(row: pd.Series, columns: Iterable[str | None]) -> str | None
 
 
 def source_key_from_inventory_path(source_file: str) -> str:
+    """
+    source key from inventory path。
+
+        Args:
+            source_file (str): 参数 ``source_file``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     stem = Path(source_file).with_suffix("").as_posix()
     prefix = "公开数据/公开数据/"
     if stem.startswith(prefix):
@@ -269,6 +387,12 @@ def source_key_from_inventory_path(source_file: str) -> str:
 
 
 def load_inventory() -> dict[str, SourceInfo]:
+    """
+    load inventory。
+
+        Returns:
+            (dict[str, SourceInfo]): 函数返回值。
+    """
     if not INVENTORY_JSON.exists():
         return {}
     raw = json.loads(INVENTORY_JSON.read_text(encoding="utf-8"))
@@ -287,6 +411,16 @@ def load_inventory() -> dict[str, SourceInfo]:
 
 
 def source_label(table_key: str, inventory: dict[str, SourceInfo]) -> str:
+    """
+    source label。
+
+        Args:
+            table_key (str): 参数 ``table_key``。
+            inventory (dict[str, SourceInfo]): 参数 ``inventory``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     info = inventory.get(table_key)
     if info is None:
         return table_key
@@ -300,6 +434,18 @@ def evidence_line(
     inventory: dict[str, SourceInfo],
     values: Iterable[str] | None = None,
 ) -> str:
+    """
+    evidence line。
+
+        Args:
+            table_key (str): 参数 ``table_key``。
+            fields (Iterable[str]): 参数 ``fields``。
+            inventory (dict[str, SourceInfo]): 参数 ``inventory``。
+            values (Iterable[str] | None): 参数 ``values``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     field_text = "、".join(fields)
     if values:
         value_text = "；".join(shorten(value, 80) for value in values if clean_value(value))
@@ -309,6 +455,14 @@ def evidence_line(
 
 
 def update_if_empty(profile: EnterpriseProfile, attr: str, value: Any) -> None:
+    """
+    update if empty。
+
+        Args:
+            profile (EnterpriseProfile): 参数 ``profile``。
+            attr (str): 参数 ``attr``。
+            value (Any): 参数 ``value``。
+    """
     text = clean_value(value)
     if text is None:
         return
@@ -319,6 +473,15 @@ def update_if_empty(profile: EnterpriseProfile, attr: str, value: Any) -> None:
 def build_profiles(
     tables: dict[str, pd.DataFrame],
 ) -> tuple[dict[str, EnterpriseProfile], dict[str, EnterpriseProfile]]:
+    """
+    build profiles。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+
+        Returns:
+            (tuple[dict[str, EnterpriseProfile], dict[str, EnterpriseProfile]]): 函数返回值。
+    """
     by_credit: dict[str, EnterpriseProfile] = {}
     by_name: dict[str, EnterpriseProfile] = {}
 
@@ -438,6 +601,12 @@ def profile_for(
     by_credit: dict[str, EnterpriseProfile],
     by_name: dict[str, EnterpriseProfile],
 ) -> EnterpriseProfile:
+    """
+    profile for。
+
+        Returns:
+            (EnterpriseProfile): 函数返回值。
+    """
     if credit and credit in by_credit:
         return by_credit[credit]
     if name and name in by_name:
@@ -447,22 +616,68 @@ def profile_for(
 
 
 def profile_enterprise_name(profile: EnterpriseProfile, fallback: str | None = None) -> str:
+    """
+    profile enterprise name。
+
+        Args:
+            profile (EnterpriseProfile): 参数 ``profile``。
+            fallback (str | None): 参数 ``fallback``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return profile.name or clean_value(fallback) or "脱敏企业"
 
 
 def profile_masked_id(profile: EnterpriseProfile, fallback: str | None = None) -> str:
+    """
+    profile masked id。
+
+        Args:
+            profile (EnterpriseProfile): 参数 ``profile``。
+            fallback (str | None): 参数 ``fallback``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return mask_id(profile.credit_code or profile.internal_id or fallback)
 
 
 def profile_industry(profile: EnterpriseProfile, fallback: str | None = None) -> str:
+    """
+    profile industry。
+
+        Args:
+            profile (EnterpriseProfile): 参数 ``profile``。
+            fallback (str | None): 参数 ``fallback``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return profile.industry or profile.supervision or clean_value(fallback) or "未知"
 
 
 def profile_supervision(profile: EnterpriseProfile, fallback: str | None = None) -> str:
+    """
+    profile supervision。
+
+        Args:
+            profile (EnterpriseProfile): 参数 ``profile``。
+            fallback (str | None): 参数 ``fallback``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return profile.supervision or clean_value(fallback) or "未知"
 
 
 def infer_scene(*texts: Any) -> str:
+    """
+    infer scene。
+
+        Returns:
+            (str): 函数返回值。
+    """
     text = " ".join(clean_value(item) or "" for item in texts)
     if re.search(r"有限空间|受限空间|雨水收集池|污水池|罐内|地下|地沟|下水道|井|池", text):
         return "有限空间"
@@ -478,6 +693,15 @@ def infer_scene(*texts: Any) -> str:
 
 
 def disposal_flow(scene: str) -> list[str]:
+    """
+    disposal flow。
+
+        Args:
+            scene (str): 参数 ``scene``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     flows = {
         "粉尘涉爆": [
             "立即停止涉粉作业和动火作业，隔离积尘、火源和非防爆电气。",
@@ -509,6 +733,16 @@ def disposal_flow(scene: str) -> list[str]:
 
 
 def review_steps(scene: str, suggestion: str | None = None) -> list[str]:
+    """
+    review steps。
+
+        Args:
+            scene (str): 参数 ``scene``。
+            suggestion (str | None): 参数 ``suggestion``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     first = suggestion or "按风险点重新评估隐患原因、责任岗位和整改期限。"
     return [
         first,
@@ -518,6 +752,17 @@ def review_steps(scene: str, suggestion: str | None = None) -> list[str]:
 
 
 def risk_chain_for(scene: str, trigger: str, control_gap: str | None = None) -> list[str]:
+    """
+    risk chain for。
+
+        Args:
+            scene (str): 参数 ``scene``。
+            trigger (str): 参数 ``trigger``。
+            control_gap (str | None): 参数 ``control_gap``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     scene_result = {
         "粉尘涉爆": "积尘、点火源或除尘失效可能演化为粉尘爆炸。",
         "冶金": "高温、煤气、吊装或联锁失效可能演化为灼烫、爆炸、中毒或机械伤害。",
@@ -533,6 +778,12 @@ def risk_chain_for(scene: str, trigger: str, control_gap: str | None = None) -> 
 
 
 def keyword_list(*parts: Any, scene: str) -> list[str]:
+    """
+    keyword list。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     words = [scene, "公开数据案例", "RAG案例", "隐患闭环", "执法处罚", "风险组合"]
     text = " ".join(clean_value(part) or "" for part in parts)
     for token in re.split(r"[、，,；;。\s]+", text):
@@ -549,6 +800,16 @@ def build_risk_history_map(
     tables: dict[str, pd.DataFrame],
     inventory: dict[str, SourceInfo],
 ) -> dict[str, RiskHistoryInfo]:
+    """
+    build risk history map。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+            inventory (dict[str, SourceInfo]): 参数 ``inventory``。
+
+        Returns:
+            (dict[str, RiskHistoryInfo]): 函数返回值。
+    """
     result: dict[str, RiskHistoryInfo] = {}
     for key, df in tables.items():
         if "szs_enterprise_risk_history" not in key:
@@ -587,6 +848,16 @@ def build_writ_maps(
     tables: dict[str, pd.DataFrame],
     inventory: dict[str, SourceInfo],
 ) -> tuple[dict[str, WritInfo], dict[str, WritInfo]]:
+    """
+    build writ maps。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+            inventory (dict[str, SourceInfo]): 参数 ``inventory``。
+
+        Returns:
+            (tuple[dict[str, WritInfo], dict[str, WritInfo]]): 函数返回值。
+    """
     by_case: dict[str, WritInfo] = defaultdict(WritInfo)
     by_writ_id: dict[str, WritInfo] = defaultdict(WritInfo)
 
@@ -636,6 +907,16 @@ def build_writ_maps(
 
 
 def merge_writ_info(base: WritInfo, other: WritInfo) -> WritInfo:
+    """
+    merge writ info。
+
+        Args:
+            base (WritInfo): 参数 ``base``。
+            other (WritInfo): 参数 ``other``。
+
+        Returns:
+            (WritInfo): 函数返回值。
+    """
     for attr in ("writ_ids", "writ_nos", "writ_types", "writ_sources", "created_times", "attachment_ids"):
         items = getattr(base, attr)
         for value in getattr(other, attr):
@@ -647,6 +928,15 @@ def merge_writ_info(base: WritInfo, other: WritInfo) -> WritInfo:
 
 
 def parse_penalty_amount(text: Any) -> float | None:
+    """
+    parse penalty amount。
+
+        Args:
+            text (Any): 参数 ``text``。
+
+        Returns:
+            (float | None): 函数返回值。
+    """
     value = clean_value(text)
     if not value:
         return None
@@ -665,6 +955,16 @@ def parse_penalty_amount(text: Any) -> float | None:
 
 
 def extract_enterprise_from_case(case_name: str | None, party: str | None = None) -> str | None:
+    """
+    extract enterprise from case。
+
+        Args:
+            case_name (str | None): 参数 ``case_name``。
+            party (str | None): 参数 ``party``。
+
+        Returns:
+            (str | None): 函数返回值。
+    """
     clean_party = clean_value(party)
     if clean_party and not clean_party.startswith(("USER", "LA", "PI", "WS")):
         clean_party = clean_party.replace("??", "").strip("“”\"'")
@@ -682,6 +982,15 @@ def extract_enterprise_from_case(case_name: str | None, party: str | None = None
 
 
 def load_discretion_map(tables: dict[str, pd.DataFrame]) -> dict[str, dict[str, Any]]:
+    """
+    load discretion map。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+
+        Returns:
+            (dict[str, dict[str, Any]]): 函数返回值。
+    """
     mapping: dict[str, dict[str, Any]] = {}
     for key, df in tables.items():
         if not key.endswith("ds_aczf_la_discretion_3_202603181745"):
@@ -717,6 +1026,19 @@ def build_hidden_cases(
     by_name: dict[str, EnterpriseProfile],
     limit: int,
 ) -> tuple[list[CaseCard], dict[str, int]]:
+    """
+    build hidden cases。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+            inventory (dict[str, SourceInfo]): 参数 ``inventory``。
+            by_credit (dict[str, EnterpriseProfile]): 参数 ``by_credit``。
+            by_name (dict[str, EnterpriseProfile]): 参数 ``by_name``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (tuple[list[CaseCard], dict[str, int]]): 函数返回值。
+    """
     raw_cases: list[dict[str, Any]] = []
     for key, df in tables.items():
         if "st_fxsb_enterprise_routine_check_trouble" not in key:
@@ -860,6 +1182,19 @@ def build_penalty_cases(
     by_name: dict[str, EnterpriseProfile],
     limit: int,
 ) -> tuple[list[CaseCard], dict[str, int]]:
+    """
+    build penalty cases。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+            inventory (dict[str, SourceInfo]): 参数 ``inventory``。
+            by_credit (dict[str, EnterpriseProfile]): 参数 ``by_credit``。
+            by_name (dict[str, EnterpriseProfile]): 参数 ``by_name``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (tuple[list[CaseCard], dict[str, int]]): 函数返回值。
+    """
     discretion = load_discretion_map(tables)
     writ_by_case, writ_by_id = build_writ_maps(tables, inventory)
     raw_cases: list[dict[str, Any]] = []
@@ -1022,6 +1357,20 @@ def build_risk_cases(
     risk_history: dict[str, RiskHistoryInfo],
     limit: int,
 ) -> tuple[list[CaseCard], dict[str, int], dict[str, int]]:
+    """
+    build risk cases。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+            inventory (dict[str, SourceInfo]): 参数 ``inventory``。
+            by_credit (dict[str, EnterpriseProfile]): 参数 ``by_credit``。
+            by_name (dict[str, EnterpriseProfile]): 参数 ``by_name``。
+            risk_history (dict[str, RiskHistoryInfo]): 参数 ``risk_history``。
+            limit (int): 参数 ``limit``。
+
+        Returns:
+            (tuple[list[CaseCard], dict[str, int], dict[str, int]]): 函数返回值。
+    """
     raw_cases: list[dict[str, Any]] = []
     accident_stats = {"risk_rows_accident_true": 0, "risk_rows_event_true": 0, "risk_rows_with_accident_summary": 0}
     for key, df in tables.items():
@@ -1189,6 +1538,15 @@ def build_risk_cases(
 
 
 def count_merged_accident_signals(tables: dict[str, pd.DataFrame]) -> dict[str, int]:
+    """
+    count merged accident signals。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+
+        Returns:
+            (dict[str, int]): 函数返回值。
+    """
     stats = {
         "merged_risk_accident_flag_true": 0,
         "st_ds_accident_flag_true": 0,
@@ -1211,10 +1569,28 @@ def count_merged_accident_signals(tables: dict[str, pd.DataFrame]) -> dict[str, 
 
 
 def bullet_list(items: Iterable[str]) -> str:
+    """
+    bullet list。
+
+        Args:
+            items (Iterable[str]): 参数 ``items``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return "\n".join(f"  - {item}" for item in items)
 
 
 def render_case(case: CaseCard) -> str:
+    """
+    render case。
+
+        Args:
+            case (CaseCard): 参数 ``case``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     lines = [
         f"### {case.case_id}｜{case.class_name}｜{case.title}",
         "",
@@ -1240,6 +1616,12 @@ def render_case(case: CaseCard) -> str:
 
 
 def render_templates() -> list[str]:
+    """
+    render templates。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     templates = [
         (
             "E-001",
@@ -1297,6 +1679,12 @@ def render_markdown(
     merged_accident_stats: dict[str, int],
     generated_at: str,
 ) -> str:
+    """
+    render markdown。
+
+        Returns:
+            (str): 函数返回值。
+    """
     readable_tables = len(tables)
     readable_rows = sum(len(df) for df in tables.values())
     mapping_rows = 0
@@ -1439,6 +1827,24 @@ def build_summary(
     merged_accident_stats: dict[str, int],
     generated_at: str,
 ) -> dict[str, Any]:
+    """
+    build summary。
+
+        Args:
+            tables (dict[str, pd.DataFrame]): 参数 ``tables``。
+            b_cases (list[CaseCard]): 参数 ``b_cases``。
+            c_cases (list[CaseCard]): 参数 ``c_cases``。
+            d_cases (list[CaseCard]): 参数 ``d_cases``。
+            b_stats (dict[str, int]): 参数 ``b_stats``。
+            c_stats (dict[str, int]): 参数 ``c_stats``。
+            d_stats (dict[str, int]): 参数 ``d_stats``。
+            accident_stats (dict[str, int]): 参数 ``accident_stats``。
+            merged_accident_stats (dict[str, int]): 参数 ``merged_accident_stats``。
+            generated_at (str): 参数 ``generated_at``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     return {
         "generated_at": generated_at,
         "target": str(TARGET_KB),
@@ -1468,6 +1874,15 @@ def build_summary(
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """
+    parse args。
+
+        Args:
+            argv (list[str] | None): 参数 ``argv``。
+
+        Returns:
+            (argparse.Namespace): 函数返回值。
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", default=str(TARGET_KB), help="Markdown output path.")
     parser.add_argument("--report-json", default=str(DEFAULT_REPORT_JSON), help="JSON run report path.")
@@ -1477,6 +1892,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """
+    main。
+
+        Args:
+            argv (list[str] | None): 参数 ``argv``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     args = parse_args(argv)
     if args.quiet_loader:
         logging.disable(logging.CRITICAL)

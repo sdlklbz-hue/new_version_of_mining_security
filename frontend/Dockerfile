@@ -12,7 +12,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # 锁文件存在时使用 npm ci，否则退化为 npm install
-RUN npm install
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 COPY tsconfig.json tsconfig.node.json vite.config.ts index.html ./
 COPY public ./public
@@ -23,9 +23,9 @@ RUN npm run build
 # ---------- Runtime Stage ----------
 FROM nginx:alpine
 
-RUN apk add --no-cache gettext
+# 内置 wget 用于 healthcheck（alpine 镜像默认带 wget，无需额外安装）
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf.template
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
@@ -33,4 +33,4 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget -q -O - http://localhost/ >/dev/null 2>&1 || exit 1
 
-CMD ["/bin/sh", "-c", "envsubst '${BACKEND_HOST} ${BACKEND_PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
+CMD ["nginx", "-g", "daemon off;"]

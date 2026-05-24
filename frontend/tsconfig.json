@@ -16,10 +16,8 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["vite/client"]
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"],
-  "exclude": ["src/**/*_1.*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

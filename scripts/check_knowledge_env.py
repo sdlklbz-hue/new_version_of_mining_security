@@ -19,6 +19,16 @@ from typing import Any
 
 
 def _rel(path: Path, root: Path) -> str:
+    """
+    内部 rel。
+
+        Args:
+            path (Path): 参数 ``path``。
+            root (Path): 参数 ``root``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     try:
         return str(path.relative_to(root))
     except ValueError:
@@ -26,19 +36,55 @@ def _rel(path: Path, root: Path) -> str:
 
 
 def _dt(timestamp: float) -> str:
+    """
+    内部 dt。
+
+        Args:
+            timestamp (float): 参数 ``timestamp``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return datetime.fromtimestamp(timestamp).isoformat(timespec="seconds")
 
 
 def _quote_ident(name: str) -> str:
+    """
+    内部 quote ident。
+
+        Args:
+            name (str): 名称标识
+
+        Returns:
+            (str): 函数返回值。
+    """
     return '"' + name.replace('"', '""') + '"'
 
 
 def _connect_readonly(db_path: Path) -> sqlite3.Connection:
+    """
+    内部 connect readonly。
+
+        Args:
+            db_path (Path): 参数 ``db_path``。
+
+        Returns:
+            (sqlite3.Connection): 函数返回值。
+    """
     uri = db_path.resolve().as_uri() + "?mode=ro"
     return sqlite3.connect(uri, uri=True)
 
 
 def _sqlite_table_names(conn: sqlite3.Connection) -> list[str]:
+    """
+    内部 sqlite table names。
+
+        Args:
+            conn (sqlite3.Connection): 参数 ``conn``。
+
+        Returns:
+            (list[str]): 函数返回值。
+    """
     rows = conn.execute(
         "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
     ).fetchall()
@@ -46,6 +92,15 @@ def _sqlite_table_names(conn: sqlite3.Connection) -> list[str]:
 
 
 def _sqlite_overview(db_path: Path) -> dict[str, Any]:
+    """
+    内部 sqlite overview。
+
+        Args:
+            db_path (Path): 参数 ``db_path``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     if not db_path.exists():
         return {"exists": False, "path": str(db_path)}
 
@@ -77,6 +132,15 @@ def _sqlite_overview(db_path: Path) -> dict[str, Any]:
 
 
 def _agentfs_report(project_root: Path) -> dict[str, Any]:
+    """
+    内部 agentfs report。
+
+        Args:
+            project_root (Path): 参数 ``project_root``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     db_path = project_root / "data" / "agentfs.db"
     report = _sqlite_overview(db_path)
     if not report.get("exists"):
@@ -108,6 +172,15 @@ def _agentfs_report(project_root: Path) -> dict[str, Any]:
 
 
 def _knowledge_files(project_root: Path) -> list[dict[str, Any]]:
+    """
+    内部 knowledge files。
+
+        Args:
+            project_root (Path): 参数 ``project_root``。
+
+        Returns:
+            (list[dict[str, Any]]): 函数返回值。
+    """
     kb_dir = project_root / "knowledge_base"
     files = []
     if not kb_dir.exists():
@@ -126,6 +199,15 @@ def _knowledge_files(project_root: Path) -> list[dict[str, Any]]:
 
 
 def _chroma_report(project_root: Path) -> list[dict[str, Any]]:
+    """
+    内部 chroma report。
+
+        Args:
+            project_root (Path): 参数 ``project_root``。
+
+        Returns:
+            (list[dict[str, Any]]): 函数返回值。
+    """
     data_dir = project_root / "data"
     reports = []
     if not data_dir.exists():
@@ -163,6 +245,15 @@ def _chroma_report(project_root: Path) -> list[dict[str, Any]]:
 
 
 def _public_data_report(public_root: Path) -> dict[str, Any]:
+    """
+    内部 public data report。
+
+        Args:
+            public_root (Path): 参数 ``public_root``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     files = []
     if public_root.exists():
         for path in sorted(public_root.rglob("*")):
@@ -196,9 +287,19 @@ def _public_data_report(public_root: Path) -> dict[str, Any]:
 
 
 def build_report(project_root: Path, public_data_root: Path | None = None) -> dict[str, Any]:
+    """
+    build report。
+
+        Args:
+            project_root (Path): 参数 ``project_root``。
+            public_data_root (Path | None): 参数 ``public_data_root``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     project_root = project_root.resolve()
     if public_data_root is None:
-        public_data_root = (project_root.parent / "公开数据").resolve()
+        public_data_root = (project_root / "datasets" / "raw" / "public").resolve()
     else:
         public_data_root = public_data_root.resolve()
 
@@ -212,6 +313,12 @@ def build_report(project_root: Path, public_data_root: Path | None = None) -> di
 
 
 def main() -> int:
+    """
+    main。
+
+        Returns:
+            (int): 函数返回值。
+    """
     parser = argparse.ArgumentParser(description="Read-only knowledge environment check")
     parser.add_argument(
         "--project-root",
@@ -221,7 +328,7 @@ def main() -> int:
     parser.add_argument(
         "--public-data-root",
         default=None,
-        help="Path to the public data root; defaults to ../公开数据",
+        help="Path to the public data root; defaults to datasets/raw/public under project root",
     )
     args = parser.parse_args()
 

@@ -1,14 +1,29 @@
 import { useEffect, useState } from "react";
 import type { HealthResponse, ScenarioId } from "../api/types";
-import { SCENARIO_NAMES } from "../data/demoData";
+import { SCENARIO_LABELS } from "../data/demoData";
+import BatchJobBanner from "./BatchJobBanner";
 
 interface Props {
   health: HealthResponse | null;
   scenario: ScenarioId;
-  onScenarioChange: (scenario: ScenarioId) => void;
+  onScenarioChange: (s: ScenarioId) => void;
+  backendOnline: boolean;
+  demoMode?: boolean;
+  onMenuToggle?: () => void;
+  menuExpanded?: boolean;
+  onOpenRiskTab?: () => void;
 }
 
-export default function StatusBar({ health, scenario, onScenarioChange }: Props) {
+export default function StatusBar({
+  health,
+  scenario,
+  onScenarioChange,
+  backendOnline,
+  demoMode,
+  onMenuToggle,
+  menuExpanded,
+  onOpenRiskTab,
+}: Props) {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -16,53 +31,64 @@ export default function StatusBar({ health, scenario, onScenarioChange }: Props)
     return () => clearInterval(id);
   }, []);
 
-  const online = health?.status === "healthy";
-  const statusText = online ? "正常" : "离线";
-  const dot = online ? "online" : "offline";
+  const statusText = backendOnline ? "在线" : "离线";
+  const dot = backendOnline ? "online" : "offline";
   const version = health?.version ?? "—";
   const time = now.toLocaleTimeString("zh-CN", { hour12: false });
-  const scenes = Object.entries(SCENARIO_NAMES) as Array<[ScenarioId, string]>;
 
   return (
-    <div className="system-status-bar">
-      <div className="top-brand">
-        <div className="brand-mark">御界</div>
-        <div>
-          <div className="brand-name">Yu Jie</div>
-          <div className="brand-subtitle font-mono">SECURITY CENTER</div>
+    <>
+      <div className="system-status-bar">
+        <div className="status-bar-left">
+          {onMenuToggle && (
+            <button
+              type="button"
+              className="sidebar-menu-btn"
+              aria-label="打开或关闭侧边栏"
+              aria-expanded={menuExpanded ?? false}
+              onClick={onMenuToggle}
+            >
+              菜单
+            </button>
+          )}
+          <div className="status-bar-item">
+            <span className={`status-dot ${dot}`} aria-hidden="true" />
+            <span className="font-mono">系统 {statusText}</span>
+          </div>
+          <div className="status-bar-item font-mono">v{version}</div>
+          <div className="status-bar-item status-bar-scenario">
+            <label className="status-bar-scenario-label" htmlFor="scenario-select-top">
+              监管场景
+            </label>
+            <select
+              id="scenario-select-top"
+              className="scada-select status-bar-scenario-select"
+              value={scenario}
+              onChange={(e) => onScenarioChange(e.target.value as ScenarioId)}
+            >
+              {(Object.keys(SCENARIO_LABELS) as ScenarioId[]).map((s) => (
+                <option key={s} value={s}>
+                  {SCENARIO_LABELS[s]}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>
-      <nav className="top-scenario-nav" aria-label="场景模式切换">
-        {scenes.map(([id, name]) => (
-          <button
-            key={id}
-            type="button"
-            className={`top-scenario-item ${scenario === id ? "active" : ""}`}
-            onClick={() => onScenarioChange(id)}
-          >
-            {name}
-          </button>
-        ))}
-      </nav>
-      <div className="top-search" aria-hidden="true">
-        <span className="top-search-icon">⌕</span>
-        <span>查询系统...</span>
-      </div>
-      <div className="status-actions">
-        <div className={`backend-pill ${online ? "online" : "offline"}`}>
-          <span className={`status-dot ${dot}`}></span>
-          <span>后端状态: {statusText}</span>
-        </div>
-        <div className="status-icon-btn font-mono" title="版本">
-          v{version}
-        </div>
-        <div className="status-icon-btn font-mono" title="系统时间">
+        <div className="status-bar-item font-mono" aria-live="polite">
           {time}
         </div>
-        <div className="status-alert" title="预警中心">
-          !
-        </div>
       </div>
-    </div>
+      {!backendOnline && (
+        <div className="mock-banner" role="status">
+          后端未连接，部分页面将使用本地演示数据。请启动 FastAPI 服务（默认端口 8000）。
+        </div>
+      )}
+      {demoMode && (
+        <div className="demo-banner" role="status">
+          演示模式：主 Tab 每 12 秒自动轮播，便于路演展示。
+        </div>
+      )}
+      <BatchJobBanner onOpenRiskTab={onOpenRiskTab} />
+    </>
   );
 }

@@ -15,13 +15,16 @@ from pathlib import Path
 from typing import Any
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _bootstrap import setup_project_paths
 
-from harness.knowledge_base import KnowledgeBaseManager
-from harness.vector_store import VectorStore, split_by_headers
-from utils.config import get_config, resolve_project_path
+PROJECT_ROOT = setup_project_paths()
+
+from mining_risk_serve.harness.knowledge_base import KnowledgeBaseManager
+from mining_risk_serve.harness.vector_store import VectorStore, split_by_headers
+from mining_risk_common.utils.config import get_config, resolve_project_path
 
 
 DEFAULT_SOURCE_COMMIT = "2f0819487bdaf2a8495f15c260015cbf932d29d3"
@@ -29,10 +32,28 @@ DEFAULT_REPORT_PATH = "reports/rag_index_rebuild_run.json"
 
 
 def _sha256(data: bytes) -> str:
+    """
+    内部 sha256。
+
+        Args:
+            data (bytes): 参数 ``data``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     return hashlib.sha256(data).hexdigest()
 
 
 def _rel_project(path: Path) -> str:
+    """
+    内部 rel project。
+
+        Args:
+            path (Path): 参数 ``path``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     try:
         return path.resolve().relative_to(PROJECT_ROOT).as_posix()
     except ValueError:
@@ -40,6 +61,7 @@ def _rel_project(path: Path) -> str:
 
 
 def _dependency_state() -> dict[str, dict[str, Any]]:
+    """检查 RAG 相关可选依赖是否已安装。"""
     modules = {
         "chromadb": "chromadb",
         "sentence_transformers": "sentence-transformers",
@@ -62,6 +84,15 @@ def _dependency_state() -> dict[str, dict[str, Any]]:
 
 
 def _iter_kb_files(kb_dir: Path) -> list[Path]:
+    """
+    内部 iter kb files。
+
+        Args:
+            kb_dir (Path): 参数 ``kb_dir``。
+
+        Returns:
+            (list[Path]): 函数返回值。
+    """
     main_files = []
     for filename in KnowledgeBaseManager.KNOWLEDGE_FILES:
         path = kb_dir / filename
@@ -77,6 +108,15 @@ def _iter_kb_files(kb_dir: Path) -> list[Path]:
 
 
 def _doc_type(path: Path) -> str:
+    """
+    内部 doc type。
+
+        Args:
+            path (Path): 参数 ``path``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     name = path.name
     if "合规" in name:
         return "compliance"
@@ -94,6 +134,16 @@ def _doc_type(path: Path) -> str:
 
 
 def _scenario(path: Path, text: str) -> str:
+    """
+    内部 scenario。
+
+        Args:
+            path (Path): 参数 ``path``。
+            text (str): 参数 ``text``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     parts = {part.lower() for part in path.parts}
     if "dust" in parts:
         return "dust"
@@ -113,6 +163,15 @@ def _scenario(path: Path, text: str) -> str:
 
 
 def _risk_type(text: str) -> str:
+    """
+    内部 risk type。
+
+        Args:
+            text (str): 参数 ``text``。
+
+        Returns:
+            (str): 函数返回值。
+    """
     if any(token in text for token in ("粉尘", "涉爆", "除尘")):
         return "粉尘涉爆"
     if any(token in text for token in ("冶金", "煤气", "熔融", "高炉", "转炉")):
@@ -127,6 +186,16 @@ def _risk_type(text: str) -> str:
 
 
 def _extract_ids(text: str, section_title: str) -> dict[str, str]:
+    """
+    内部 extract ids。
+
+        Args:
+            text (str): 参数 ``text``。
+            section_title (str): 参数 ``section_title``。
+
+        Returns:
+            (dict[str, str]): 函数返回值。
+    """
     combined = f"{section_title}\n{text}"
     rule_ids = re.findall(r"\b(?:COM|PHY|SRC)-[A-Z]+-\d{3}\b", combined)
     sop_ids = re.findall(r"\bSOP-[A-Z]+(?:-[A-Z0-9]+)*\b", combined)
@@ -143,6 +212,17 @@ def _build_chunks(
     source_commit: str,
     build_time: str,
 ) -> tuple[list[str], list[dict[str, Any]], list[str], Counter[str]]:
+    """
+    内部 build chunks。
+
+        Args:
+            kb_dir (Path): 参数 ``kb_dir``。
+            source_commit (str): 参数 ``source_commit``。
+            build_time (str): 参数 ``build_time``。
+
+        Returns:
+            (tuple[list[str], list[dict[str, Any]], list[str], Counter[str]]): 函数返回值。
+    """
     config = get_config()
     rag_config = config.harness.memory.long_term.rag
     chunk_size = int(rag_config.get("chunk_size", 300))
@@ -194,6 +274,15 @@ def _build_chunks(
 
 
 def rebuild_index(args: argparse.Namespace) -> dict[str, Any]:
+    """
+    rebuild index。
+
+        Args:
+            args (argparse.Namespace): 参数 ``args``。
+
+        Returns:
+            (dict[str, Any]): 函数返回值。
+    """
     kb_dir = resolve_project_path(args.kb_dir)
     persist_dir = resolve_project_path(args.persist_dir)
     report_path = resolve_project_path(args.report_json)
@@ -243,10 +332,19 @@ def rebuild_index(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """
+    parse args。
+
+        Args:
+            argv (list[str] | None): 参数 ``argv``。
+
+        Returns:
+            (argparse.Namespace): 函数返回值。
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clear", action="store_true", help="Delete and recreate the target Chroma collection first.")
     parser.add_argument("--kb-dir", default="knowledge_base", help="Knowledge base directory to index.")
-    parser.add_argument("--persist-dir", default="data/chroma_db", help="Chroma persist directory.")
+    parser.add_argument("--persist-dir", default="var/chroma", help="Chroma persist directory.")
     parser.add_argument("--collection-name", default="knowledge_base", help="Chroma collection name.")
     parser.add_argument(
         "--embedding-backend",
@@ -261,6 +359,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """
+    main。
+
+        Args:
+            argv (list[str] | None): 参数 ``argv``。
+
+        Returns:
+            (int): 函数返回值。
+    """
     args = parse_args(argv)
     report = rebuild_index(args)
     print(json.dumps(report, ensure_ascii=False, indent=2))

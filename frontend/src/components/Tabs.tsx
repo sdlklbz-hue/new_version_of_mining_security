@@ -1,32 +1,35 @@
-import type { ReactNode } from "react";
-
 export interface TabDef {
   id: string;
   label: string;
-  icon?: string;
 }
 
 interface Props {
   tabs: TabDef[];
   active: string;
   onChange: (id: string) => void;
-  children?: ReactNode;
 }
 
 export default function Tabs({ tabs, active, onChange }: Props) {
   return (
-    <div className="tabs-bar">
-      {tabs.map((t) => (
-        <button
-          key={t.id}
-          className={`tab-button ${t.id === active ? "active" : ""}`}
-          onClick={() => onChange(t.id)}
-          type="button"
-        >
-          {t.icon && <span className="tab-icon font-mono">{t.icon}</span>}
-          <span>{t.label}</span>
-        </button>
-      ))}
+    <div className="tabs-bar" role="tablist" aria-label="主功能导航">
+      {tabs.map((t) => {
+        const selected = t.id === active;
+        return (
+          <button
+            key={t.id}
+            id={`tab-${t.id}`}
+            type="button"
+            role="tab"
+            aria-selected={selected}
+            aria-controls={`panel-${t.id}`}
+            tabIndex={selected ? 0 : -1}
+            className={`tab-button ${selected ? "active" : ""}`}
+            onClick={() => onChange(t.id)}
+          >
+            {t.label}
+          </button>
+        );
+      })}
     </div>
   );
 }

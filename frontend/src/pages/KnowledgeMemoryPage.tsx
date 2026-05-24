@@ -8,20 +8,18 @@ import {
   fetchMemoryStats,
   fetchWarningExperiences,
   fetchEnterpriseRiskHistory,
-  fetchApprovals,
-  decideApproval,
   fetchAuditLogs,
   exportMemoryData,
   queryShortTermMemoryPaginated,
   queryLongTermMemoryPaginated,
   migrateToLongTerm,
   deleteShortTermMemory,
-  fetchModuleTrend,
+  deleteLongTermMemory,
+  deleteEnterpriseDataBySource,
 } from "../api/client";
-import type { ModuleTrendPoint } from "../api/client";
 import ReactECharts from "echarts-for-react";
-import "echarts-gl";
-import { ModuleTrendComparisonChart } from "../components/charts";
+import SubTabs from "../components/SubTabs";
+import DecisionApprovalSection from "../components/DecisionApprovalSection";
 
 const PRIO_COLORS: Record<string, string> = { P0: "#ef4444", P1: "#f97316", P2: "#3b82f6", P3: "#10b981" };
 const PRIO_BG: Record<string, string> = { P0: "rgba(239,68,68,0.15)", P1: "rgba(249,115,22,0.15)", P2: "rgba(59,130,246,0.15)", P3: "rgba(16,185,129,0.15)" };
@@ -153,60 +151,60 @@ function ExportDialog({ memoryType, onClose }: { memoryType: string; onClose: ()
   );
 }
 
+const KNOWLEDGE_SECTIONS = [
+  { id: "overview", label: "总览仪表盘" },
+  { id: "data", label: "数据管理" },
+  { id: "risk", label: "风险评估" },
+  { id: "import", label: "导入预测" },
+  { id: "experience", label: "预警经验" },
+  { id: "short", label: "短期记忆" },
+  { id: "long", label: "长期记忆" },
+  { id: "approval", label: "审批管理" },
+  { id: "audit", label: "审计日志" },
+] as const;
+
+type KnowledgeSection = (typeof KNOWLEDGE_SECTIONS)[number]["id"];
+
 export default function KnowledgeMemoryPage() {
-  const [activeSection, setActiveSection] = useState<"overview" | "data" | "risk" | "import" | "short" | "long" | "experience" | "approval" | "audit">("overview");
+  const [activeSection, setActiveSection] = useState<KnowledgeSection>("overview");
 
   return (
     <div>
-      <div className="section-title">
-        <span className="section-title-icon font-mono">▧</span>
-        预警经验管理系统
-      </div>
-      <div className="sub-tab-bar">
-        {[
-          { key: "overview" as const, icon: "◎", label: "总览仪表盘" },
-          { key: "data" as const, icon: "▥", label: "数据管理" },
-          { key: "risk" as const, icon: "◉", label: "风险评估" },
-          { key: "import" as const, icon: "⇩", label: "导入预测" },
-          { key: "experience" as const, icon: "!", label: "预警经验" },
-          { key: "short" as const, icon: "▤", label: "短期记忆" },
-          { key: "long" as const, icon: "▣", label: "长期记忆" },
-          { key: "approval" as const, icon: "☑", label: "审批管理" },
-          { key: "audit" as const, icon: "⌕", label: "审计日志" },
-        ].map((t) => (
-          <button key={t.key} type="button" className={`sub-tab ${activeSection === t.key ? "active" : ""}`} onClick={() => setActiveSection(t.key)}>
-            <span className="sub-tab-icon font-mono">{t.icon}</span>
-            <span>{t.label}</span>
-          </button>
-        ))}
-      </div>
+      <div className="section-title">知识库与预警经验管理</div>
+      <SubTabs
+        tabs={[...KNOWLEDGE_SECTIONS]}
+        active={activeSection}
+        onChange={(id) => setActiveSection(id as KnowledgeSection)}
+        ariaLabel="知识库与记忆子模块"
+      />
       <div className="divider" />
-      {activeSection === "overview" && <OverviewDashboard />}
-      {activeSection === "data" && <DataManagementSection />}
-      {activeSection === "risk" && <RiskVisualizationSection />}
-      {activeSection === "import" && <ExcelImportSection />}
-      {activeSection === "experience" && <WarningExperienceSection />}
-      {activeSection === "short" && <ShortTermMemorySection />}
-      {activeSection === "long" && <LongTermMemorySection />}
-      {activeSection === "approval" && <ApprovalSection />}
-      {activeSection === "audit" && <AuditLogSection />}
+      <div
+        role="tabpanel"
+        id={`subtab-panel-${activeSection}`}
+        aria-labelledby={`subtab-${activeSection}`}
+      >
+        {activeSection === "overview" && <OverviewDashboard />}
+        {activeSection === "data" && <DataManagementSection />}
+        {activeSection === "risk" && <RiskVisualizationSection />}
+        {activeSection === "import" && <ExcelImportSection />}
+        {activeSection === "experience" && <WarningExperienceSection />}
+        {activeSection === "short" && <ShortTermMemorySection />}
+        {activeSection === "long" && <LongTermMemorySection />}
+        {activeSection === "approval" && <ApprovalSection />}
+        {activeSection === "audit" && <AuditLogSection />}
+      </div>
     </div>
   );
 }
 
 function OverviewDashboard() {
   const [memStats, setMemStats] = useState<any>(null);
-  const [moduleTrendData, setModuleTrendData] = useState<ModuleTrendPoint[] | null>(null);
   const [loading, setLoading] = useState(false);
 
   const loadStats = useCallback(async () => {
     setLoading(true);
-    const [stats, moduleResp] = await Promise.all([
-      fetchMemoryStats(),
-      fetchModuleTrend(),
-    ]);
+    const stats = await fetchMemoryStats();
     if (stats) setMemStats(stats);
-    if (moduleResp?.success) setModuleTrendData(moduleResp.data);
     setLoading(false);
   }, []);
 
@@ -217,83 +215,72 @@ function OverviewDashboard() {
   const weTotal = memStats?.warning_experiences?.total ?? 0;
   const grandTotal = shortTotal + longTotal + weTotal;
 
+  const combinedTimelineOption = useMemo(() => {
+    const st = memStats?.short_term?.timeline || {};
+    const lt = memStats?.long_term?.timeline || {};
+    const wt = memStats?.warning_experiences?.timeline || {};
+    const allDays = new Set([...Object.keys(st), ...Object.keys(lt), ...Object.keys(wt)]);
+    const sorted = [...allDays].sort();
+    if (!sorted.length) return { backgroundColor: "transparent" };
+    return {
+      backgroundColor: "transparent",
+      tooltip: { trigger: "axis" as const },
+      legend: { data: ["短期记忆", "长期记忆", "预警经验"], textStyle: { color: "#94a3b8", fontSize: 11 }, top: 0 },
+      grid: { left: 55, right: 20, top: 40, bottom: 30 },
+      xAxis: { type: "category" as const, data: sorted.map((d) => d.slice(5)), axisLabel: { color: "#94a3b8", fontSize: 10 } },
+      yAxis: { type: "value" as const, axisLabel: { color: "#94a3b8" }, splitLine: { lineStyle: { color: "#1e293b" } } },
+      dataZoom: [{ type: "inside", start: 0, end: 100 }, { type: "slider", start: 0, end: 100, height: 20, bottom: 5, borderColor: "#334155", backgroundColor: "#0f172a", dataBackground: { lineStyle: { color: "#334155" }, areaStyle: { color: "#1e293b" } }, selectedDataBackground: { lineStyle: { color: "#3b82f6" }, areaStyle: { color: "rgba(59,130,246,0.2)" } }, textStyle: { color: "#94a3b8" } }],
+      series: [
+        { name: "短期记忆", type: "line", data: sorted.map((d) => st[d] || 0), smooth: true, lineStyle: { color: "#3b82f6", width: 2 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(59,130,246,0.25)" }, { offset: 1, color: "rgba(59,130,246,0.02)" }] } }, itemStyle: { color: "#3b82f6" } },
+        { name: "长期记忆", type: "line", data: sorted.map((d) => lt[d] || 0), smooth: true, lineStyle: { color: "#10b981", width: 2 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(16,185,129,0.25)" }, { offset: 1, color: "rgba(16,185,129,0.02)" }] } }, itemStyle: { color: "#10b981" } },
+        { name: "预警经验", type: "line", data: sorted.map((d) => wt[d] || 0), smooth: true, lineStyle: { color: "#8b5cf6", width: 2 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(139,92,246,0.25)" }, { offset: 1, color: "rgba(139,92,246,0.02)" }] } }, itemStyle: { color: "#8b5cf6" } },
+      ],
+    };
+  }, [memStats]);
+
   const radarOption = useMemo(() => {
     const st = memStats?.short_term || {};
     const lt = memStats?.long_term || {};
     const we = memStats?.warning_experiences || {};
-    const dims = ["总量规模", "分类多样性", "企业覆盖", "P0紧急度", "时间跨度"];
-    const stVals = [st.total || 0, Object.keys(st.by_category || {}).length, Object.keys(st.by_enterprise || {}).length, st.by_priority?.P0 || 0, Object.keys(st.timeline || {}).length];
-    const ltVals = [lt.total || 0, Object.keys(lt.by_category || {}).length, Object.keys(lt.by_enterprise || {}).length, lt.by_priority?.P0 || 0, Object.keys(lt.timeline || {}).length];
-    const weVals = [we.total || 0, Object.keys(we.by_scenario || {}).length, 0, we.by_level?.["红"] || 0, Object.keys(we.timeline || {}).length];
-    const maxVal = Math.max(...stVals, ...ltVals, ...weVals, 1);
-    const normSt = stVals.map((v) => v / maxVal);
-    const normLt = ltVals.map((v) => v / maxVal);
-    const normWe = weVals.map((v) => v / maxVal);
-    const N = 30;
-    const buildSurface = (vals: number[], offset: number) => ({
-      type: "surface" as const,
-      wireframe: { show: false },
-      shading: "realistic" as const,
-      realisticMaterial: { roughness: 0.5, metalness: 0.1 },
-      equation: {
-        x: { min: 0, max: 1, step: 1 / N },
-        y: { min: 0, max: 1, step: 1 / N },
-        z: (x: number, y: number) => {
-          let z = 0;
-          vals.forEach((v, vi) => {
-            const cx = (vi + 0.5) / vals.length;
-            const cy = 0.5;
-            z += v * Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) * 12);
-          });
-          z += offset * 0.15;
-          return Math.max(0, z);
-        },
-      },
-      itemStyle: { opacity: 0.85 },
-    });
-    const buildScatters = (vals: number[], offset: number, color: string, name: string) =>
-      vals.map((v, vi) => ({
-        type: "scatter3D" as const,
-        name: `${name}-${dims[vi]}`,
-        data: [[(vi + 0.5) / vals.length, 0.5, v + offset * 0.15]],
-        symbolSize: 10,
-        itemStyle: { color },
-        label: {
-          show: true,
-          formatter: () => `${dims[vi]}:${(v * maxVal).toFixed(0)}`,
-          color: "#e5e7eb",
-          fontSize: 10,
-          distance: 5,
-        },
-      }));
-    const series: any[] = [
-      buildSurface(normSt, 0),
-      ...buildScatters(normSt, 0, "#3b82f6", "短期记忆"),
-      buildSurface(normLt, 1),
-      ...buildScatters(normLt, 1, "#10b981", "长期记忆"),
-      buildSurface(normWe, 2),
-      ...buildScatters(normWe, 2, "#8b5cf6", "预警经验"),
+    const dimNames = ["总量规模", "分类多样性", "企业覆盖", "P0紧急度", "时间跨度(天)"];
+    const rawBySeries = [
+      { name: "短期记忆", raw: [st.total || 0, Object.keys(st.by_category || {}).length, Object.keys(st.by_enterprise || {}).length, st.by_priority?.P0 || 0, Object.keys(st.timeline || {}).length], lineStyle: { color: "#3b82f6", width: 2 }, areaStyle: { color: "rgba(59,130,246,0.15)" }, itemStyle: { color: "#3b82f6" } },
+      { name: "长期记忆", raw: [lt.total || 0, Object.keys(lt.by_category || {}).length, Object.keys(lt.by_enterprise || {}).length, lt.by_priority?.P0 || 0, Object.keys(lt.timeline || {}).length], lineStyle: { color: "#10b981", width: 2 }, areaStyle: { color: "rgba(16,185,129,0.15)" }, itemStyle: { color: "#10b981" } },
+      { name: "预警经验", raw: [we.total || 0, Object.keys(we.by_scenario || {}).length, 0, we.by_level?.["红"] || 0, Object.keys(we.timeline || {}).length], lineStyle: { color: "#8b5cf6", width: 2 }, areaStyle: { color: "rgba(139,92,246,0.15)" }, itemStyle: { color: "#8b5cf6" } },
     ];
+    const dimMax = dimNames.map((_, i) => Math.max(...rawBySeries.map((s) => s.raw[i]), 1));
     return {
       backgroundColor: "transparent",
-      tooltip: {},
+      tooltip: {
+        trigger: "item" as const,
+        formatter: (params: { name?: string; data?: { rawValues?: number[] } }) => {
+          const raw = params.data?.rawValues;
+          if (!raw) return "";
+          const lines = dimNames.map((d, i) => `${d}: ${raw[i]}`);
+          return `<b>${params.name ?? ""}</b><br/>${lines.join("<br/>")}`;
+        },
+      },
       legend: { data: ["短期记忆", "长期记忆", "预警经验"], bottom: 0, textStyle: { color: "#94a3b8", fontSize: 10 } },
-      visualMap: {
-        show: true, min: 0, max: 1.2, dimension: 2,
-        orient: "horizontal" as const, left: "center", bottom: 30,
-        textStyle: { color: "#9ca3af", fontSize: 10 },
-        inRange: { color: ["#0d1b2a", "#1b4965", "#3b82f6", "#06b6d4", "#10b981", "#eab308", "#f97316", "#ef4444"] },
+      radar: {
+        center: ["50%", "45%"],
+        radius: "60%",
+        indicator: dimNames.map((name) => ({ name, max: 100 })),
+        axisName: { color: "#94a3b8", fontSize: 10 },
+        splitArea: { areaStyle: { color: ["rgba(59,130,246,0.02)", "rgba(59,130,246,0.02)"] } },
+        splitLine: { lineStyle: { color: "#1e293b" } },
+        axisLine: { lineStyle: { color: "#1e293b" } },
       },
-      xAxis3D: { type: "value" as const, name: "", min: 0, max: 1, nameTextStyle: { color: "#94a3b8" }, axisLine: { lineStyle: { color: "#374151" } }, axisLabel: { color: "#6b7280", fontSize: 9 } },
-      yAxis3D: { type: "value" as const, name: "", min: 0, max: 1, nameTextStyle: { color: "#94a3b8" }, axisLine: { lineStyle: { color: "#374151" } }, axisLabel: { color: "#6b7280", fontSize: 9 } },
-      zAxis3D: { type: "value" as const, name: "指标值", min: 0, max: 1.2, nameTextStyle: { color: "#94a3b8" }, axisLine: { lineStyle: { color: "#374151" } }, axisLabel: { color: "#6b7280", fontSize: 9 } },
-      grid3D: {
-        viewControl: { autoRotate: true, autoRotateSpeed: 4, distance: 220, alpha: 25, beta: 40 },
-        light: { main: { intensity: 1.2, shadow: true, shadowQuality: "high" as const, alpha: 30, beta: 40 }, ambient: { intensity: 0.4 } },
-        postEffect: { enable: true, bloom: { enable: true, bloomIntensity: 0.08 }, SSAO: { enable: true, radius: 2, intensity: 1 } },
-        boxWidth: 100, boxHeight: 100, boxDepth: 100,
-      },
-      series,
+      series: [{
+        type: "radar",
+        data: rawBySeries.map((s) => ({
+          name: s.name,
+          value: s.raw.map((v, i) => (v / dimMax[i]) * 100),
+          rawValues: s.raw,
+          lineStyle: s.lineStyle,
+          areaStyle: s.areaStyle,
+          itemStyle: s.itemStyle,
+        })),
+      }],
     };
   }, [memStats]);
 
@@ -369,7 +356,7 @@ function OverviewDashboard() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">OV 记忆系统总览仪表盘</div>
+          <div className="risk-report-title">📊 记忆系统总览仪表盘</div>
           <button className="scada-btn secondary" type="button" onClick={loadStats} disabled={loading}>🔄 刷新</button>
         </div>
       </div>
@@ -378,29 +365,36 @@ function OverviewDashboard() {
         <>
           <div className="row cols-4" style={{ marginBottom: 14 }}>
             <StatCard value={grandTotal} label="记忆总量" color="#f1f5f9" icon="📚" />
-            <StatCard value={shortTotal} label="短期记忆" color="#3b82f6" icon="ST" />
-            <StatCard value={longTotal} label="长期记忆" color="#10b981" icon="LT" />
-            <StatCard value={weTotal} label="预警经验" color="#8b5cf6" icon="EX" />
+            <StatCard value={shortTotal} label="短期记忆" color="#3b82f6" icon="🧠" />
+            <StatCard value={longTotal} label="长期记忆" color="#10b981" icon="💾" />
+            <StatCard value={weTotal} label="预警经验" color="#8b5cf6" icon="⚡" />
           </div>
 
           <div className="row cols-4" style={{ marginBottom: 14 }}>
-            <StatCard value={memStats.pending_approvals ?? 0} label="待审批" color="#f59e0b" icon="📋" />
+            <StatCard
+              value={memStats.pending_approvals ?? 0}
+              label={
+                (memStats.decision_pending_reviews ?? 0) > 0
+                  ? `待审批（决策 ${memStats.decision_pending_reviews}）`
+                  : "待审批"
+              }
+              color="#f59e0b"
+              icon="📋"
+            />
             <StatCard value={memStats.iteration_count ?? 0} label="迭代次数" color="#06b6d4" icon="🔄" />
-            <StatCard value={memStats.audit_log_count ?? 0} label="审计日志" color="#64748b" icon="AU" />
+            <StatCard value={memStats.audit_log_count ?? 0} label="审计日志" color="#64748b" icon="🔍" />
             <StatCard value={memStats.warning_experiences?.financial_total ?? 0} label="财务影响(万元)" color="#ef4444" icon="💰" />
           </div>
 
-          {moduleTrendData && moduleTrendData.length > 0 && (
-            <ModuleTrendComparisonChart
-              data={moduleTrendData}
-              title="📈 三模块时间趋势对比（支持拖拽缩放）"
-            />
-          )}
+          <div className="scada-card" style={{ marginBottom: 14 }}>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 三模块时间趋势对比（支持拖拽缩放）</div>
+            <ReactECharts option={combinedTimelineOption} style={{ height: 350 }} />
+          </div>
 
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 3D多维度记忆曲面</div>
-              <ReactECharts option={radarOption} style={{ height: 400 }} />
+              <div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 多维度雷达对比</div>
+              <ReactECharts option={radarOption} style={{ height: 350 }} />
             </div>
             <div className="scada-card">
               <div className="risk-report-title" style={{ marginBottom: 10 }}>🌐 记忆结构旭日图</div>
@@ -426,7 +420,7 @@ function OverviewDashboard() {
 
           <div className="row cols-3" style={{ marginBottom: 14 }}>
             <div className="scada-card" style={{ padding: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#3b82f6", marginBottom: 10 }}>ST 短期记忆分类</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#3b82f6", marginBottom: 10 }}>🧠 短期记忆分类</div>
               {Object.entries(memStats.short_term?.by_category || {}).sort(([, a], [, b]) => (b as number) - (a as number)).map(([k, v]) => (
                 <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                   <span style={{ fontSize: 12, color: "#cbd5e1" }}>{CAT_LABELS[k] || k}</span>
@@ -435,7 +429,7 @@ function OverviewDashboard() {
               ))}
             </div>
             <div className="scada-card" style={{ padding: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#10b981", marginBottom: 10 }}>LT 长期记忆分类</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#10b981", marginBottom: 10 }}>💾 长期记忆分类</div>
               {Object.entries(memStats.long_term?.by_category || {}).sort(([, a], [, b]) => (b as number) - (a as number)).map(([k, v]) => (
                 <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                   <span style={{ fontSize: 12, color: "#cbd5e1" }}>{CAT_LABELS[k] || k}</span>
@@ -471,7 +465,7 @@ function DataManagementSection() {
 
   const importFromNewData = useCallback(async () => {
     setLoading(true);
-    setStatus("正在扫描并导入 new_data 目录...");
+    setStatus("正在扫描并导入 datasets/raw/public 目录...");
     try {
       const result = await importEnterpriseData("folder");
       if (result?.success) {
@@ -494,6 +488,17 @@ function DataManagementSection() {
 
   useEffect(() => { refreshStats(); }, [refreshStats]);
 
+  const handleDeleteSource = useCallback(async (src: string) => {
+    if (!window.confirm(`确定要删除数据源「${src}」及其全部企业数据记忆吗？此操作不可恢复。`)) return;
+    const result = await deleteEnterpriseDataBySource(src);
+    if (!result?.success) {
+      setStatus(`❌ 删除失败: ${src}`);
+      return;
+    }
+    setStatus(`✅ 已删除 ${result.deleted_count ?? 0} 条记忆条目（数据源: ${src}）`);
+    refreshStats();
+  }, [refreshStats]);
+
   return (
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
@@ -509,7 +514,7 @@ function DataManagementSection() {
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
           <button className="scada-btn" type="button" onClick={importFromNewData} disabled={loading}>
-            {loading ? "导入中..." : "📁 从 new_data/ 导入Excel数据"}
+            {loading ? "导入中..." : "📁 从 datasets/raw/public 导入Excel数据"}
           </button>
           <button className="scada-btn secondary" type="button" onClick={refreshStats}>🔄 刷新统计</button>
         </div>
@@ -537,7 +542,18 @@ function DataManagementSection() {
           <div className="risk-report-title" style={{ marginBottom: 10 }}>📁 已导入数据源</div>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {stats.sources.map((src: string, i: number) => (
-              <span key={i} className="tag tag-cyan" style={{ fontSize: 11 }}>{src}</span>
+              <span key={i} className="tag tag-cyan" style={{ fontSize: 11, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                {src}
+                <button
+                  className="scada-btn secondary"
+                  style={{ fontSize: 9, padding: "1px 5px", color: "#ef4444" }}
+                  type="button"
+                  title={`删除数据源 ${src}`}
+                  onClick={() => handleDeleteSource(src)}
+                >
+                  🗑️
+                </button>
+              </span>
             ))}
           </div>
         </div>
@@ -656,6 +672,9 @@ function RiskVisualizationSection() {
             {loading ? "评估中..." : "🚀 执行批量风险评估"}
           </button>
         </div>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#94a3b8" }}>
+          这里用于记忆库演示级批量评分；需要逐家运行完整 Agent 决策并输出 JSON 时，请使用「企业风险预测」页的批量完整决策。
+        </div>
         {message && <div className={`alert ${message.includes("✅") ? "success" : message.includes("❌") ? "error" : "info"}`} style={{ marginTop: 10 }}>{message}</div>}
       </div>
 
@@ -687,13 +706,13 @@ function RiskVisualizationSection() {
           )}
 
           <div className="scada-card">
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 详细评估结果（按名称长度降序）</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 详细评估结果</div>
             <table className="scada-table">
               <thead>
                 <tr><th>企业ID</th><th>企业名称</th><th>场景</th><th>风险评分</th><th>风险等级</th><th>评估时间</th><th>预警经验</th><th>历史</th></tr>
               </thead>
               <tbody>
-                {[...results].sort((a, b) => b.enterprise_name.length - a.enterprise_name.length).map((r) => (
+                {results.map((r) => (
                   <tr key={r.enterprise_id} className={r.risk_level === "红" ? "risk-score-table-row-red" : r.risk_level === "橙" ? "risk-score-table-row-orange" : r.risk_level === "黄" ? "risk-score-table-row-yellow" : ""}>
                     <td className="font-mono" style={{ fontSize: 11 }}>{r.enterprise_id}</td>
                     <td style={{ fontWeight: 600 }}>{r.enterprise_name}</td>
@@ -730,15 +749,7 @@ function ExcelImportSection() {
       const result = await assessEnterpriseFile(file);
       if (result?.success && result.results) {
         setResults(result.results);
-        const analyzedRows = result.analyzed_rows ?? result.results.length;
-        const experienceCount = result.experience_count ?? result.results.length;
-        if (analyzedRows > 0) {
-          const totalHint = result.total_rows === analyzedRows ? "" : `（源文件 ${result.total_rows} 行）`;
-          setStatus(`✅ 完成 ${analyzedRows} 条数据预测分析${totalHint}，生成 ${experienceCount} 条预警经验`);
-        } else {
-          const columnsHint = result.detected_columns?.length ? `当前识别列：${result.detected_columns.slice(0, 8).join("、")}` : "未识别到明确表头";
-          setStatus(`⚠️ 已读取 ${result.total_rows} 行，但未识别到可评估企业记录。${columnsHint}`);
-        }
+        setStatus(`✅ 完成 ${result.total_rows} 条数据预测分析，预警经验已自动生成`);
       } else {
         setStatus(`❌ 预测分析失败: ${result?.message || "未知错误"}`);
       }
@@ -795,109 +806,11 @@ function ExcelImportSection() {
     };
   }, [levelDistribution]);
 
-  const rankedResults = useMemo(() => [...results].sort((a, b) => b.risk_score - a.risk_score), [results]);
-
-  const riskStats = useMemo(() => {
-    const total = results.length;
-    const avgScore = total ? results.reduce((sum, r) => sum + r.risk_score, 0) / total : 0;
-    const highRiskCount = (levelDistribution["红"] || 0) + (levelDistribution["橙"] || 0);
-    const warningCount = highRiskCount + (levelDistribution["黄"] || 0);
-    return {
-      total,
-      avgScore,
-      highRiskCount,
-      warningRate: total ? warningCount / total : 0,
-      maxScore: rankedResults[0]?.risk_score ?? 0,
-      maxEnterprise: rankedResults[0]?.enterprise_name ?? "-",
-    };
-  }, [levelDistribution, rankedResults, results]);
-
-  const scoreBandOption = useMemo(() => {
-    const bands = [
-      { label: "0-0.2", min: 0, max: 0.2, color: "#38bdf8" },
-      { label: "0.2-0.4", min: 0.2, max: 0.4, color: "#3b82f6" },
-      { label: "0.4-0.6", min: 0.4, max: 0.6, color: "#eab308" },
-      { label: "0.6-0.8", min: 0.6, max: 0.8, color: "#f97316" },
-      { label: "0.8-1.0", min: 0.8, max: 1.01, color: "#ef4444" },
-    ];
-    const data = bands.map((band) => ({
-      value: results.filter((r) => r.risk_score >= band.min && r.risk_score < band.max).length,
-      itemStyle: { color: band.color },
-    }));
-    return {
-      backgroundColor: "transparent",
-      tooltip: { trigger: "axis" as const },
-      grid: { left: 42, right: 20, top: 25, bottom: 35 },
-      xAxis: { type: "category" as const, data: bands.map((b) => b.label), axisLabel: { color: "#94a3b8" } },
-      yAxis: { type: "value" as const, minInterval: 1, axisLabel: { color: "#94a3b8" }, splitLine: { lineStyle: { color: "#1e293b" } } },
-      series: [{ type: "bar" as const, data, barWidth: 24 }],
-    };
-  }, [results]);
-
-  const topRiskOption = useMemo(() => {
-    const chartRows = rankedResults.slice(0, 10).reverse();
-    return {
-      backgroundColor: "transparent",
-      tooltip: { trigger: "axis" as const },
-      grid: { left: 120, right: 30, top: 20, bottom: 30 },
-      xAxis: { type: "value" as const, min: 0, max: 1, axisLabel: { color: "#94a3b8" }, splitLine: { lineStyle: { color: "#1e293b" } } },
-      yAxis: { type: "category" as const, data: chartRows.map((r) => r.enterprise_name.slice(0, 12)), axisLabel: { color: "#94a3b8", fontSize: 10 } },
-      series: [{
-        type: "bar" as const,
-        data: chartRows.map((r) => ({ value: r.risk_score, itemStyle: { color: LEVEL_COLORS[r.risk_level] || "#3b82f6" } })),
-        label: { show: true, position: "right" as const, color: "#cbd5e1", formatter: "{c}" },
-      }],
-    };
-  }, [rankedResults]);
-
-  const factorAverages = useMemo(() => {
-    const acc: Record<string, { sum: number; count: number }> = {};
-    results.forEach((r) => {
-      r.key_factors.forEach((factor) => {
-        if (!acc[factor.name]) acc[factor.name] = { sum: 0, count: 0 };
-        acc[factor.name].sum += factor.value;
-        acc[factor.name].count += 1;
-      });
-    });
-    return Object.entries(acc).map(([name, stat]) => ({ name, value: stat.count ? stat.sum / stat.count : 0 }));
-  }, [results]);
-
-  const factorRadarOption = useMemo(() => ({
-    backgroundColor: "transparent",
-    tooltip: { trigger: "item" as const },
-    radar: {
-      indicator: factorAverages.map((f) => ({ name: f.name, max: 1 })),
-      axisName: { color: "#cbd5e1", fontSize: 11 },
-      splitLine: { lineStyle: { color: "#334155" } },
-      splitArea: { areaStyle: { color: ["rgba(15,23,42,0.3)", "rgba(30,41,59,0.2)"] } },
-      axisLine: { lineStyle: { color: "#334155" } },
-    },
-    series: [{
-      type: "radar" as const,
-      data: [{ value: factorAverages.map((f) => Number(f.value.toFixed(3))), name: "平均指标" }],
-      areaStyle: { color: "rgba(59,130,246,0.18)" },
-      lineStyle: { color: "#38bdf8", width: 2 },
-      itemStyle: { color: "#38bdf8" },
-    }],
-  }), [factorAverages]);
-
-  const scenarioDistribution = useMemo(() => {
-    const labels: Record<string, string> = { chemical: "危化品", metallurgy: "冶金", dust: "粉尘" };
-    const dist: Record<string, number> = {};
-    results.forEach((r) => {
-      const label = labels[r.scenario] || r.scenario || "未分类";
-      dist[label] = (dist[label] || 0) + 1;
-    });
-    return Object.entries(dist).sort((a, b) => b[1] - a[1]);
-  }, [results]);
-
-  const priorityRows = useMemo(() => rankedResults.slice(0, 10), [rankedResults]);
-
   return (
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📥 Excel文件导入与预测分析</div>
+          <div className="risk-report-title">📥 Excel/CSV 文件导入与预测分析</div>
         </div>
         <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
           <label className="scada-btn" style={{ cursor: "pointer" }}>
@@ -908,110 +821,37 @@ function ExcelImportSection() {
             💾 导入到长期记忆库
             <input ref={memoryFileRef} type="file" accept=".xlsx,.xls,.csv" style={{ display: "none" }} onChange={handleImportToMemory} disabled={loading} />
           </label>
-          <button className="scada-btn secondary" type="button" onClick={() => handleExport("long", "xlsx")}>📤 导出长期记忆</button>
-          <button className="scada-btn secondary" type="button" onClick={() => handleExport("short", "csv")}>📤 导出短期记忆</button>
+          <button className="scada-btn secondary" type="button" onClick={() => handleExport("long", "xlsx")}>📤 导出长期记忆（XLSX）</button>
+          <button className="scada-btn secondary" type="button" onClick={() => handleExport("short", "csv")}>📤 导出短期记忆（CSV）</button>
         </div>
-        {status && <div className={`alert ${status.includes("✅") ? "success" : status.includes("❌") ? "error" : status.includes("⚠️") ? "warning" : "info"}`} style={{ marginTop: 10 }}>{status}</div>}
+        {status && <div className={`alert ${status.includes("✅") ? "success" : status.includes("❌") ? "error" : "info"}`} style={{ marginTop: 10 }}>{status}</div>}
       </div>
-
-      {!loading && status.includes("⚠️") && results.length === 0 && (
-        <div className="scada-card">
-          <div className="empty-state">
-            <div className="empty-state-icon">📭</div>
-            <div>本次导入没有生成风险评估结果，因此不会渲染图表。</div>
-          </div>
-        </div>
-      )}
 
       {results.length > 0 && (
         <>
-          <div className="row cols-4" style={{ marginBottom: 14 }}>
-            {[
-              { label: "有效企业", value: riskStats.total.toLocaleString(), color: "#38bdf8" },
-              { label: "红橙风险", value: riskStats.highRiskCount.toLocaleString(), color: "#f97316" },
-              { label: "平均评分", value: riskStats.avgScore.toFixed(3), color: "#eab308" },
-              { label: "需关注占比", value: `${Math.round(riskStats.warningRate * 100)}%`, color: "#8b5cf6" },
-            ].map((item) => (
-              <div key={item.label} className="scada-card" style={{ textAlign: "center", padding: 16 }}>
-                <div style={{ fontSize: 26, fontWeight: 800, color: item.color, fontFamily: "JetBrains Mono" }}>{item.value}</div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>{item.label}</div>
-              </div>
-            ))}
-          </div>
-
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
               <div className="risk-report-title" style={{ marginBottom: 10 }}>📊 风险等级分布</div>
               <ReactECharts option={pieOption} style={{ height: 250 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 风险评分区间</div>
-              <ReactECharts option={scoreBandOption} style={{ height: 250 }} />
-            </div>
-          </div>
-
-          <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>🏭 Top 10 风险企业</div>
-              <ReactECharts option={topRiskOption} style={{ height: 320 }} />
-            </div>
-            <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>🧭 关键风险因子均值</div>
-              <ReactECharts option={factorRadarOption} style={{ height: 320 }} />
-            </div>
-          </div>
-
-          <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>🚨 重点关注处置清单</div>
-              <table className="scada-table">
-                <thead><tr><th>企业名称</th><th>评分</th><th>等级</th><th>建议动作</th></tr></thead>
-                <tbody>
-                  {priorityRows.map((r) => (
-                    <tr key={`${r.enterprise_id}-${r.enterprise_name}`} className={r.risk_level === "红" ? "risk-score-table-row-red" : r.risk_level === "橙" ? "risk-score-table-row-orange" : r.risk_level === "黄" ? "risk-score-table-row-yellow" : ""}>
-                      <td style={{ fontWeight: 600 }}>{r.enterprise_name}</td>
-                      <td className="font-mono" style={{ color: LEVEL_COLORS[r.risk_level], fontWeight: 700 }}>{r.risk_score.toFixed(4)}</td>
-                      <td><span className="tag" style={{ background: LEVEL_BG[r.risk_level], color: LEVEL_COLORS[r.risk_level], fontWeight: 700 }}>{r.risk_level}级</span></td>
-                      <td style={{ color: "#cbd5e1" }}>{r.risk_level === "红" ? "立即核查" : r.risk_level === "橙" ? "限期整改" : r.risk_level === "黄" ? "持续监测" : "常规巡检"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 场景与等级汇总</div>
-              <table className="scada-table">
-                <thead><tr><th>维度</th><th>数量</th><th>占比</th></tr></thead>
-                <tbody>
-                  {scenarioDistribution.map(([name, count]) => (
-                    <tr key={name}>
-                      <td>{name}</td>
-                      <td className="font-mono" style={{ color: "#38bdf8", fontWeight: 700 }}>{count}</td>
-                      <td className="font-mono">{Math.round((count / results.length) * 100)}%</td>
-                    </tr>
-                  ))}
-                  {Object.entries(levelDistribution).filter(([, count]) => count > 0).map(([name, count]) => (
-                    <tr key={name}>
-                      <td>{name}级预警</td>
-                      <td className="font-mono" style={{ color: LEVEL_COLORS[name], fontWeight: 700 }}>{count}</td>
-                      <td className="font-mono">{Math.round((count / results.length) * 100)}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div style={{ marginTop: 12, color: "#94a3b8", fontSize: 12 }}>
-                最高风险企业：<b style={{ color: "#f1f5f9" }}>{riskStats.maxEnterprise}</b>，评分 <b style={{ color: "#ef4444" }}>{riskStats.maxScore.toFixed(4)}</b>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 预测结果摘要</div>
+              <div style={{ fontSize: 13, lineHeight: 2 }}>
+                <div>总企业数: <b style={{ color: "#f1f5f9" }}>{results.length}</b></div>
+                <div style={{ color: "#ef4444" }}>红色预警: <b>{levelDistribution["红"]}</b> 家</div>
+                <div style={{ color: "#f97316" }}>橙色预警: <b>{levelDistribution["橙"]}</b> 家</div>
+                <div style={{ color: "#eab308" }}>黄色预警: <b>{levelDistribution["黄"]}</b> 家</div>
+                <div style={{ color: "#3b82f6" }}>蓝色预警: <b>{levelDistribution["蓝"]}</b> 家</div>
               </div>
             </div>
           </div>
-
           <div className="scada-card">
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 详细预测结果（按风险评分排序）</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 详细预测结果</div>
             <table className="scada-table">
               <thead><tr><th>企业名称</th><th>风险评分</th><th>风险等级</th><th>场景</th><th>关键指标</th></tr></thead>
               <tbody>
-                {rankedResults.map((r, i) => (
-                  <tr key={`${r.enterprise_id}-${i}`} className={r.risk_level === "红" ? "risk-score-table-row-red" : r.risk_level === "橙" ? "risk-score-table-row-orange" : r.risk_level === "黄" ? "risk-score-table-row-yellow" : ""}>
+                {results.map((r, i) => (
+                  <tr key={i} className={r.risk_level === "红" ? "risk-score-table-row-red" : r.risk_level === "橙" ? "risk-score-table-row-orange" : ""}>
                     <td style={{ fontWeight: 600 }}>{r.enterprise_name}</td>
                     <td className="font-mono" style={{ fontWeight: 700, color: LEVEL_COLORS[r.risk_level] }}>{r.risk_score.toFixed(4)}</td>
                     <td><span className="tag" style={{ background: LEVEL_BG[r.risk_level], color: LEVEL_COLORS[r.risk_level], fontWeight: 700 }}>{r.risk_level}级</span></td>
@@ -1068,47 +908,8 @@ function WarningExperienceSection() {
   const weStatsTimelineOption = useMemo(() => {
     const tl = memStats?.warning_experiences?.timeline || {};
     const entries = Object.entries(tl).sort(([a], [b]) => a.localeCompare(b));
-    const hasRealData = entries.length > 0;
-    const dates = hasRealData ? entries.map(([d]) => d.slice(5)) : [];
-    const values = hasRealData ? entries.map(([, v]) => v) : [];
-    if (!hasRealData) {
-      const demoDates: string[] = [], demoReds: number[] = [], demoOranges: number[] = [], demoYellows: number[] = [], demoBlues: number[] = [];
-      for (let i = 29; i >= 0; i--) {
-        const d = new Date(); d.setDate(d.getDate() - i);
-        const ds = `${(d.getMonth() + 1).toString().padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`;
-        demoDates.push(ds);
-        const base = 3 + Math.sin(i / 4.5) * 3;
-        demoReds.push(Math.max(0, Math.round(base * (0.15 + Math.random() * 0.25))));
-        demoOranges.push(Math.max(0, Math.round(base * (0.25 + Math.random() * 0.35))));
-        demoYellows.push(Math.max(0, Math.round(base * (0.30 + Math.random() * 0.40))));
-        demoBlues.push(Math.max(0, Math.round(base * (0.20 + Math.random() * 0.50))));
-      }
-      return {
-        backgroundColor: "transparent", title: { text: "近30日预警生成趋势", left: 12, top: 6, textStyle: { color: "#94a3b8", fontSize: 11, fontWeight: 500 } },
-        legend: { bottom: 2, data: ["红色预警", "橙色预警", "黄色预警", "蓝色预警"], textStyle: { color: "#94a3b8", fontSize: 9 }, itemWidth: 14, itemHeight: 8, itemGap: 10 },
-        tooltip: { trigger: "axis" as const, axisPointer: { type: "cross" as const } },
-        grid: { left: 55, right: 18, top: 36, bottom: 38 },
-        xAxis: { type: "category" as const, data: demoDates, axisLabel: { color: "#64748b", fontSize: 9, interval: 4 }, axisLine: { lineStyle: { color: "#334155" } }, axisTick: { show: false } },
-        yAxis: { type: "value" as const, name: "预警数量", nameTextStyle: { color: "#64748b", fontSize: 10 }, axisLabel: { color: "#64748b", fontSize: 9 }, splitLine: { lineStyle: { color: "#1e293b" } } },
-        dataZoom: [{ type: "inside", start: 0, end: 100 }, { type: "slider", start: 0, end: 100, height: 16, bottom: 4, borderColor: "#334155", backgroundColor: "#0f172a", dataBackground: { lineStyle: { color: "#334155" }, areaStyle: { color: "#1e293b" } }, selectedDataBackground: { lineStyle: { color: "#8b5cf6" }, areaStyle: { color: "rgba(139,92,246,0.15)" } }, textStyle: { color: "#64748b", fontSize: 8 } }],
-        series: [
-          { name: "红色预警", type: "line" as const, data: demoReds, smooth: true, lineStyle: { color: "#ef4444", width: 2.5 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(239,68,68,0.25)" }, { offset: 1, color: "rgba(239,68,68,0.02)" }] } }, symbol: "circle", symbolSize: 5, itemStyle: { color: "#ef4444" } },
-          { name: "橙色预警", type: "line" as const, data: demoOranges, smooth: true, lineStyle: { color: "#f97316", width: 2.5 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(249,115,22,0.22)" }, { offset: 1, color: "rgba(249,115,22,0.02)" }] } }, symbol: "circle", symbolSize: 5, itemStyle: { color: "#f97316" } },
-          { name: "黄色预警", type: "line" as const, data: demoYellows, smooth: true, lineStyle: { color: "#eab308", width: 2.5 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(234,179,8,0.20)" }, { offset: 1, color: "rgba(234,179,8,0.02)" }] } }, symbol: "circle", symbolSize: 5, itemStyle: { color: "#eab308" } },
-          { name: "蓝色预警", type: "line" as const, data: demoBlues, smooth: true, lineStyle: { color: "#3b82f6", width: 2.5 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(59,130,246,0.18)" }, { offset: 1, color: "rgba(59,130,246,0.02)" }] } }, symbol: "circle", symbolSize: 5, itemStyle: { color: "#3b82f6" } },
-        ],
-      };
-    }
-    return {
-      backgroundColor: "transparent",
-      title: { text: "预警生成时间趋势", left: 12, top: 6, textStyle: { color: "#94a3b8", fontSize: 11, fontWeight: 500 } },
-      tooltip: { trigger: "axis" as const, axisPointer: { type: "cross" as const } },
-      grid: { left: 55, right: 18, top: 36, bottom: 45 },
-      xAxis: { type: "category" as const, data: dates, axisLabel: { color: "#64748b", fontSize: 9, interval: Math.ceil(dates.length / 12) }, axisLine: { lineStyle: { color: "#334155" } }, axisTick: { show: false } },
-      yAxis: { type: "value" as const, name: "预警数量", nameTextStyle: { color: "#64748b", fontSize: 10 }, axisLabel: { color: "#64748b", fontSize: 9 }, splitLine: { lineStyle: { color: "#1e293b" } } },
-      dataZoom: [{ type: "inside", start: 0, end: 100 }, { type: "slider", start: 0, end: 100, height: 16, bottom: 4, borderColor: "#334155", backgroundColor: "#0f172a", dataBackground: { lineStyle: { color: "#334155" }, areaStyle: { color: "#1e293b" } }, selectedDataBackground: { lineStyle: { color: "#8b5cf6" }, areaStyle: { color: "rgba(139,92,246,0.15)" } }, textStyle: { color: "#64748b", fontSize: 8 } }],
-      series: [{ type: "line" as const, data: values, smooth: true, lineStyle: { color: "#8b5cf6", width: 3 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(139,92,246,0.28)" }, { offset: 1, color: "rgba(139,92,246,0.04)" }] } }, itemStyle: { color: "#8b5cf6" }, symbol: "circle", symbolSize: 5 }],
-    };
+    if (!entries.length) return { backgroundColor: "transparent" };
+    return { backgroundColor: "transparent", tooltip: { trigger: "axis" as const }, grid: { left: 50, right: 20, top: 20, bottom: 50 }, xAxis: { type: "category" as const, data: entries.map(([d]) => d.slice(5)), axisLabel: { color: "#94a3b8", fontSize: 10 } }, yAxis: { type: "value" as const, axisLabel: { color: "#94a3b8" }, splitLine: { lineStyle: { color: "#1e293b" } } }, dataZoom: [{ type: "inside", start: 0, end: 100 }, { type: "slider", start: 0, end: 100, height: 20, bottom: 5, borderColor: "#334155", backgroundColor: "#0f172a", dataBackground: { lineStyle: { color: "#334155" }, areaStyle: { color: "#1e293b" } }, selectedDataBackground: { lineStyle: { color: "#8b5cf6" }, areaStyle: { color: "rgba(139,92,246,0.2)" } }, textStyle: { color: "#94a3b8" } }], series: [{ type: "line" as const, data: entries.map(([, v]) => v), smooth: true, lineStyle: { color: "#8b5cf6", width: 3 }, areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(139,92,246,0.3)" }, { offset: 1, color: "rgba(139,92,246,0.05)" }] } }, itemStyle: { color: "#8b5cf6" } }] };
   }, [memStats]);
 
   const scenarioBarOption = useMemo(() => {
@@ -1200,7 +1001,7 @@ function WarningExperienceSection() {
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📊 风险等级分布</div><ReactECharts option={pieOption} style={{ height: 280 }} /></div>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📈 预警生成趋势</div><ReactECharts option={weStatsTimelineOption} style={{ height: 320 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📈 预警生成趋势</div><ReactECharts option={weStatsTimelineOption} style={{ height: 280 }} /></div>
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>💰 财务影响仪表盘</div><ReactECharts option={financialGaugeOption} style={{ height: 220 }} /></div>
@@ -1348,7 +1149,15 @@ function ShortTermMemorySection() {
   useEffect(() => { loadData(); }, [loadData]);
 
   const handleMigrate = useCallback(async (ids: string[]) => { await migrateToLongTerm(ids); loadData(); }, [loadData]);
-  const handleDelete = useCallback(async (id: string) => { await deleteShortTermMemory(id); loadData(); }, [loadData]);
+  const handleDelete = useCallback(async (id: string) => {
+    if (!window.confirm("确定要删除该条短期记忆吗？此操作不可恢复。")) return;
+    const ok = await deleteShortTermMemory(id);
+    if (!ok) {
+      window.alert("删除失败，请稍后重试");
+      return;
+    }
+    loadData();
+  }, [loadData]);
 
   const catPieOption = useMemo(() => {
     const byCat = memStats?.short_term?.by_category || {};
@@ -1374,47 +1183,18 @@ function ShortTermMemorySection() {
     const byEnt = memStats?.short_term?.by_enterprise || {};
     const top = Object.entries(byEnt).sort(([, a], [, b]) => (b as number) - (a as number)).slice(0, 8);
     if (!top.length) return { backgroundColor: "transparent" };
-    return { backgroundColor: "transparent", tooltip: { trigger: "axis" as const }, grid: { left: 100, right: 20, top: 20, bottom: 30 }, xAxis: { type: "value" as const, axisLabel: { color: "#94a3b8" }, splitLine: { lineStyle: { color: "#1e293b" } } }, yAxis: { type: "category" as const, data: top.map(([k]) => k.length > 12 ? k.slice(0, 12) + "…" : k), axisLabel: { color: "#94a3b8", fontSize: 10 } }, series: [{ type: "bar" as const, data: top.map(([, v]) => ({ value: v as number, itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#06b6d4" }, { offset: 1, color: "#22d3ee" }] }, borderRadius: [0, 6, 6, 0] } })), barWidth: "50%" }] };
+    return { backgroundColor: "transparent", tooltip: { trigger: "axis" as const }, grid: { left: 80, right: 20, top: 20, bottom: 30 }, xAxis: { type: "value" as const, axisLabel: { color: "#94a3b8" }, splitLine: { lineStyle: { color: "#1e293b" } } }, yAxis: { type: "category" as const, data: top.map(([k]) => k.slice(0, 10)), axisLabel: { color: "#94a3b8", fontSize: 10 } }, series: [{ type: "bar" as const, data: top.map(([, v]) => ({ value: v as number, itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#06b6d4" }, { offset: 1, color: "#22d3ee" }] }, borderRadius: [0, 6, 6, 0] } })), barWidth: "50%" }] };
   }, [memStats]);
 
   const heatmapOption = useMemo(() => {
     const byCat = memStats?.short_term?.by_category || {};
     const byPrio = memStats?.short_term?.by_priority || {};
     const cats = Object.keys(byCat);
-    const prios = ["P0", "P1", "P2", "P3"];
-    if (!cats.length) {
-      const riskVars = ["风险评分", "可燃气体", "通风状态", "消防完好", "安全评分", "隐患数量", "整改率", "培训覆盖"];
-      const corrMatrix: number[][] = [];
-      for (let i = 0; i < riskVars.length; i++) {
-        const row: number[] = [];
-        for (let j = 0; j < riskVars.length; j++) {
-          if (i === j) { row.push(1.0); continue; }
-          const baseCorr = Math.abs(Math.sin((i - j) * 0.8)) * 0.85;
-          const noise = (Math.random() - 0.5) * 0.12;
-          const sign = ((i + j) % 3 === 0 && i < j) ? -1 : 1;
-          row.push(Number(Math.max(-0.95, Math.min(0.95, sign * baseCorr + noise)).toFixed(2)));
-        }
-        corrMatrix.push(row);
-      }
-      const heatData: number[][] = [];
-      corrMatrix.forEach((row, i) => row.forEach((val, j) => { heatData.push([j, i, val]); }));
-      return {
-        backgroundColor: "transparent",
-        title: { text: "风险指标相关性矩阵（模拟数据）", left: 14, top: 4, textStyle: { color: "#94a3b8", fontSize: 10, fontWeight: 500 } },
-        tooltip: { formatter: (p: any) => `${riskVars[p.data[1]]} ↔ ${riskVars[p.data[0]]}<br/>相关系数: <strong>${p.data[2]}</strong>` },
-        grid: { left: 100, right: 55, top: 28, bottom: 50 },
-        xAxis: { type: "category" as const, data: riskVars, axisLabel: { color: "#94a3b8", fontSize: 9, rotate: 35 }, axisLine: { lineStyle: { color: "#334155" } }, axisTick: { show: false } },
-        yAxis: { type: "category" as const, data: riskVars, axisLabel: { color: "#94a3b8", fontSize: 9 }, axisLine: { lineStyle: { color: "#334155" } }, axisTick: { show: false } },
-        visualMap: { min: -1, max: 1, show: true, orient: "vertical" as const, right: 4, top: "center", calculable: true,
-          textStyle: { color: "#64748b", fontSize: 9 }, itemWidth: 10, itemHeight: 80, itemGap: 3,
-          inRange: { color: ["#ef4444", "#f97316", "#f59e0b", "#eab308", "#d1d5db", "#10b981", "#06b6d4", "#3b82f6"] },
-          text: ["正强相关", "负强相关"], textGap: 5 },
-        series: [{ type: "heatmap" as const, data: heatData, label: { show: true, color: "#fff", fontSize: 9, fontWeight: 600, formatter: (p: any) => p.data[2] || "" }, itemStyle: { borderColor: "#0f172a", borderWidth: 2, borderRadius: 2 }, emphasis: { itemStyle: { shadowBlur: 8, shadowColor: "rgba(0,0,0,0.5)" } } }],
-      };
-    }
+    const prios = ["P0", "P1", "P2", "P3"].filter((p) => byPrio[p]);
+    if (!cats.length || !prios.length) return { backgroundColor: "transparent" };
     const data: number[][] = [];
     cats.forEach((cat, ci) => { prios.forEach((prio, pi) => { const count = items.filter((i) => i.category === cat && i.priority === prio).length; data.push([pi, ci, count]); }); });
-    return { backgroundColor: "transparent", title: { text: "分类×优先级关联热力图", left: 14, top: 4, textStyle: { color: "#94a3b8", fontSize: 10, fontWeight: 500 } }, tooltip: { formatter: (p: any) => `${CAT_LABELS[cats[p.data[1]]] || cats[p.data[1]]} × ${prios[p.data[0]]}: ${p.data[2]}条` }, grid: { left: 90, right: 50, top: 28, bottom: 40 }, xAxis: { type: "category" as const, data: prios, axisLabel: { color: "#94a3b8", fontSize: 11 } }, yAxis: { type: "category" as const, data: cats.map((c) => CAT_LABELS[c] || c), axisLabel: { color: "#94a3b8", fontSize: 10 } }, visualMap: { min: 0, max: Math.max(...data.map((d) => d[2]), 1), show: true, orient: "vertical" as const, right: 0, top: "center", textStyle: { color: "#94a3b8", fontSize: 10 }, inRange: { color: ["#0f172a", "#1e3a5f", "#3b82f6", "#06b6d4", "#10b981"] } }, series: [{ type: "heatmap" as const, data, label: { show: true, color: "#e5e7eb", fontSize: 11, fontWeight: 600, formatter: (p: any) => p.data[2] || "" }, itemStyle: { borderColor: "#0f172a", borderWidth: 3, borderRadius: 4 } }] };
+    return { backgroundColor: "transparent", tooltip: { formatter: (p: any) => `${CAT_LABELS[cats[p.data[1]]] || cats[p.data[1]]} × ${prios[p.data[0]]}: ${p.data[2]}条` }, grid: { left: 90, right: 40, top: 10, bottom: 40 }, xAxis: { type: "category" as const, data: prios, axisLabel: { color: "#94a3b8", fontSize: 11 } }, yAxis: { type: "category" as const, data: cats.map((c) => CAT_LABELS[c] || c), axisLabel: { color: "#94a3b8", fontSize: 10 } }, visualMap: { min: 0, max: Math.max(...data.map((d) => d[2]), 1), show: true, orient: "vertical" as const, right: 0, top: "center", textStyle: { color: "#94a3b8", fontSize: 10 }, inRange: { color: ["#1e293b", "#3b82f6", "#06b6d4"] } }, series: [{ type: "heatmap" as const, data, label: { show: true, color: "#fff", fontSize: 10, formatter: (p: any) => p.data[2] || "" }, itemStyle: { borderColor: "#0f172a", borderWidth: 2 } }] };
   }, [memStats, items]);
 
   const importanceGaugeOption = useMemo(() => {
@@ -1441,47 +1221,25 @@ function ShortTermMemorySection() {
 
   const associationScatterOption = useMemo(() => {
     const byCat = memStats?.short_term?.by_category || {};
+    const byPrio = memStats?.short_term?.by_priority || {};
     const cats = Object.keys(byCat);
-    if (!cats.length) {
-      const varLabels = ["风险评分", "预警频率", "隐患数量", "整改率", "安全投入"];
-      const demoData: number[][] = [];
-      for (let i = 0; i < 45; i++) {
-        const riskScore = 0.2 + Math.random() * 0.75;
-        const warningFreq = Math.round(riskScore * (12 + Math.random() * 18) + (Math.random() - 0.4) * 6);
-        const hiddenDanger = Math.round(riskScore * (3 + Math.random() * 7) + (Math.random() - 0.5) * 3);
-        demoData.push([Number(riskScore.toFixed(3)), warningFreq, hiddenDanger]);
-      }
-      return {
-        backgroundColor: "transparent",
-        title: { text: "风险评分 vs 预警频率（模拟数据）", left: 12, top: 4, textStyle: { color: "#94a3b8", fontSize: 10 } },
-        tooltip: { formatter: (p: any) => `风险评分: ${p.data[0]}<br/>预警次数: ${p.data[1]}次<br/>隐患数: ${p.data[2]}项` },
-        legend: { bottom: 2, data: ["企业数据点"], textStyle: { color: "#94a3b8", fontSize: 9 } },
-        grid: { left: 62, right: 22, top: 32, bottom: 36 },
-        xAxis: { type: "value" as const, name: "风险评分(0-1)", nameLocation: "center" as const, nameGap: 28, nameTextStyle: { color: "#64748b", fontSize: 10 }, min: 0, max: 1, axisLabel: { color: "#64748b", fontSize: 9 }, splitLine: { lineStyle: { color: "#1e293b" } }, axisLine: { lineStyle: { color: "#334155" } } },
-        yAxis: { type: "value" as const, name: "年度预警次数", nameLocation: "center" as const, nameGap: 36, nameTextStyle: { color: "#64748b", fontSize: 10 }, axisLabel: { color: "#64748b", fontSize: 9 }, splitLine: { lineStyle: { color: "#1e293b" } }, axisLine: { lineStyle: { color: "#334155" } } },
-        visualMap: { show: true, dimension: 2, right: 4, top: 24, min: 0, max: 10, calculable: true, inRange: { color: ["#3b82f6", "#06b6d4", "#10b981", "#f59e0b", "#ef4444"] }, text: ["高隐患", "低隐患"], textStyle: { color: "#64748b", fontSize: 8 }, itemWidth: 8, itemHeight: 80 },
-        series: [{ type: "scatter" as const, data: demoData, symbolSize: (d: number[]) => Math.max(10, d[1] * 1.6), itemStyle: { shadowBlur: 8, shadowColor: "rgba(59,130,246,0.35)", opacity: 0.85, borderColor: "#1e293b", borderWidth: 1.5 }, label: { show: false }, emphasis: { itemStyle: { shadowBlur: 14, shadowColor: "rgba(59,130,246,0.55)" } } }],
-        markLine: { silent: true, symbol: "none", lineStyle: { type: "dashed", color: "#64748b", width: 1.5, opacity: 0.5 }, data: [{ xAxis: 0.6, label: { formatter: "高风险线", position: "insideEndTop", color: "#ef4444", fontSize: 8 } }, { xAxis: 0.4, label: { formatter: "中风险线", position: "insideEndTop", color: "#f59e0b", fontSize: 8 } }] },
-      };
-    }
+    if (!cats.length) return { backgroundColor: "transparent" };
     const scatterData = cats.map((cat, i) => {
       const count = byCat[cat] as number || 0;
       const p0Count = items.filter((item) => item.category === cat && item.priority === "P0").length;
-      const p1Count = items.filter((item) => item.category === cat && item.priority === "P1").length;
-      return [i, count, p0Count + p1Count, CAT_LABELS[cat] || cat];
+      return [i, count, p0Count, CAT_LABELS[cat] || cat];
     });
     return {
       backgroundColor: "transparent",
-      title: { text: "分类关联强度分布", left: 12, top: 4, textStyle: { color: "#94a3b8", fontSize: 10 } },
-      tooltip: { formatter: (p: any) => `${p.data[3]}: ${p.data[1]}条 (P0+P1: ${p.data[2]}条)` },
+      tooltip: { formatter: (p: any) => `${p.data[3]}: ${p.data[1]}条 (P0: ${p.data[2]}条)` },
       grid: { left: 50, right: 30, top: 30, bottom: 50 },
       xAxis: { type: "category" as const, data: cats.map((c) => CAT_LABELS[c] || c), axisLabel: { color: "#94a3b8", fontSize: 10, rotate: 20 } },
       yAxis: { type: "value" as const, name: "记忆数量", nameTextStyle: { color: "#94a3b8", fontSize: 10 }, axisLabel: { color: "#94a3b8" }, splitLine: { lineStyle: { color: "#1e293b" } } },
       visualMap: { min: 0, max: Math.max(...scatterData.map((d) => d[2] as number), 1), show: false, inRange: { color: ["#3b82f6", "#f59e0b", "#ef4444"] } },
       series: [{
         type: "scatter" as const, data: scatterData,
-        symbolSize: (d: any[]) => Math.max(12, Number(d[1]) * 3),
-        itemStyle: { shadowBlur: 6, shadowColor: "rgba(59,130,246,0.4)", borderColor: "#1e293b", borderWidth: 2 },
+        symbolSize: (d: any[]) => Math.max(10, Number(d[1]) * 3),
+        itemStyle: { borderColor: "#0f172a", borderWidth: 1 },
         label: { show: true, formatter: (p: any) => `${p.data[1]}条`, color: "#e5e7eb", fontSize: 10, position: "top" as const },
       }],
     };
@@ -1528,11 +1286,11 @@ function ShortTermMemorySection() {
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>⏱️ 记忆重要度评分</div><ReactECharts option={importanceGaugeOption} style={{ height: 220 }} /></div>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 分类关联强度散点图</div><ReactECharts option={associationScatterOption} style={{ height: 320 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 分类关联强度散点图</div><ReactECharts option={associationScatterOption} style={{ height: 220 }} /></div>
           </div>
           <div className="scada-card" style={{ marginBottom: 14 }}>
             <div className="risk-report-title" style={{ marginBottom: 10 }}>🔥 分类×优先级关联热力图</div>
-            <ReactECharts option={heatmapOption} style={{ height: Math.max(420, Object.keys(memStats.short_term?.by_category || {}).length * 40 + 80) }} />
+            <ReactECharts option={heatmapOption} style={{ height: Math.max(200, Object.keys(memStats.short_term?.by_category || {}).length * 40 + 80) }} />
           </div>
         </>
       )}
@@ -1606,6 +1364,16 @@ function LongTermMemorySection() {
   }, [search, filterCat, page]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const handleDelete = useCallback(async (id: string) => {
+    if (!window.confirm("确定要删除该条长期记忆吗？此操作不可恢复。")) return;
+    const ok = await deleteLongTermMemory(id);
+    if (!ok) {
+      window.alert("删除失败，请稍后重试");
+      return;
+    }
+    loadData();
+  }, [loadData]);
 
   const catPieOption = useMemo(() => {
     const byCat = memStats?.long_term?.by_category || {};
@@ -1896,7 +1664,12 @@ function LongTermMemorySection() {
                   <td className="font-mono" style={{ fontSize: 11 }}>{item.enterprise_id || "—"}</td>
                   <td style={{ fontSize: 11, color: "#94a3b8" }}>{item.time}</td>
                   <td>{item.verified ? <span style={{ color: "#10b981" }}>✅</span> : <span style={{ color: "#64748b" }}>—</span>}</td>
-                  <td><button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px" }} type="button" onClick={() => setDetailItem(item)}>📋 详情</button></td>
+                  <td>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px" }} type="button" onClick={() => setDetailItem(item)}>📋 详情</button>
+                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px", color: "#ef4444" }} type="button" onClick={() => handleDelete(item.id)}>🗑️</button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -1916,86 +1689,7 @@ function LongTermMemorySection() {
 }
 
 function ApprovalSection() {
-  const [approvals, setApprovals] = useState<any[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("");
-
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    const resp = await fetchApprovals({ status: filterStatus || undefined, limit: 50 });
-    if (resp) { setApprovals(resp.items || []); setTotal(resp.total); }
-    setLoading(false);
-  }, [filterStatus]);
-
-  useEffect(() => { loadData(); }, [loadData]);
-
-  const handleDecide = useCallback(async (id: string, decision: string) => {
-    const comment = decision === "approved" ? "审批通过" : "需要进一步修改";
-    await decideApproval(id, decision, "admin", comment);
-    loadData();
-  }, [loadData]);
-
-  return (
-    <div>
-      <div className="scada-card" style={{ marginBottom: 14 }}>
-        <div className="risk-report-header">
-          <div className="risk-report-title">📋 管理员审批工作流</div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <span className="tag tag-orange">待审批: {approvals.filter((a) => a.status === "pending").length}</span>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-          <select className="scada-input" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={{ width: 120 }}>
-            <option value="">全部状态</option>
-            <option value="pending">待审批</option>
-            <option value="approved">已批准</option>
-            <option value="rejected">已驳回</option>
-          </select>
-          <button className="scada-btn secondary" type="button" onClick={loadData}>🔄 刷新</button>
-        </div>
-      </div>
-
-      <div className="scada-card">
-        {approvals.length === 0 ? (
-          <div className="empty-state"><div className="empty-state-icon">📋</div><div>暂无审批记录</div></div>
-        ) : (
-          <table className="scada-table">
-            <thead><tr><th>ID</th><th>目标</th><th>操作</th><th>发起人</th><th>状态</th><th>创建时间</th><th>决策</th></tr></thead>
-            <tbody>
-              {approvals.map((a) => (
-                <tr key={a.id}>
-                  <td className="font-mono" style={{ fontSize: 11 }}>{a.id}</td>
-                  <td style={{ fontSize: 12 }}>{a.target_id}</td>
-                  <td style={{ fontSize: 12 }}>{a.action}</td>
-                  <td style={{ fontSize: 12 }}>{a.actor}</td>
-                  <td>
-                    <span className="tag" style={{
-                      background: a.status === "pending" ? "rgba(245,158,11,0.15)" : a.status === "approved" ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.15)",
-                      color: a.status === "pending" ? "#f59e0b" : a.status === "approved" ? "#10b981" : "#ef4444",
-                      fontWeight: 700,
-                    }}>
-                      {a.status === "pending" ? "待审批" : a.status === "approved" ? "已批准" : "已驳回"}
-                    </span>
-                  </td>
-                  <td style={{ fontSize: 11, color: "#94a3b8" }}>{a.created_at}</td>
-                  <td>
-                    {a.status === "pending" && (
-                      <div style={{ display: "flex", gap: 4 }}>
-                        <button className="scada-btn" style={{ fontSize: 10, padding: "2px 8px", background: "#10b981" }} type="button" onClick={() => handleDecide(a.id, "approved")}>✅ 批准</button>
-                        <button className="scada-btn" style={{ fontSize: 10, padding: "2px 8px", background: "#ef4444" }} type="button" onClick={() => handleDecide(a.id, "rejected")}>❌ 驳回</button>
-                      </div>
-                    )}
-                    {a.decided_by && <span style={{ fontSize: 10, color: "#94a3b8" }}>审批人: {a.decided_by}</span>}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </div>
-  );
+  return <DecisionApprovalSection />;
 }
 
 function AuditLogSection() {

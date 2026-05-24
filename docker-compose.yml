@@ -16,17 +16,16 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
-      - ./data:/app/data
-      - ./models:/app/models
+      - ./packages:/app/packages
+      - ./datasets:/app/datasets
+      - ./var:/app/var
+      - ./artifacts:/app/artifacts
       - ./logs:/app/logs
       - ./knowledge_base:/app/knowledge_base
       - ./memory:/app/memory
-      - ./new_data:/app/new_data
-      - ./api:/app/api
-      - ./utils:/app/utils
       - ./config.yaml:/app/config.yaml
     environment:
-      PYTHONPATH: /app
+      MINING_PROJECT_ROOT: /app
       PYTHONUNBUFFERED: "1"
       # LLM / OpenAI 兼容 SDK 凭证（如需）。
       # 任意自定义 provider 可通过通用 LLM_* 覆盖，或在 config.yaml 中配置 api_key_env 后透传对应变量。
@@ -42,13 +41,17 @@ services:
       MRA_ALLOW_UNAUTHENTICATED_ADMIN: ${MRA_ALLOW_UNAUTHENTICATED_ADMIN:-}
       MRA_ENABLE_MOCK_FALLBACK: ${MRA_ENABLE_MOCK_FALLBACK:-true}
       MRA_CORS_ORIGINS: ${MRA_CORS_ORIGINS:-http://localhost:8501,http://127.0.0.1:8501,http://localhost:5173,http://127.0.0.1:5173}
+      # RAG：长期记忆召回 / 校验证据检索（需 API_REQUIREMENTS_FILE=requirements-deploy-rag.txt 且已重建 var/chroma）
+      RAG_ENABLED: ${RAG_ENABLED:-true}
+      RAG_EMBEDDING_BACKEND: ${RAG_EMBEDDING_BACKEND:-auto}
+      RAG_ALLOW_FALLBACK_EMBEDDING: ${RAG_ALLOW_FALLBACK_EMBEDDING:-true}
       # 限制 native ML/RAG 依赖的线程池，降低 tokenizer/BLAS/OpenMP 组合崩溃风险。
       TOKENIZERS_PARALLELISM: "false"
       OMP_NUM_THREADS: "1"
       OPENBLAS_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
       NUMEXPR_NUM_THREADS: "1"
-    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    command: uvicorn mining_risk_serve.api.main:app --host 0.0.0.0 --port 8000
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
