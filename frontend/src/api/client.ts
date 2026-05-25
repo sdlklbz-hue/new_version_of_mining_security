@@ -23,6 +23,7 @@ import type {
   DemoReplayLoadResponse,
   EnterpriseDetailResponse,
   EnterpriseListResponse,
+  EnterpriseMapMarkersResponse,
   HealthResponse,
   IndustryWarningResponse,
   IterationRecord,
@@ -1275,6 +1276,27 @@ export async function fetchEnterpriseDbDetail(folderName: string): Promise<Enter
   }
 }
 
+export async function fetchEnterpriseMapMarkers(params: {
+  tracked_only?: boolean;
+  keyword?: string;
+  predicted_level?: string;
+  has_prediction?: boolean;
+} = {}): Promise<EnterpriseMapMarkersResponse | null> {
+  try {
+    const usp = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
+    });
+    const qs = usp.toString();
+    const resp = await fetch(url(`/api/v1/visualization/enterprise-map/markers${qs ? `?${qs}` : ""}`));
+    if (!resp.ok) return null;
+    return jsonOrThrow<EnterpriseMapMarkersResponse>(resp);
+  } catch (e) {
+    console.error("获取企业风险地图标记失败:", e);
+    return null;
+  }
+}
+
 export async function fetchIndustryList(): Promise<{ success: boolean; industries: string[] } | null> {
   try {
     const resp = await fetch(url("/api/v1/visualization/enterprise-db/industries"));
@@ -1286,4 +1308,4 @@ export async function fetchIndustryList(): Promise<{ success: boolean; industrie
   }
 }
 
-export type { EnterpriseDetailResponse, IndustryWarningResponse, EnterpriseListResponse };
+export type { EnterpriseDetailResponse, EnterpriseMapMarkersResponse, IndustryWarningResponse, EnterpriseListResponse };

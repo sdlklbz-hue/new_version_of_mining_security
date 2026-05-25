@@ -177,6 +177,7 @@ python -m mining_risk_train.iteration.regression_test \
 | `/api/v1/iteration/status` | GET | 迭代状态 |
 | `/api/v1/iteration/approve` | POST | 两级审批 |
 | `/api/v1/iteration/canary` | POST | 灰度比例 |
+| `/api/v1/visualization/enterprise-map/markers` | GET | 企业风险地图点位（经纬度 + 预测等级 + 跟踪状态） |
 
 敏感操作需请求头 `X-Admin-Token`（`MRA_ADMIN_TOKEN`）。本地可临时设 `MRA_ALLOW_UNAUTHENTICATED_ADMIN=true`；生产建议 `MRA_ENABLE_MOCK_FALLBACK=false`。
 
@@ -396,6 +397,8 @@ mining_risk_agent/
 |--------|------|
 | 企业风险预测 | 场景切换、上传/模拟数据、风险仪表盘、SHAP、决策卡片、SSE 日志 |
 | 数据可视化 | 预警趋势、相关性热力图、企业统计分布（读取 `datasets/raw/public`） |
+| 风险地图 | OpenStreetMap 企业落点、模型风险等级着色、搜索与已跟踪企业侧栏 |
+| 企业多维画像 | `datasets/enterprise_db` 企业档案、分类统计、详情面板 |
 | 知识库与记忆 | 6 大知识库预览、P0–P3 短期记忆、长期 RAG 召回 |
 | 模型迭代 CI/CD | 版本时间线、审批流、灰度进度、模拟迭代动画 |
 | 系统配置 | LLM 连通性、场景参数、Swagger 链接 |
@@ -404,7 +407,7 @@ mining_risk_agent/
 
 **路演前检查**（1920×1080 全屏）：
 
-1. 五标签页切换无报错  
+1. 各标签页切换无报错  
 2. 模拟数据 → 执行预测，5 秒内出结果  
 3. 切换 chemical / metallurgy / dust，阈值与 `scenario_id` 变化  
 4. 知识库列表与记忆清理/RAG 召回  

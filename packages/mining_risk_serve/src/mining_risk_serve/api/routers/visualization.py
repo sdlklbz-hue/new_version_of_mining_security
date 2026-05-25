@@ -5,16 +5,18 @@
 
 import json
 import os
-from typing import Any, Dict, List, Optional
+import time
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
 
 from mining_risk_common.utils.logger import get_logger
 from mining_risk_common.utils.config import get_config, resolve_project_path
+from mining_risk_serve.api.services.decision_store import DecisionStore
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -825,6 +827,7 @@ INDUSTRY_CODE_MAP: Dict[str, str] = {
 _enterprise_cache: Dict[str, Any] = {}
 _cache_timestamp: float = 0.0
 _CACHE_TTL = 300.0
+_MAP_CACHE_KEY = "map_markers"
 
 
 def _is_cache_valid() -> bool:
@@ -951,6 +954,192 @@ class EnterpriseDetailResponse(BaseModel):
     data: Dict[str, Any]
 
 
+class EnterpriseMapMarker(BaseModel):
+    folder: str
+    name: str
+    lat: float
+    lng: float
+    industry: str = ""
+    predicted_level: Optional[str] = None
+    probability: Optional[float] = None
+    tracked: bool = False
+    last_predicted_at: Optional[str] = None
+    scenario_id: Optional[str] = None
+    reported_level: str = ""
+
+
+class EnterpriseMapMeta(BaseModel):
+    total_enterprises: int
+    with_coordinates: int
+    skipped_no_coords: int
+    returned: int
+    tracked_count: int
+
+
+class EnterpriseMapMarkersResponse(BaseModel):
+    success: bool
+    markers: List[EnterpriseMapMarker]
+    meta: EnterpriseMapMeta
+
+
+def _as_float(value: Any) -> Optional[float]:
+    if value in (None, ""):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _valid_lng_lat(lng: Optional[float], lat: Optional[float]) -> bool:
+    return lng is not None and lat is not None and 73 <= lng <= 135 and 3 <= lat <= 54
+
+
+def _record_sort_key(record: Dict[str, Any]) -> float:
+    for key in ("MAIN_ADDR", "修改时间", "时间戳", "创建时间"):
+        value = _as_float(record.get(key))
+        if value is not None:
+            return value
+    return 0.0
+
+
+def _latest_coordinate(records: Any, lng_key: str, lat_key: str) -> Optional[Tuple[float, float]]:
+    if not isinstance(records, list):
+        return None
+    candidates = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        lng = _as_float(record.get(lng_key))
+        lat = _as_float(record.get(lat_key))
+        if _valid_lng_lat(lng, lat):
+            candidates.append((_record_sort_key(record), lng, lat))
+    if not candidates:
+        return None
+    _, lng, lat = max(candidates, key=lambda item: item[0])
+    return lat, lng
+
+
+def _extract_lat_lng(detail: Dict[str, Any]) -> Optional[Tuple[float, float]]:
+    data = detail.get("详细数据", {}) if isinstance(detail, dict) else {}
+    if not isinstance(data, dict):
+        return None
+    for section, lng_key, lat_key in (
+        ("企业生产经营地址", "经度", "纬度"),
+        ("企业目录", "经度", "纬度"),
+        ("行政执法企业信息", "企业位置经度", "企业位置纬度"),
+    ):
+        coord = _latest_coordinate(data.get(section), lng_key, lat_key)
+        if coord:
+            return coord
+    return None
+
+
+def _latest_reported_level(detail: Dict[str, Any]) -> str:
+    ratings = detail.get("详细数据", {}).get("企业评级信息填报", []) if isinstance(detail, dict) else []
+    if isinstance(ratings, list) and ratings:
+        latest = ratings[-1]
+        if isinstance(latest, dict):
+            return str(latest.get("NEW_LEVEL") or "")
+    return ""
+
+
+def _extract_probability(record: Dict[str, Any], level: str) -> Optional[float]:
+    response = record.get("response") or {}
+    dist = response.get("probability_distribution") or response.get("probabilities") or {}
+    if isinstance(dist, dict) and level in dist:
+        return _as_float(dist.get(level))
+    value = response.get("confidence") or response.get("confidence_score") or response.get("probability")
+    return _as_float(value)
+
+
+def _build_latest_predictions_index() -> Dict[str, Dict[str, Any]]:
+    index: Dict[str, Dict[str, Any]] = {}
+    try:
+        store = DecisionStore()
+        for summary in store.list_all_summaries():
+            name = str(summary.get("enterprise_name") or "").strip()
+            if not name:
+                continue
+            created_at = str(summary.get("created_at") or "")
+            current = index.get(name)
+            if current and str(current.get("last_predicted_at") or "") >= created_at:
+                continue
+
+            probability = None
+            try:
+                record = store.load_record(str(summary.get("record_id") or ""))
+                probability = _extract_probability(record, str(summary.get("predicted_level") or ""))
+            except Exception:
+                probability = None
+
+            index[name] = {
+                "predicted_level": summary.get("predicted_level") or None,
+                "probability": probability,
+                "tracked": True,
+                "last_predicted_at": created_at or None,
+                "scenario_id": summary.get("scenario_id") or None,
+            }
+    except Exception as exc:
+        logger.warning("构建企业地图预测索引失败: %s", exc)
+    return index
+
+
+def _build_enterprise_map_markers() -> Tuple[List[Dict[str, Any]], Dict[str, int]]:
+    index_data = _load_enterprise_db_index()
+    prediction_index = _build_latest_predictions_index()
+    markers: List[Dict[str, Any]] = []
+    skipped_no_coords = 0
+
+    enterprise_meta = {item["name"]: item for item in _get_cached_enterprises()}
+    for item in index_data:
+        name = item.get("企业名称", "")
+        folder = item.get("文件夹名称", name)
+        detail = _load_enterprise_detail(folder)
+        if not detail:
+            skipped_no_coords += 1
+            continue
+        coord = _extract_lat_lng(detail)
+        if not coord:
+            skipped_no_coords += 1
+            continue
+        lat, lng = coord
+        meta = enterprise_meta.get(name, {})
+        pred = prediction_index.get(name, {})
+        markers.append({
+            "folder": folder,
+            "name": name,
+            "lat": lat,
+            "lng": lng,
+            "industry": meta.get("industry") or "其他行业",
+            "predicted_level": pred.get("predicted_level"),
+            "probability": pred.get("probability"),
+            "tracked": bool(pred.get("tracked")),
+            "last_predicted_at": pred.get("last_predicted_at"),
+            "scenario_id": pred.get("scenario_id"),
+            "reported_level": _latest_reported_level(detail),
+        })
+
+    meta = {
+        "total_enterprises": len(index_data),
+        "with_coordinates": len(markers),
+        "skipped_no_coords": skipped_no_coords,
+        "tracked_count": sum(1 for marker in markers if marker.get("tracked")),
+    }
+    return markers, meta
+
+
+def _get_cached_map_markers() -> Tuple[List[Dict[str, Any]], Dict[str, int]]:
+    global _enterprise_cache, _cache_timestamp
+    if _is_cache_valid() and _MAP_CACHE_KEY in _enterprise_cache:
+        cached = _enterprise_cache[_MAP_CACHE_KEY]
+        return cached["markers"], cached["meta"]
+    markers, meta = _build_enterprise_map_markers()
+    _enterprise_cache[_MAP_CACHE_KEY] = {"markers": markers, "meta": meta}
+    _cache_timestamp = time.time()
+    return markers, meta
+
+
 @router.get("/enterprise-db/list", response_model=EnterpriseListResponse)
 async def list_enterprise_db(
     keyword: str = "",
@@ -984,6 +1173,36 @@ async def get_enterprise_detail(folder_name: str):
         raise HTTPException(status_code=404, detail="企业数据未找到")
     return EnterpriseDetailResponse(
         success=True, name=detail.get("企业名称", folder_name), data=detail
+    )
+
+
+@router.get("/enterprise-map/markers", response_model=EnterpriseMapMarkersResponse)
+async def get_enterprise_map_markers(
+    tracked_only: bool = Query(False),
+    keyword: str = Query(""),
+    predicted_level: str = Query(""),
+    has_prediction: Optional[bool] = Query(None),
+) -> EnterpriseMapMarkersResponse:
+    markers, meta = _get_cached_map_markers()
+    filtered = []
+    keyword_norm = keyword.strip()
+    level_norm = predicted_level.strip()
+    for marker in markers:
+        if tracked_only and not marker.get("tracked"):
+            continue
+        if keyword_norm and keyword_norm not in str(marker.get("name", "")):
+            continue
+        if level_norm and marker.get("predicted_level") != level_norm:
+            continue
+        if has_prediction is True and not marker.get("predicted_level"):
+            continue
+        if has_prediction is False and marker.get("predicted_level"):
+            continue
+        filtered.append(EnterpriseMapMarker(**marker))
+    return EnterpriseMapMarkersResponse(
+        success=True,
+        markers=filtered,
+        meta=EnterpriseMapMeta(**{**meta, "returned": len(filtered)}),
     )
 
 

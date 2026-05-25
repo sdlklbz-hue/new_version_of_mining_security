@@ -25,26 +25,13 @@ import BatchDecisionPanel from "../components/BatchDecisionPanel";
 import { useDecisionBatch } from "../context/DecisionBatchContext";
 import { ProbabilityChart, ShapChart } from "../components/charts";
 import { formatFeatureLabel } from "../lib/featureLabels";
+import { LEVEL_GLOW, LEVEL_HEX, RISK_LEVELS_CONFIG } from "../lib/riskLevels";
 import JsonView from "../components/JsonView";
 import ReactECharts from "echarts-for-react";
 
 interface Props {
   scenario: ScenarioId;
 }
-
-const LEVEL_HEX: Record<string, string> = {
-  红: "#ef4444",
-  橙: "#f97316",
-  黄: "#eab308",
-  蓝: "#3b82f6",
-};
-
-const LEVEL_GLOW: Record<string, string> = {
-  红: "glow-red",
-  橙: "glow-orange",
-  黄: "glow-yellow",
-  蓝: "glow-blue",
-};
 
 /** 三维风险加权总分上限（与后端 RiskAssessor 一致） */
 const THREE_D_SCORE_MAX = 4;
@@ -1092,13 +1079,6 @@ function TimelineLogs({ nodes }: { nodes: NodeStatus[] }) {
     </div>
   );
 }
-
-const RISK_LEVELS_CONFIG = [
-  { key: "红", label: "红色预警", color: "#ef4444", bg: "rgba(239,68,68,0.12)", range: "≥ 0.80", desc: "极高风险，需立即处置" },
-  { key: "橙", label: "橙色预警", color: "#f97316", bg: "rgba(249,115,22,0.12)", range: "0.60-0.79", desc: "高风险，需限期整改" },
-  { key: "黄", label: "黄色预警", color: "#eab308", bg: "rgba(234,179,8,0.12)", range: "0.40-0.59", desc: "中等风险，需加强监控" },
-  { key: "蓝", label: "蓝色预警", color: "#3b82f6", bg: "rgba(59,130,246,0.12)", range: "0.20-0.39", desc: "低风险，常规巡检" },
-];
 
 function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
   const tdr = decision.three_d_risk;

@@ -845,3 +845,31 @@ export interface EnterpriseDetailResponse {
   name: string;
   data: Record<string, unknown>;
 }
+
+export interface EnterpriseMapMarker {
+  folder: string;
+  name: string;
+  lat: number;
+  lng: number;
+  industry: string;
+  predicted_level?: string | null;
+  probability?: number | null;
+  tracked: boolean;
+  last_predicted_at?: string | null;
+  scenario_id?: string | null;
+  reported_level: string;
+}
+
+export interface EnterpriseMapMeta {
+  total_enterprises: number;
+  with_coordinates: number;
+  skipped_no_coords: number;
+  returned: number;
+  tracked_count: number;
+}
+
+export interface EnterpriseMapMarkersResponse {
+  success: boolean;
+  markers: EnterpriseMapMarker[];
+  meta: EnterpriseMapMeta;
+}
