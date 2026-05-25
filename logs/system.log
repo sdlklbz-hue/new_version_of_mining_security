@@ -10956,3 +10956,70 @@ json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 16217556 (c
 2026-05-25 08:37:29,897 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
 2026-05-25 08:37:30,971 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
 2026-05-25 08:37:30,978 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（C:\Users\sdlkl\Desktop\a_new_version\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-25 08:37:42,464 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-25 08:37:42,669 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-25 08:37:45,224 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:37:45,254 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:37:45,255 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-25 08:37:45,271 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-25 08:37:45,292 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-25 08:37:45,301 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-25 08:37:45,560 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:37:48,510 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:37:48,512 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-25 08:37:48,519 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:37:48,826 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-25 08:37:48,841 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-25 08:37:48,867 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-25 08:37:48,887 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:39:56,176 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:39:56,197 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-25 08:39:56,202 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-25 08:39:56,206 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-25 08:39:56,220 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:39:56,221 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-25 08:39:56,515 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:39:59,988 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:39:59,989 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-25 08:39:59,995 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-25 08:40:00,001 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-25 08:40:00,008 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-25 08:40:00,022 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:40:00,329 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: C:\Users\sdlkl\Desktop\a_new_version\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-25 08:40:14,728 - mining_risk_serve.api.routers.memory - INFO - 持久化 long_term 成功: 20025 条
+2026-05-25 08:40:14,753 - mining_risk_serve.api.routers.memory - INFO - 持久化 audit_log 成功: 1 条
+2026-05-25 08:40:20,304 - mining_risk_serve.api.routers.memory - INFO - 持久化 short_term 成功: 8380 条
+2026-05-25 08:40:22,203 - mining_risk_serve.api.routers.memory - INFO - 持久化 long_term 成功: 28405 条
+2026-05-25 08:40:22,741 - mining_risk_serve.api.routers.memory - INFO - 持久化 warning_experience 成功: 8380 条
+2026-05-25 08:40:23,249 - mining_risk_serve.api.routers.memory - INFO - 持久化 enterprise_risk_history 成功: 8380 条
+2026-05-25 08:40:23,255 - mining_risk_serve.api.routers.memory - INFO - 持久化 audit_log 成功: 2 条
+2026-05-25 08:41:25,304 - mining_risk_common.dataplane.preprocessor - INFO - Pipeline 已从 artifacts/pipelines/preprocessing_pipeline.pkl 加载
+2026-05-25 08:41:25,305 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-25 08:41:25,388 - mining_risk_common.model.stacking - INFO - 基学习器 multinomial_lr (logistic_regression) 已初始化
+2026-05-25 08:41:25,388 - mining_risk_common.model.stacking - WARNING - XGBoost 未安装，使用随机森林替代
+2026-05-25 08:41:25,388 - mining_risk_common.model.stacking - INFO - 基学习器 xgboost (xgboost) 已初始化
+2026-05-25 08:41:25,388 - mining_risk_common.model.stacking - WARNING - LightGBM 未安装，使用随机森林替代
+2026-05-25 08:41:25,388 - mining_risk_common.model.stacking - INFO - 基学习器 lightgbm (lightgbm) 已初始化
+2026-05-25 08:41:25,389 - mining_risk_common.model.stacking - WARNING - CatBoost 未安装，使用随机森林替代
+2026-05-25 08:41:25,389 - mining_risk_common.model.stacking - INFO - 基学习器 catboost (catboost) 已初始化
+2026-05-25 08:41:25,389 - mining_risk_common.model.stacking - INFO - 基学习器 random_forest (random_forest) 已初始化
+2026-05-25 08:41:25,389 - mining_risk_common.model.stacking - INFO - 元学习器已初始化
+2026-05-25 08:41:25,390 - mining_risk_serve.agent.workflow - ERROR - 模型加载失败 (artifacts/models/stacking_risk_v1_stable.pkl): No module named 'xgboost'
+2026-05-25 08:41:25,391 - mining_risk_serve.agent.workflow - ERROR - 风险评估失败: 模型加载失败: No module named 'xgboost'
+2026-05-25 08:41:25,524 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - INFO - 基学习器 multinomial_lr (logistic_regression) 已初始化
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - WARNING - XGBoost 未安装，使用随机森林替代
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - INFO - 基学习器 xgboost (xgboost) 已初始化
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - WARNING - LightGBM 未安装，使用随机森林替代
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - INFO - 基学习器 lightgbm (lightgbm) 已初始化
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - WARNING - CatBoost 未安装，使用随机森林替代
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - INFO - 基学习器 catboost (catboost) 已初始化
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - INFO - 基学习器 random_forest (random_forest) 已初始化
+2026-05-25 08:41:25,568 - mining_risk_common.model.stacking - INFO - 元学习器已初始化
+2026-05-25 08:41:25,570 - mining_risk_serve.agent.workflow - ERROR - 模型加载失败 (artifacts/models/stacking_risk_v1_stable.pkl): No module named 'xgboost'
+2026-05-25 08:41:25,571 - mining_risk_serve.agent.workflow - ERROR - 风险评估失败: 模型加载失败: No module named 'xgboost'
+2026-05-25 08:41:25,572 - mining_risk_serve.api.services.prediction_service - WARNING - Workflow 返回结果不完整，降级至 Mock: 模型加载失败: No module named 'xgboost'
+2026-05-25 08:41:25,647 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: C:\Users\sdlkl\Desktop\a_new_version\var\decisions\ENT-DEMO-001_chemical_20260525_084125_603598.json
+2026-05-25 08:41:25,650 - mining_risk_serve.api.routers.memory - INFO - 持久化 approval_store 成功: 1 条
+2026-05-25 08:41:25,651 - mining_risk_serve.api.routers.memory - INFO - 持久化 audit_log 成功: 3 条
+2026-05-25 08:41:38,649 - mining_risk_common.dataplane.loader - INFO - API 数据加载成功，企业ID: ENT-DEMO-001, 形状: (294, 41)
