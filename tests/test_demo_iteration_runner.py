@@ -11,7 +11,7 @@ from mining_risk_serve.iteration.demo_replay import DemoReplayService
 from mining_risk_serve.iteration.demo_runner import DemoIterationError, DemoIterationRunner
 
 
-DEMO_DIR = Path(__file__).resolve().parent.parent / "data" / "demo"
+DEMO_DIR = Path(__file__).resolve().parent.parent / "datasets" / "demo"
 
 
 def _service(tmpdir):

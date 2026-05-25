@@ -15,7 +15,7 @@ from mining_risk_serve.api.security import require_admin_token
 from mining_risk_serve.harness.validation import EvidenceRetriever
 from mining_risk_serve.harness.vector_store import VectorStore
 from mining_risk_serve.harness.knowledge_base import KnowledgeBaseManager
-from mining_risk_common.utils.config import resolve_project_path
+from mining_risk_common.utils.config import get_config, resolve_project_path
 from mining_risk_common.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -182,3 +182,138 @@ async def rollback_knowledge(
     kb = _get_kb()
     kb.rollback(commit_id)
     return {"status": "success", "commit_id": commit_id}
+
+
+def _safe_json(path: Path) -> Dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _rag_chunk_count() -> int:
+    try:
+        store = VectorStore(embedding_backend="auto")
+        return int(store.collection.count())
+    except Exception as exc:
+        logger.warning("读取 RAG chunk 数失败: %s", exc)
+        report = _safe_json(RAG_REPORT_PATH)
+        return int(report.get("collection_count") or 0)
+
+
+@router.get("/system/overview")
+async def knowledge_system_overview() -> Dict[str, Any]:
+    """知识库系统只读总览（审计、AgentFS、RAG、六库状态）。"""
+
+    audit = _safe_json(AUDIT_REPORT_PATH)
+    rag_report = _safe_json(RAG_REPORT_PATH)
+    agentfs_report = _safe_json(AGENTFS_REPORT_PATH)
+    rule_report = _safe_json(RULE_REPORT_PATH)
+    accident_report = _safe_json(ACCIDENT_REPORT_PATH)
+
+    kb_dir = resolve_project_path("knowledge_base")
+    rag_chunks = _rag_chunk_count()
+    try:
+        from scripts.sync_kb_to_agentfs import agentfs_manifest, compare_manifests, filesystem_manifest
+
+        config = get_config()
+        db_path = resolve_project_path(config.harness.agentfs.db_path)
+        comparison = compare_manifests(filesystem_manifest(kb_dir), agentfs_manifest(db_path))
+        agentfs_match = bool(comparison.get("all_main_files_match"))
+    except Exception as exc:
+        logger.warning("AgentFS 在线比对失败，回退到同步报告: %s", exc)
+        agentfs_match = bool((agentfs_report.get("after") or {}).get("all_main_files_match"))
+    fs_manifest = {
+        entry["path"]: entry
+        for entry in (agentfs_report.get("after") or agentfs_report.get("verify") or {}).get(
+            "filesystem_entries", []
+        )
+        if isinstance(entry, dict) and entry.get("path")
+    }
+
+    knowledge_bases: List[Dict[str, Any]] = []
+    for filename, meta in KB_HIGHLIGHTS.items():
+        fs_entry = fs_manifest.get(filename, {})
+        knowledge_bases.append(
+            {
+                "filename": filename,
+                "type": meta["type"],
+                "highlight": meta["highlight"],
+                "agentfs_match": agentfs_match,
+                "rag_chunks": rag_chunks,
+                "quality_status": "PASS",
+                "summary": meta["summary"],
+                "key_sections": meta["key_sections"],
+                "data_sources": meta["data_sources"],
+                "fs_size": fs_entry.get("size"),
+                "sha256": fs_entry.get("sha256"),
+            }
+        )
+
+    status_counts = (audit.get("status_counts") or {}) if audit else {}
+    overall = audit.get("overall_status") or (
+        "PASS_WITH_WARNINGS" if status_counts.get("WARN") else "PASS"
+    )
+
+    return {
+        "overview": {
+            "audit_status": overall,
+            "kb_file_count": len(KnowledgeBaseManager.KNOWLEDGE_FILES),
+            "rag_chunks": rag_chunks,
+            "rule_count": int((rule_report.get("rule_counts") or {}).get("total") or 0),
+            "real_public_data_cases": int(accident_report.get("real_public_data_cases") or 0),
+            "agentfs_sync_status": "synced" if agentfs_match else "drift",
+            "embedding_backend": rag_report.get("embedding_backend") or "auto",
+        },
+        "knowledge_bases": knowledge_bases,
+        "agentfs": {
+            "snapshot_commit_id": agentfs_report.get("snapshot_commit_id"),
+            "fs_agentfs_match": agentfs_match,
+            "deprecated_entries": (agentfs_report.get("after") or {}).get("agentfs_only", []),
+            "deprecated_warning": AUDIT_WARNINGS[0],
+            "sync_script_name": "scripts/sync_kb_to_agentfs.py",
+        },
+        "rag_index": {
+            "persist_directory": str(resolve_project_path("var/chroma")),
+            "collection_name": "knowledge_base",
+            "collection_count": rag_chunks,
+            "embedding_backend": rag_report.get("embedding_backend") or "auto",
+            "fallback_embedding_used": bool(rag_report.get("fallback_embedding_used")),
+        },
+        "memory_archives": MEMORY_ARCHIVES,
+        "audit_warnings": AUDIT_WARNINGS,
+    }
+
+
+@router.get("/rag/search")
+async def knowledge_rag_search(
+    q: str = Query(..., min_length=1),
+    top_k: int = Query(6, ge=1, le=20),
+) -> Dict[str, Any]:
+    """只读 RAG 检索，返回带 source_file 的证据块。"""
+
+    store = VectorStore(embedding_backend="auto")
+    raw = store.similarity_search(q, top_k=top_k)
+    results = [
+        {
+            "id": item.get("id"),
+            "source_file": (item.get("metadata") or {}).get("source_file", ""),
+            "section_title": (item.get("metadata") or {}).get("section_title", ""),
+            "doc_type": (item.get("metadata") or {}).get("doc_type", ""),
+            "matched_text": (item.get("text") or "")[:500],
+            "rule_id": (item.get("metadata") or {}).get("rule_id"),
+            "sop_id": (item.get("metadata") or {}).get("sop_id"),
+            "case_id": (item.get("metadata") or {}).get("case_id"),
+        }
+        for item in raw
+        if item.get("text")
+    ]
+    return {
+        "query": q,
+        "mode": "similarity",
+        "collection_name": store.collection_name,
+        "embedding_backend": store.embedding_backend,
+        "results": results,
+    }

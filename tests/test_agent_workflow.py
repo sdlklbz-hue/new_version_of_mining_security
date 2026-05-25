@@ -80,7 +80,7 @@ def base_state(mock_raw_data, mock_prediction):
 class TestMemoryRecallNode:
     """测试 memory_recall 对长期记忆 RAG 开关的处理。"""
 
-    @patch("agent.workflow._get_memory")
+    @patch("mining_risk_serve.agent.workflow._get_memory")
     async def test_memory_recall_enabled_calls_rag(self, mock_get_memory, base_state):
         mock_memory = MagicMock()
         mock_memory.is_long_term_rag_enabled.return_value = True
@@ -100,7 +100,7 @@ class TestMemoryRecallNode:
         assert status["status"] == "completed"
         assert "召回 1 条记忆" in status["detail"]
 
-    @patch("agent.workflow._get_memory")
+    @patch("mining_risk_serve.agent.workflow._get_memory")
     async def test_memory_recall_disabled_skips_safely(self, mock_get_memory, base_state):
         mock_memory = MagicMock()
         mock_memory.is_long_term_rag_enabled.return_value = False
@@ -126,12 +126,12 @@ class TestMemoryRecallNode:
 class TestNormalFlow:
     """测试正常通过流"""
 
-    @patch("agent.workflow._load_pipeline")
-    @patch("agent.workflow._load_model")
-    @patch("agent.workflow._get_memory")
-    @patch("agent.workflow.OpenAICompatibleClient")
-    @patch("agent.workflow.SamplingNode")
-    @patch("agent.workflow.RiskAssessor")
+    @patch("mining_risk_serve.agent.workflow._load_pipeline")
+    @patch("mining_risk_serve.agent.workflow._load_model")
+    @patch("mining_risk_serve.agent.workflow._get_memory")
+    @patch("mining_risk_serve.agent.workflow.OpenAICompatibleClient")
+    @patch("mining_risk_serve.agent.workflow.SamplingNode")
+    @patch("mining_risk_serve.agent.workflow.RiskAssessor")
     async def test_full_workflow_approve(
         self,
         mock_risk_assessor_cls,
@@ -264,13 +264,13 @@ class TestNormalFlow:
 class TestMarchRetryLoop:
     """测试 MARCH 校验失败后的回环重试"""
 
-    @patch("agent.workflow._load_pipeline")
-    @patch("agent.workflow._load_model")
-    @patch("agent.workflow._get_memory")
-    @patch("agent.workflow.OpenAICompatibleClient")
-    @patch("agent.workflow.run_march_validation")
-    @patch("agent.workflow.SamplingNode")
-    @patch("agent.workflow.RiskAssessor")
+    @patch("mining_risk_serve.agent.workflow._load_pipeline")
+    @patch("mining_risk_serve.agent.workflow._load_model")
+    @patch("mining_risk_serve.agent.workflow._get_memory")
+    @patch("mining_risk_serve.agent.workflow.OpenAICompatibleClient")
+    @patch("mining_risk_serve.agent.workflow.run_march_validation")
+    @patch("mining_risk_serve.agent.workflow.SamplingNode")
+    @patch("mining_risk_serve.agent.workflow.RiskAssessor")
     async def test_march_retry_then_pass(
         self,
         mock_risk_assessor_cls,
@@ -341,11 +341,11 @@ class TestMarchRetryLoop:
         assert result["march_result"]["passed"] is True
         assert result["final_status"] == "APPROVE"
 
-    @patch("agent.workflow._load_pipeline")
-    @patch("agent.workflow._load_model")
-    @patch("agent.workflow._get_memory")
-    @patch("agent.workflow.OpenAICompatibleClient")
-    @patch("agent.workflow.run_march_validation")
+    @patch("mining_risk_serve.agent.workflow._load_pipeline")
+    @patch("mining_risk_serve.agent.workflow._load_model")
+    @patch("mining_risk_serve.agent.workflow._get_memory")
+    @patch("mining_risk_serve.agent.workflow.OpenAICompatibleClient")
+    @patch("mining_risk_serve.agent.workflow.run_march_validation")
     async def test_march_final_reject(
         self,
         mock_run_march,
@@ -400,12 +400,12 @@ class TestMarchRetryLoop:
 class TestMonteCarloBlock:
     """测试蒙特卡洛置信度不足导致人工审核"""
 
-    @patch("agent.workflow._load_pipeline")
-    @patch("agent.workflow._load_model")
-    @patch("agent.workflow._get_memory")
-    @patch("agent.workflow.OpenAICompatibleClient")
-    @patch("agent.workflow.SamplingNode")
-    @patch("agent.workflow.RiskAssessor")
+    @patch("mining_risk_serve.agent.workflow._load_pipeline")
+    @patch("mining_risk_serve.agent.workflow._load_model")
+    @patch("mining_risk_serve.agent.workflow._get_memory")
+    @patch("mining_risk_serve.agent.workflow.OpenAICompatibleClient")
+    @patch("mining_risk_serve.agent.workflow.SamplingNode")
+    @patch("mining_risk_serve.agent.workflow.RiskAssessor")
     async def test_monte_carlo_human_review(
         self,
         mock_risk_assessor_cls,

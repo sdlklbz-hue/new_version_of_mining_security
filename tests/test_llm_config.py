@@ -3,7 +3,9 @@
 from mining_risk_common.utils.config import LLMConfig, LLMProviderConfig
 
 
-def test_llm_config_defaults_to_glm5():
+def test_llm_config_defaults_to_glm5(monkeypatch):
+    monkeypatch.delenv("LLM_GLM5_MODEL", raising=False)
+    monkeypatch.delenv("LLM_MODEL", raising=False)
     cfg = LLMConfig(
         providers={
             "glm5": LLMProviderConfig(model="glm-5", base_url="https://example.com/v1")
@@ -15,6 +17,8 @@ def test_llm_config_defaults_to_glm5():
 
 
 def test_llm_config_selects_custom_provider_from_env(monkeypatch):
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setenv("LLM_PROVIDER", "custom-openai")
     monkeypatch.setenv("LLM_CUSTOM_OPENAI_API_KEY", "test-custom-key")
     monkeypatch.setenv("LLM_CUSTOM_OPENAI_MODEL", "custom-model")

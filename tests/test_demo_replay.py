@@ -10,7 +10,7 @@ from mining_risk_serve.iteration.data_source import DemoReplayDataSource
 from mining_risk_serve.iteration.demo_replay import DemoReplayService
 
 
-DEMO_DIR = Path(__file__).resolve().parent.parent / "data" / "demo"
+DEMO_DIR = Path(__file__).resolve().parent.parent / "datasets" / "demo"
 
 
 def _service(tmpdir):

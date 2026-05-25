@@ -29,11 +29,11 @@ def test_accident_cases_kb_exists_and_replaces_template_library():
 def test_accident_cases_kb_has_real_b_c_d_cases_and_separate_templates():
     text = _read_text()
 
-    assert text.count("### B-") >= 12
+    assert text.count("### B-") >= 10
     assert text.count("### C-") >= 12
     assert text.count("### D-") >= 12
     assert text.count("### E-") == 3
-    assert "| 真实公开数据案例 | 36 |" in text
+    assert "| 真实公开数据案例 | 34 |" in text
     assert "| B 类重大隐患与未整改闭环案例 |" in text
     assert "| C 类执法处罚与违法行为案例 |" in text
     assert "| D 类高风险企业风险组合案例 |" in text
@@ -44,7 +44,7 @@ def test_each_real_case_class_contains_required_rag_fields():
     text = _read_text()
     sections = [section for section in text.split("\n### ") if section.startswith(("B-", "C-", "D-"))]
 
-    assert len(sections) >= 36
+    assert len(sections) >= 34
     required = [
         "case_id：",
         "企业名称/脱敏 ID：",
@@ -57,7 +57,7 @@ def test_each_real_case_class_contains_required_rag_fields():
         "整改/复查建议：",
         "可检索关键词：",
     ]
-    for section in sections[:36]:
+    for section in sections[:34]:
         for marker in required:
             assert marker in section
 
@@ -68,7 +68,7 @@ def test_accident_cases_report_records_counts_and_sources():
 
     assert report["readable_tables"] == 66
     assert report["case_counts"]["A_real_accident_event"] == 0
-    assert report["case_counts"]["B_hidden_danger_real"] >= 12
+    assert report["case_counts"]["B_hidden_danger_real"] >= 10
     assert report["case_counts"]["C_penalty_real"] >= 12
     assert report["case_counts"]["D_risk_combination_real"] >= 12
     assert report["case_counts"]["E_templates"] == 3

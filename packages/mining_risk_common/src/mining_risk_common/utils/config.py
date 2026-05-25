@@ -452,9 +452,9 @@ class LLMConfig(BaseModel):
             env_base_url = os.getenv(f"LLM_{prefix}_BASE_URL")
 
             if name == self.provider:
-                env_key = os.getenv("LLM_API_KEY") or env_key or os.getenv("OPENAI_API_KEY")
-                env_model = os.getenv("LLM_MODEL") or env_model
-                env_base_url = os.getenv("LLM_BASE_URL") or env_base_url
+                env_key = env_key or os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
+                env_model = env_model or os.getenv("LLM_MODEL")
+                env_base_url = env_base_url or os.getenv("LLM_BASE_URL")
 
             if env_key:
                 cfg.api_key = env_key

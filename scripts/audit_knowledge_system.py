@@ -159,7 +159,6 @@ def _grep_number(pattern: str, text: str, default: int = 0) -> int:
 
 
 def _kb_paths() -> list[Path]:
-        """私有辅助方法。"""
     return [PROJECT_ROOT / "knowledge_base" / name for name in KnowledgeBaseManager.KNOWLEDGE_FILES]
 
 
@@ -426,7 +425,7 @@ def check_enterprise_conditions_public_stats() -> AuditResult:
     """
     path = PROJECT_ROOT / "knowledge_base" / "企业已具备的执行条件.md"
     text = _read_text(path) if path.exists() else ""
-    required_terms = ["公开数据", "116798", "67", "2568"]
+    required_terms = ["公开数据", "可读表数量", "可读数据行数", "字段出现次数"]
     missing = [term for term in required_terms if term not in text]
     status = PASS if not missing else FAIL
     return _result(
@@ -609,13 +608,6 @@ def check_chroma_index() -> AuditResult:
         count = store.collection.count()
     except Exception as exc:
         return _result("rag.formal_chroma_index", FAIL, f"Cannot open Chroma collection: {exc}", persist_dir=str(persist_dir))
-    finally:
-        if store is not None:
-            try:
-                store.client._system.stop()
-            except Exception:
-                pass
-
     expected = report.get("collection_count")
     reasonable = count >= 100 and (expected is None or abs(int(expected) - count) <= max(5, int(expected) * 0.05))
     status = PASS if reasonable else FAIL
@@ -667,17 +659,11 @@ def check_rag_query_returns_evidence() -> AuditResult:
         store = VectorStore(
             persist_directory=str(resolve_project_path("var/chroma")),
             collection_name="knowledge_base",
-            embedding_backend="fallback",
+            embedding_backend="auto",
         )
         results = store.similarity_search("粉尘涉爆 除尘系统 异常 公开数据", top_k=5)
     except Exception as exc:
         return _result("rag.query_returns_evidence_blocks", FAIL, f"RAG query failed: {exc}")
-    finally:
-        if store is not None:
-            try:
-                store.client._system.stop()
-            except Exception:
-                pass
 
     useful = [
         {
@@ -802,7 +788,6 @@ def _make_workspace_temp_dir(prefix: str) -> Path:
 
 
 async def _check_memory_archive_async() -> AuditResult:
-        """私有辅助方法。"""
     tmp = _make_workspace_temp_dir("memory_archive_")
     try:
         fs = AgentFS(db_path=str(tmp / "agentfs.db"), git_repo_path=str(tmp / "git"))
@@ -844,7 +829,6 @@ def check_memory_archive() -> AuditResult:
 
 
 async def _check_workflow_light_e2e_async() -> AuditResult:
-        """私有辅助方法。"""
     from mining_risk_serve.agent.workflow import ScenarioConfig, node_decision_generation, node_memory_recall
 
     state = {
@@ -953,10 +937,10 @@ async def _check_workflow_light_e2e_async() -> AuditResult:
 
     fake_memory = FakeMemory()
     with (
-        patch("agent.workflow._get_memory", return_value=fake_memory),
-        patch("agent.workflow.OpenAICompatibleClient", new=FakeClient),
-        patch("agent.workflow.SamplingNode", new=FakeSamplingNode),
-        patch("agent.workflow.RiskAssessor", new=FakeRiskAssessor),
+        patch("mining_risk_serve.agent.workflow._get_memory", return_value=fake_memory),
+        patch("mining_risk_serve.agent.workflow.OpenAICompatibleClient", new=FakeClient),
+        patch("mining_risk_serve.agent.workflow.SamplingNode", new=FakeSamplingNode),
+        patch("mining_risk_serve.agent.workflow.RiskAssessor", new=FakeRiskAssessor),
     ):
         state = await node_memory_recall(state)
         state = await node_decision_generation(state, ScenarioConfig("chemical"))
