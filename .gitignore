@@ -61,3 +61,11 @@ frontend/*.tsbuildinfo
 
 # Editor
 .vscode
+
+# Bundled / platform-specific artifacts (do not commit)
+python312/
+python312.zip
+get-pip.py
+pip.whl
+net_test.py
+named_pipe_api.py

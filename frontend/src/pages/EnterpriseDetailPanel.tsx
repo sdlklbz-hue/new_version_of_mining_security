@@ -3,6 +3,7 @@ import ReactECharts from "echarts-for-react";
 import "echarts-gl";
 import * as echarts from "echarts";
 import type { EnterpriseDetailResponse } from "../api/client";
+import ProcessFlowDiagram, { parseProcessFlowContent } from "../components/ProcessFlowDiagram";
 
 interface Props {
   data: EnterpriseDetailResponse;
@@ -69,6 +70,12 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
   const tagReports = useMemo(() => getTagReports(detailData), [detailData]);
   const ratingData = useMemo(() => getRatingData(detailData), [detailData]);
   const riskInfo = useMemo(() => getRiskLevel(ratingData), [ratingData]);
+
+  const processFlowRaw = basicInfo["工艺流程内容"];
+  const processFlowDiagrams = useMemo(
+    () => parseProcessFlowContent(processFlowRaw),
+    [processFlowRaw],
+  );
 
   const checkStats = useMemo(() => {
     const total = checkRecords.length;
@@ -421,7 +428,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           gap: 12
         }}>
           {Object.entries(basicInfo).map(([key, value], idx) => {
-            if (value === null || value === undefined || value === "") return null;
+            if (key === "工艺流程内容" || value === null || value === undefined || value === "") return null;
             const labelMap: Record<string, string> = {
               "ENTNAME": "企业名称", "UNISCID": "统一社会信用代码", "REGNO": "注册号",
               "ENTTYPE": "企业类型", "INDUS_TYPE_LAGRE_NAME": "行业监管大类",
@@ -452,6 +459,22 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
         </div>
       </div>
 
+      {processFlowDiagrams && processFlowDiagrams.length > 0 && (
+        <div className="detail-section" style={{
+          backgroundColor: "rgba(31, 41, 55, 0.6)",
+          borderRadius: 16,
+          padding: 24,
+          border: "1px solid #374151",
+          marginBottom: 28,
+          animationDelay: "0.65s"
+        }}>
+          <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ color: "#06b6d4" }}>⚙️</span> 工艺流程图
+          </h3>
+          <ProcessFlowDiagram raw={processFlowRaw} />
+        </div>
+      )}
+
       {Object.keys(safetyInfo).length > 0 && (
         <div className="detail-section" style={{
           backgroundColor: "rgba(31, 41, 55, 0.6)",
@@ -470,7 +493,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
             gap: 12
           }}>
             {Object.entries(safetyInfo).map(([key, value], idx) => {
-              if (value === null || value === undefined || value === "") return null;
+              if (key === "工艺流程内容" || value === null || value === undefined || value === "") return null;
               const colors = ["#ef4444", "#f97316", "#eab308", "#10b981", "#3b82f6", "#8b5cf6"];
               const c = colors[idx % colors.length];
               return (

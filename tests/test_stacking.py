@@ -1,6 +1,6 @@
 """
 Stacking 模型单元测试
-验证 7 基学习器接口一致性、OOF 无 NaN、save/load 等
+验证基学习器接口一致性、OOF 无 NaN、save/load 等
 """
 
 import os
@@ -18,12 +18,12 @@ class TestStackingRiskModel:
 
     def test_init(self):
         model = StackingRiskModel()
-        assert len(model.base_learners) == 7
+        assert len(model.base_learners) == 5
         assert model.meta_learner is not None
         assert model.risk_levels == ["蓝", "黄", "橙", "红"]
 
     def test_base_learners_interface(self):
-        """验证 7 个基学习器均具备统一接口 fit(X,y) 和 predict_proba(X)"""
+        """验证各基学习器均具备统一接口 fit(X,y) 和 predict_proba(X)"""
         np.random.seed(42)
         X = pd.DataFrame(np.random.randn(20, 5))
         y = pd.Series(np.random.randint(0, 4, size=20))

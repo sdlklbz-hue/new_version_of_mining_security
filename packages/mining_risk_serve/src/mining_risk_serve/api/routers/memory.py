@@ -23,6 +23,15 @@ from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+from mining_risk_serve.api.services.dependencies import get_registry
+from mining_risk_serve.harness.agentfs import AgentFS
+from mining_risk_serve.harness.memory import ShortTermMemory
+from mining_risk_serve.harness.memory_statistics import (
+    MemoryStatsFilters,
+    build_export_rows,
+    build_statistics_payload,
+    parse_time,
+)
 from mining_risk_common.utils.config import get_config, resolve_project_path
 from mining_risk_common.utils.logger import get_logger
 
@@ -1597,3 +1606,149 @@ async def manual_persist() -> Dict[str, bool]:
         return {"success": True}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+_runtime_agentfs: Optional[AgentFS] = None
+_runtime_short_term: Optional[ShortTermMemory] = None
+
+
+def _get_agentfs() -> AgentFS:
+    return _runtime_agentfs or AgentFS()
+
+
+def _get_runtime_short_term() -> Optional[ShortTermMemory]:
+    if _runtime_short_term is not None:
+        return _runtime_short_term
+    try:
+        return get_registry().get_memory().short_term
+    except Exception:
+        return None
+
+
+def _memory_stats_filters(
+    *,
+    module: str = "all",
+    priority: Optional[str] = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    keyword: Optional[str] = None,
+    path: Optional[str] = None,
+    risk_level: Optional[str] = None,
+    risk_type: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+) -> MemoryStatsFilters:
+    return MemoryStatsFilters(
+        module=module,
+        priority=priority,
+        start_time=parse_time(start_time),
+        end_time=parse_time(end_time),
+        keyword=keyword,
+        path=path,
+        risk_level=risk_level,
+        risk_type=risk_type,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@router.get("/statistics")
+async def memory_statistics(
+    refresh: bool = Query(False),
+    module: str = Query("all"),
+    priority: Optional[str] = Query(None),
+    start_time: Optional[str] = Query(None),
+    end_time: Optional[str] = Query(None),
+    keyword: Optional[str] = Query(None),
+    path: Optional[str] = Query(None),
+    risk_level: Optional[str] = Query(None),
+    risk_type: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+) -> Dict[str, Any]:
+    """记忆统计看板数据（Harness AgentFS + 短期记忆）。"""
+
+    _ = refresh
+    filters = _memory_stats_filters(
+        module=module,
+        priority=priority,
+        start_time=start_time,
+        end_time=end_time,
+        keyword=keyword,
+        path=path,
+        risk_level=risk_level,
+        risk_type=risk_type,
+        limit=limit,
+        offset=offset,
+    )
+    return build_statistics_payload(
+        filters=filters,
+        agentfs=_get_agentfs(),
+        short_term=_get_runtime_short_term(),
+    )
+
+
+@router.get("/export")
+async def memory_statistics_export(
+    format: str = Query("csv"),
+    module: str = Query("all"),
+    priority: Optional[str] = Query(None),
+    start_time: Optional[str] = Query(None),
+    end_time: Optional[str] = Query(None),
+    keyword: Optional[str] = Query(None),
+    path: Optional[str] = Query(None),
+    risk_level: Optional[str] = Query(None),
+    risk_type: Optional[str] = Query(None),
+) -> StreamingResponse:
+    """导出记忆统计记录（csv / pdf）。"""
+
+    filters = _memory_stats_filters(
+        module=module,
+        priority=priority,
+        start_time=start_time,
+        end_time=end_time,
+        keyword=keyword,
+        path=path,
+        risk_level=risk_level,
+        risk_type=risk_type,
+        limit=100000,
+        offset=0,
+    )
+    rows = build_export_rows(
+        filters=filters,
+        agentfs=_get_agentfs(),
+        short_term=_get_runtime_short_term(),
+    )
+    if not rows:
+        raise HTTPException(status_code=400, detail="无数据可导出")
+
+    fmt = (format or "csv").lower()
+    filename = f"memory_{module}.{fmt}"
+
+    if fmt == "pdf":
+        try:
+            from reportlab.lib.pagesizes import A4, landscape
+            from reportlab.platypus import SimpleDocTemplate, Table
+
+            pdf_buf = io.BytesIO()
+            doc = SimpleDocTemplate(pdf_buf, pagesize=landscape(A4))
+            table_data = [list(rows[0].keys())] + [list(row.values()) for row in rows[:200]]
+            doc.build([Table(table_data)])
+            pdf_buf.seek(0)
+            return StreamingResponse(
+                pdf_buf,
+                media_type="application/pdf",
+                headers={"Content-Disposition": f"attachment; filename={filename}"},
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"PDF 导出失败: {exc}") from exc
+
+    df = pd.DataFrame(rows)
+    buf = io.StringIO()
+    df.to_csv(buf, index=False, encoding="utf-8-sig")
+    buf.seek(0)
+    return StreamingResponse(
+        io.BytesIO(buf.getvalue().encode("utf-8-sig")),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )

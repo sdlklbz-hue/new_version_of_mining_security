@@ -17,6 +17,7 @@ from mining_risk_serve.api.schemas.prediction import (
     BatchDecisionResponse,
     BatchJobStatus,
     DecisionRequest,
+    PredictRequest,
     VALID_SCENARIO_IDS,
 )
 from mining_risk_serve.api.services.decision_store import DecisionStore, get_decision_settings
@@ -118,6 +119,130 @@ class DecisionBatchService:
     def __init__(self, prediction_service: Any) -> None:
         self.prediction_service = prediction_service
 
+    def _start_job(
+        self,
+        rows: List[Dict[str, Any]],
+        scenario_id: str,
+        *,
+        source: str = "batch",
+    ) -> BatchDecisionResponse:
+        if not rows:
+            raise HTTPException(status_code=400, detail="没有可预测的企业数据")
+
+        settings = get_decision_settings()
+        max_rows = int(settings["batch_max_rows"])
+        if len(rows) > max_rows:
+            rows = rows[:max_rows]
+
+        job_id = uuid.uuid4().hex[:12]
+        store = DecisionStore()
+        batch_dir = store.batch_dir(job_id)
+        job = {
+            "job_id": job_id,
+            "status": "queued",
+            "total": len(rows),
+            "completed": 0,
+            "failed": 0,
+            "running": 0,
+            "output_dir": str(batch_dir),
+            "manifest_path": None,
+            "results": [
+                {
+                    "row_index": i,
+                    "enterprise_id": str(
+                        row.get("display_name")
+                        or row.get("企业名称")
+                        or row.get("enterprise_id")
+                        or _enterprise_id(row, i)
+                    ),
+                    "status": "queued",
+                    "risk_level": None,
+                    "output_path": None,
+                    "error": None,
+                }
+                for i, row in enumerate(rows)
+            ],
+            "errors": [],
+            "created_at": time.time(),
+            "finished_at": None,
+            "cancelled": False,
+        }
+        _JOBS[job_id] = job
+        if source != "map_predict_only":
+            asyncio.create_task(self._run_job(job_id, rows, scenario_id, source=source))
+        return BatchDecisionResponse(
+            success=True,
+            message=f"批量完整决策任务已创建，共 {len(rows)} 条企业数据",
+            job_id=job_id,
+            total=len(rows),
+            status_url=f"/api/v1/agent/decision/batch/{job_id}",
+        )
+
+    async def create_job_from_enterprise_rows(
+        self,
+        rows: List[Dict[str, Any]],
+        scenario_id: Optional[str] = None,
+    ) -> BatchDecisionResponse:
+        """从企业库扁平化记录创建批量决策任务（每项需含 enterprise_id 与 data）。"""
+        scenario = scenario_id or "chemical"
+        if scenario not in VALID_SCENARIO_IDS:
+            raise HTTPException(status_code=400, detail="无效场景: %s" % scenario)
+        payload_rows: List[Dict[str, Any]] = []
+        for row in rows:
+            data = row.get("data")
+            if not isinstance(data, dict) or not data:
+                continue
+            ent_id = str(row.get("enterprise_id") or "").strip()
+            if not ent_id:
+                continue
+            name = str(row.get("name") or data.get("企业名称") or ent_id).strip()
+            payload_rows.append(
+                {
+                    "enterprise_id": ent_id,
+                    "display_name": name,
+                    **{**data, "企业名称": name},
+                }
+            )
+        if not payload_rows:
+            raise HTTPException(status_code=400, detail="企业库记录无法生成有效预测载荷")
+        return self._start_job(payload_rows, scenario, source="enterprise_map_batch")
+
+    async def create_map_predict_job(
+        self,
+        rows: List[Dict[str, Any]],
+        scenario_id: Optional[str] = None,
+    ) -> BatchDecisionResponse:
+        """企业地图批量：仅 Stacking 模型预测，不调用 GLM。"""
+        scenario = scenario_id or "chemical"
+        if scenario not in VALID_SCENARIO_IDS:
+            raise HTTPException(status_code=400, detail="无效场景: %s" % scenario)
+
+        payload_rows: List[Dict[str, Any]] = []
+        for row in rows:
+            data = row.get("data")
+            if not isinstance(data, dict) or not data:
+                continue
+            ent_id = str(row.get("enterprise_id") or "").strip()
+            if not ent_id:
+                continue
+            name = str(row.get("name") or data.get("企业名称") or ent_id).strip()
+            payload_rows.append(
+                {
+                    "enterprise_id": ent_id,
+                    "display_name": name,
+                    **{**data, "企业名称": name, "scenario_id": scenario},
+                }
+            )
+        if not payload_rows:
+            raise HTTPException(status_code=400, detail="企业库记录无法生成有效预测载荷")
+
+        resp = self._start_job(payload_rows, scenario, source="map_predict_only")
+        resp.message = f"批量模型预测任务已创建（不调用 GLM），共 {resp.total} 家企业"
+        job_id = resp.job_id
+        _JOBS[job_id]["predict_only"] = True
+        asyncio.create_task(self._run_map_predict_job(job_id, payload_rows, scenario))
+        return resp
+
     async def create_job(
         self,
         file: UploadFile,
@@ -139,44 +264,8 @@ class DecisionBatchService:
         if len(df) > max_rows:
             df = df.head(max_rows)
 
-        job_id = uuid.uuid4().hex[:12]
-        store = DecisionStore()
-        batch_dir = store.batch_dir(job_id)
         rows = [_row_to_data(row, list(df.columns)) for _, row in df.iterrows()]
-        job = {
-            "job_id": job_id,
-            "status": "queued",
-            "total": len(rows),
-            "completed": 0,
-            "failed": 0,
-            "running": 0,
-            "output_dir": str(batch_dir),
-            "manifest_path": None,
-            "results": [
-                {
-                    "row_index": i,
-                    "enterprise_id": _enterprise_id(row_data, i),
-                    "status": "queued",
-                    "risk_level": None,
-                    "output_path": None,
-                    "error": None,
-                }
-                for i, row_data in enumerate(rows)
-            ],
-            "errors": [],
-            "created_at": time.time(),
-            "finished_at": None,
-            "cancelled": False,
-        }
-        _JOBS[job_id] = job
-        asyncio.create_task(self._run_job(job_id, rows, scenario))
-        return BatchDecisionResponse(
-            success=True,
-            message=f"批量完整决策任务已创建，共 {len(rows)} 条企业数据",
-            job_id=job_id,
-            total=len(rows),
-            status_url=f"/api/v1/agent/decision/batch/{job_id}",
-        )
+        return self._start_job(rows, scenario, source="batch")
 
     def get_status(self, job_id: str) -> BatchJobStatus:
         job = _JOBS.get(job_id)
@@ -211,7 +300,129 @@ class DecisionBatchService:
                 zf.write(path, arcname=path.name)
         return zip_path
 
-    async def _run_job(self, job_id: str, rows: List[Dict[str, Any]], scenario_id: str) -> None:
+    async def _run_map_predict_job(
+        self,
+        job_id: str,
+        rows: List[Dict[str, Any]],
+        scenario_id: str,
+    ) -> None:
+        """批量仅模型预测：Stacking + 规则校验，无 GLM / MARCH 回环。"""
+        job = _JOBS[job_id]
+        settings = get_decision_settings()
+        persist = bool(settings.get("persist_enabled", True))
+        semaphore = asyncio.Semaphore(int(settings["batch_max_concurrency"]))
+        store = DecisionStore()
+        job["status"] = "running"
+        self._write_manifest(store, job)
+
+        async def run_one(row_index: int, row_data: Dict[str, Any]) -> None:
+            item = job["results"][row_index]
+            if job.get("cancelled"):
+                _refresh_job_status(job)
+                self._write_manifest(store, job)
+                return
+            async with semaphore:
+                if job.get("cancelled"):
+                    _refresh_job_status(job)
+                    self._write_manifest(store, job)
+                    return
+                item["status"] = "running"
+                job["running"] += 1
+                _refresh_job_status(job)
+                self._write_manifest(store, job)
+                enterprise_id = str(row_data.get("enterprise_id") or item["enterprise_id"])
+                display_name = str(
+                    row_data.get("display_name")
+                    or row_data.get("企业名称")
+                    or enterprise_id
+                )
+                payload = {
+                    k: v
+                    for k, v in row_data.items()
+                    if k not in ("enterprise_id", "display_name")
+                }
+                try:
+                    predict_resp = await asyncio.to_thread(
+                        self.prediction_service.predict,
+                        PredictRequest(enterprise_id=enterprise_id, data=payload),
+                    )
+                    output = None
+                    if persist:
+                        output = store.save_predict_only(
+                            enterprise_id=enterprise_id,
+                            scenario_id=scenario_id,
+                            data=payload,
+                            predicted_level=predict_resp.predicted_level,
+                            probability_distribution=predict_resp.probability_distribution,
+                            shap_contributions=predict_resp.shap_contributions,
+                            job_id=job_id,
+                            row_index=row_index,
+                        )
+                    item["enterprise_id"] = display_name
+                    if job.get("cancelled"):
+                        _discard_output_file(
+                            (output or {}).get("path") or (output or {}).get("display_path")
+                        )
+                        item["status"] = "cancelled"
+                        item["risk_level"] = None
+                        item["output_path"] = None
+                    else:
+                        item["status"] = "completed"
+                        item["risk_level"] = predict_resp.predicted_level
+                        item["output_path"] = (
+                            (output or {}).get("display_path") if output else None
+                        )
+                        job["completed"] += 1
+                except Exception as exc:
+                    logger.error(
+                        "批量模型预测单行失败 job=%s row=%s: %s",
+                        job_id,
+                        row_index,
+                        exc,
+                    )
+                    item["status"] = "failed"
+                    item["error"] = str(exc)
+                    job["failed"] += 1
+                    job["errors"].append(
+                        {
+                            "row_index": row_index,
+                            "enterprise_id": display_name,
+                            "error": str(exc),
+                        }
+                    )
+                finally:
+                    job["running"] -= 1
+                    _refresh_job_status(job)
+                    self._write_manifest(store, job)
+
+        await asyncio.gather(*(run_one(i, row_data) for i, row_data in enumerate(rows)))
+        if job.get("cancelled"):
+            for item in job["results"]:
+                if item["status"] in {"queued", "running"}:
+                    _discard_output_file(item.get("output_path"))
+                    item["status"] = "cancelled"
+                    item["output_path"] = None
+                    item["risk_level"] = None
+            job["status"] = "cancelled"
+        else:
+            job["status"] = "completed" if job["failed"] == 0 else "completed_with_errors"
+        job["finished_at"] = time.time()
+        self._write_manifest(store, job)
+        try:
+            from mining_risk_serve.api.routers.visualization import invalidate_enterprise_map_cache
+
+            invalidate_enterprise_map_cache()
+        except Exception as cache_err:
+            logger.debug("企业地图缓存失效跳过: %s", cache_err)
+
+    async def _run_job(
+        self,
+        job_id: str,
+        rows: List[Dict[str, Any]],
+        scenario_id: str,
+        *,
+        source: str = "batch",
+    ) -> None:
         job = _JOBS[job_id]
         settings = get_decision_settings()
         semaphore = asyncio.Semaphore(int(settings["batch_max_concurrency"]))
@@ -234,18 +445,26 @@ class DecisionBatchService:
                 job["running"] += 1
                 _refresh_job_status(job)
                 self._write_manifest(store, job)
-                enterprise_id = str(item["enterprise_id"])
+                enterprise_id = str(
+                    row_data.get("enterprise_id")
+                    or row_data.get("企业ID")
+                    or item["enterprise_id"]
+                )
                 try:
+                    payload = {k: v for k, v in row_data.items() if k != "enterprise_id"}
                     request = DecisionRequest(
                         enterprise_id=enterprise_id,
                         scenario_id=scenario_id,
-                        data={**row_data, "scenario_id": scenario_id},
+                        data={**payload, "scenario_id": scenario_id},
                     )
                     response = await self.prediction_service.run_decision(
                         request,
-                        source="batch",
+                        source=source,
                         job_id=job_id,
                         row_index=row_index,
+                    )
+                    item["enterprise_id"] = (
+                        str(payload.get("企业名称") or "").strip() or enterprise_id
                     )
                     if job.get("cancelled"):
                         _discard_output_file(response.output_path)

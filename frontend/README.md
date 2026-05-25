@@ -44,6 +44,17 @@ npm run dev          # http://localhost:5173 ，Vite 代理 /api 至 http://loca
 VITE_DEV_API_TARGET=http://192.168.1.10:8000 npm run dev
 ```
 
+企业风险地图的 3D 模式使用高德 JS API 2.0。本地开发时在 `frontend/.env.local`
+配置 Web 端 JS API Key 与安全密钥：
+
+```bash
+VITE_AMAP_KEY=你的Web端JS_API_Key
+VITE_AMAP_SECURITY_CODE=你的securityJsCode
+```
+
+这些 Vite 变量会进入前端构建产物，仅适合本地或受控演示环境；生产环境建议改为
+Nginx 代理注入 `jscode`。
+
 ## 生产构建
 
 ```bash

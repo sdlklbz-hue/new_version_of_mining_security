@@ -464,6 +464,12 @@ class PredictionService:
                 job_id=job_id,
                 row_index=row_index,
             )
+            try:
+                from mining_risk_serve.api.routers.visualization import invalidate_enterprise_map_cache
+
+                invalidate_enterprise_map_cache()
+            except Exception as cache_err:
+                logger.debug("企业地图缓存失效跳过: %s", cache_err)
             response.output_path = output.get("path")
             response.output_display_path = output.get("display_path")
             try:

@@ -593,6 +593,24 @@ select {
   animation: pulse-blue 1.5s infinite;
 }
 
+.timeline-node.pending {
+  border-left-color: var(--text-dim);
+  opacity: 0.72;
+}
+
+.timeline-node.pending .node-name {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.timeline-node.skipped {
+  border-left-color: var(--accent-amber);
+}
+
+.timeline-node.skipped .node-name {
+  color: var(--text-secondary);
+}
+
 @keyframes pulse-blue {
   0%, 100% { box-shadow: 0 0 0 rgba(59, 130, 246, 0); }
   50% { box-shadow: 0 0 16px rgba(59, 130, 246, 0.3); }

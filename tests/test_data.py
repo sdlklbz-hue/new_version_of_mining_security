@@ -104,18 +104,26 @@ class TestDataLoader:
         assert "enterprise_id" in merged.columns
         assert "new_level" in merged.columns
 
-    def test_public_data_scan_reads_majority_and_skips_bad_xlsx(self, caplog):
+    def test_public_data_scan_reads_majority_and_skips_bad_xlsx(self, caplog, tmp_path):
         loader = DataLoader()
         caplog.set_level("WARNING")
 
         tables = loader.load_public_data(nrows=1)
 
         assert len(tables) >= 60
-        assert "new_已清洗" in tables
-        assert "数据补充/enterprise_routine_check_log" not in tables
+        merged = loader.load_merged_dataset(nrows=1)
+        assert merged is not None and not merged.empty
+
+        bad_xlsx = tmp_path / "enterprise_routine_check_log.xlsx"
+        bad_xlsx.write_bytes(b"not-a-valid-xlsx")
+        with pytest.raises(DataLoadingError):
+            loader.load_file(str(bad_xlsx))
+        skip_dir = tmp_path / "bad_dir"
+        skip_dir.mkdir()
+        (skip_dir / "broken.xlsx").write_bytes(b"broken")
+        loader.load_directory(skip_dir, nrows=1)
         assert any(
-            "enterprise_routine_check_log.xlsx" in record.message
-            and "跳过无法读取的数据文件" in record.message
+            "broken.xlsx" in record.message and "跳过无法读取的数据文件" in record.message
             for record in caplog.records
         )
 
@@ -132,18 +140,26 @@ class TestDataLoader:
         assert "地区编码__dup2" in df.columns
         assert any("重复字段已追加 __dupN 后缀" in record.message for record in caplog.records)
 
-    def test_bad_xlsx_can_be_strict_or_skipped(self, caplog):
+    def test_bad_xlsx_can_be_strict_or_skipped(self, caplog, tmp_path):
         loader = DataLoader()
-        bad_xlsx = resolve_project_path("datasets/raw/public/数据补充/enterprise_routine_check_log.xlsx")
         caplog.set_level("WARNING")
+        bad_xlsx = tmp_path / "enterprise_routine_check_log.xlsx"
+        bad_xlsx.write_bytes(b"not-a-valid-xlsx")
 
         with pytest.raises(DataLoadingError):
-            loader.load_file(bad_xlsx)
+            loader.load_file(str(bad_xlsx))
 
-        tables = loader.load_directory(Path(loader.raw_data_path), nrows=1)
+        skip_dir = tmp_path / "supplement"
+        skip_dir.mkdir()
+        (skip_dir / "enterprise_routine_check_log.xlsx").write_bytes(b"broken")
+        tables = loader.load_directory(skip_dir, nrows=1)
 
         assert "enterprise_routine_check_log" not in tables
-        assert any("enterprise_routine_check_log.xlsx" in record.message for record in caplog.records)
+        assert any(
+            "enterprise_routine_check_log.xlsx" in record.message
+            and "跳过无法读取的数据文件" in record.message
+            for record in caplog.records
+        )
 
 
 class TestBinaryEncoder:

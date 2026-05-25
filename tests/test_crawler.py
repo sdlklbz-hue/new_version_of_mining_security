@@ -59,7 +59,7 @@ class TestRegulationCrawler:
             assert "测试法规" in content
             assert "正文内容" in content
 
-    @patch("data.crawler.requests.Session.get")
+    @patch("mining_risk_common.dataplane.crawler.requests.Session.get")
     def test_fetch(self, mock_get):
         mock_resp = MagicMock()
         mock_resp.text = "<html><body>test</body></html>"
@@ -71,7 +71,7 @@ class TestRegulationCrawler:
         html = crawler._fetch("https://www.mem.gov.cn/")
         assert html == "<html><body>test</body></html>"
 
-    @patch("data.crawler.requests.Session.get")
+    @patch("mining_risk_common.dataplane.crawler.requests.Session.get")
     def test_crawl_regulations_mock(self, mock_get):
         """Mock 完整爬取流程"""
         mock_resp = MagicMock()
@@ -101,7 +101,7 @@ class TestRegulationCrawler:
 class TestCrawlerStatic:
     """测试 Crawler 静态接口"""
 
-    @patch("data.crawler.requests.Session.get")
+    @patch("mining_risk_common.dataplane.crawler.requests.Session.get")
     def test_crawl_regulations_static(self, mock_get):
         mock_resp = MagicMock()
         mock_resp.text = "<html><body><h1>标题</h1><p>内容内容内容</p></body></html>"

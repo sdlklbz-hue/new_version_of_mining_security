@@ -1,10 +1,14 @@
-import sys
+"""本地启动 FastAPI（无热重载）。推荐: bash scripts/run_api.sh"""
 import os
+import sys
 
-os.chdir(r"c:\Users\sdlkl\Desktop\程序\mining_risk_agent-master")
-sys.path.insert(0, os.getcwd())
+ROOT = os.path.dirname(os.path.abspath(__file__))
+os.chdir(ROOT)
+sys.path.insert(0, ROOT)
+os.environ.setdefault("MINING_PROJECT_ROOT", ROOT)
 
 import uvicorn
-from api.main import app
+from mining_risk_serve.api.main import app
 
-uvicorn.run(app, host='0.0.0.0', port=8000)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

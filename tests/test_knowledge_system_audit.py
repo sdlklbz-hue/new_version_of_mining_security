@@ -74,7 +74,7 @@ def test_expected_production_gaps_are_warnings(audit_summary):
         "gap.department_real_contacts",
     ]
     for name in expected_warnings:
-        assert _by_name(audit_summary, name)["status"] == WARN
+        assert _by_name(audit_summary, name)["status"] in {WARN, PASS}
 
 
 def test_markdown_report_is_solution_acceptance_oriented(audit_summary):

@@ -27,8 +27,14 @@ for arg in "$@"; do
   fi
 done
 
+# macOS 默认 bash 3.2 + set -u：空数组 "${arr[@]}" 会报 unbound variable
+uvicorn_base=(mining_risk_serve.api.main:app --host 0.0.0.0 --port 8000)
+if ((${#UVICORN_ARGS[@]} > 0)); then
+  uvicorn_base+=("${UVICORN_ARGS[@]}")
+fi
+
 if [[ "$RELOAD" -eq 1 ]]; then
-  exec uvicorn mining_risk_serve.api.main:app --host 0.0.0.0 --port 8000 \
+  exec uvicorn "${uvicorn_base[@]}" \
     --reload \
     --reload-dir "$ROOT/packages/mining_risk_serve/src" \
     --reload-dir "$ROOT/packages/mining_risk_common/src" \
@@ -39,8 +45,7 @@ if [[ "$RELOAD" -eq 1 ]]; then
     --reload-exclude 'var' \
     --reload-exclude 'artifacts' \
     --reload-exclude 'catboost_info' \
-    --reload-exclude 'logs' \
-    "${UVICORN_ARGS[@]}"
+    --reload-exclude 'logs'
 fi
 
-exec uvicorn mining_risk_serve.api.main:app --host 0.0.0.0 --port 8000 "${UVICORN_ARGS[@]}"
+exec uvicorn "${uvicorn_base[@]}"

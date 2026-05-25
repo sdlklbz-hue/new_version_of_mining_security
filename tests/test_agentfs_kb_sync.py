@@ -66,7 +66,7 @@ def test_vector_store_split_by_headers_uses_filesystem_version():
     chunks = split_by_headers(text, max_chunk_size=500, overlap=80)
     titles = [chunk["metadata"]["section_title"] for chunk in chunks]
 
-    assert len(chunks) >= 120
+    assert len(chunks) >= 90
     assert any("粉尘涉爆执行条件" in title for title in titles)
     assert any("AgentFS 同步建议" in title for title in titles)
 

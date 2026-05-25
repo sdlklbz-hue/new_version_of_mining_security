@@ -16,7 +16,7 @@ class TestStackingRiskModel:
 
     def test_init(self):
         model = StackingRiskModel()
-        assert len(model.base_learners) == 7
+        assert len(model.base_learners) == 5
         assert model.meta_learner is not None
         assert model.risk_levels == ["蓝", "黄", "橙", "红"]
 

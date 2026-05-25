@@ -11,8 +11,10 @@ import {
 import {
   cancelDecisionBatch,
   createDecisionBatch,
+  createEnterpriseMapBatchPredict,
   fetchDecisionBatchStatus,
 } from "../api/client";
+import type { EnterpriseMapBatchPredictRequest } from "../api/types";
 import type { BatchJobStatus, ScenarioId } from "../api/types";
 
 function isBatchTerminal(status: string | undefined): boolean {
@@ -55,6 +57,7 @@ interface DecisionBatchContextValue {
   batchInfo: string;
   batchStatus: BatchJobStatus | null;
   startBatch: (file: File, scenario: ScenarioId) => Promise<void>;
+  startMapBatch: (params: Omit<EnterpriseMapBatchPredictRequest, "scenario_id"> & { scenario: ScenarioId }) => Promise<void>;
   cancelBatch: () => Promise<void>;
   clearBatch: () => void;
 }
@@ -90,6 +93,33 @@ export function DecisionBatchProvider({ children }: { children: ReactNode }) {
     const firstStatus = await fetchDecisionBatchStatus(resp.job_id);
     applyStatus(firstStatus);
   }, [applyStatus]);
+
+  const startMapBatch = useCallback(
+    async (params: Omit<EnterpriseMapBatchPredictRequest, "scenario_id"> & { scenario: ScenarioId }) => {
+      setBatchLoading(true);
+      const countHint =
+        params.folders && params.folders.length > 0
+          ? `${params.folders.length} 家已选企业`
+          : "当前筛选结果";
+      setBatchInfo(`正在创建企业地图批量模型预测任务（${countHint}，不调用 GLM）…`);
+      cancelRequestedRef.current = false;
+      setBatchStatus(null);
+      const { scenario, ...rest } = params;
+      const resp = await createEnterpriseMapBatchPredict({
+        ...rest,
+        scenario_id: scenario,
+      });
+      if (!resp?.success) {
+        setBatchInfo("批量模型预测任务创建失败，请确认后端服务与管理员令牌（X-Admin-Token）配置。");
+        setBatchLoading(false);
+        return;
+      }
+      setBatchInfo(resp.message);
+      const firstStatus = await fetchDecisionBatchStatus(resp.job_id);
+      applyStatus(firstStatus);
+    },
+    [applyStatus],
+  );
 
   const cancelBatch = useCallback(async () => {
     if (!batchStatus?.job_id) return;
@@ -151,10 +181,11 @@ export function DecisionBatchProvider({ children }: { children: ReactNode }) {
       batchInfo,
       batchStatus,
       startBatch,
+      startMapBatch,
       cancelBatch,
       clearBatch,
     }),
-    [batchLoading, batchInfo, batchStatus, startBatch, cancelBatch, clearBatch],
+    [batchLoading, batchInfo, batchStatus, startBatch, startMapBatch, cancelBatch, clearBatch],
   );
 
   return (

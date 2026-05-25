@@ -845,3 +845,49 @@ export interface EnterpriseDetailResponse {
   name: string;
   data: Record<string, unknown>;
 }
+
+export interface EnterpriseDecisionPayloadResponse {
+  success: boolean;
+  folder: string;
+  name: string;
+  enterprise_id: string;
+  payload: Record<string, unknown>;
+  source: string;
+}
+
+export interface EnterpriseMapMarker {
+  folder: string;
+  name: string;
+  lat: number;
+  lng: number;
+  industry: string;
+  predicted_level?: string | null;
+  probability?: number | null;
+  tracked: boolean;
+  last_predicted_at?: string | null;
+  scenario_id?: string | null;
+  reported_level: string;
+}
+
+export interface EnterpriseMapMeta {
+  total_enterprises: number;
+  with_coordinates: number;
+  skipped_no_coords: number;
+  returned: number;
+  tracked_count: number;
+}
+
+export interface EnterpriseMapBatchPredictRequest {
+  folders?: string[];
+  scenario_id: string;
+  skip_predicted?: boolean;
+  keyword?: string;
+  predicted_level?: string;
+  tracked_only?: boolean;
+}
+
+export interface EnterpriseMapMarkersResponse {
+  success: boolean;
+  markers: EnterpriseMapMarker[];
+  meta: EnterpriseMapMeta;
+}

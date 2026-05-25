@@ -173,7 +173,7 @@ class TestFormalRagIndex:
         self._store = VectorStore(
             persist_directory="var/chroma",
             collection_name="knowledge_base",
-            embedding_backend="fallback",
+            embedding_backend="auto",
         )
         return self._store
 

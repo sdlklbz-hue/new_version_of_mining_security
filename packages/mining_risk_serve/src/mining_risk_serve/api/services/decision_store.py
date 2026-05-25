@@ -8,7 +8,7 @@ import re
 import time
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 from mining_risk_common.utils.config import get_config, resolve_project_path
 from mining_risk_common.utils.logger import get_logger
@@ -181,6 +181,41 @@ class DecisionStore:
             json.dump(_sanitize_value(record), f, ensure_ascii=False, indent=2)
         logger.info("完整决策结果已输出: %s", path)
         return {"path": str(path), "display_path": display_path}
+
+    def save_predict_only(
+        self,
+        *,
+        enterprise_id: str,
+        scenario_id: str,
+        data: Dict[str, Any],
+        predicted_level: str,
+        probability_distribution: Dict[str, float],
+        shap_contributions: List[Dict[str, Any]],
+        job_id: Optional[str] = None,
+        row_index: Optional[int] = None,
+    ) -> Dict[str, str]:
+        """仅保存 Stacking 模型预测结果（不经过 GLM 决策节点）。"""
+        request = DecisionRequest(
+            enterprise_id=enterprise_id,
+            scenario_id=scenario_id,
+            data=data,
+        )
+        response = DecisionResponse(
+            enterprise_id=enterprise_id,
+            scenario_id=scenario_id,
+            final_status="PREDICT_ONLY",
+            predicted_level=predicted_level,
+            probability_distribution=probability_distribution,
+            shap_contributions=shap_contributions,
+            mock=False,
+        )
+        return self.save_decision(
+            request=request,
+            response=response,
+            source="map_predict_only",
+            job_id=job_id,
+            row_index=row_index,
+        )
 
     def save_manifest(self, job_id: str, manifest: Dict[str, Any]) -> Dict[str, str]:
         path = self.batch_dir(job_id) / "manifest.json"
