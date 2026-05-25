@@ -1,0 +1,3388 @@
+{
+  "version": 1,
+  "region": "suzhou",
+  "source": "amap",
+  "partial": false,
+  "fetched_at": "2026-05-25T13:23:42.264425+00:00",
+  "bounds": {
+    "min_lat": 31.0,
+    "min_lng": 120.3,
+    "max_lat": 31.5,
+    "max_lng": 121.0
+  },
+  "facility_types": [
+    "hospital",
+    "fire_station",
+    "emergency_center",
+    "police"
+  ],
+  "fetch_warnings": [],
+  "facilities": [
+    {
+      "id": "B0LRH597V1",
+      "name": "苏州瑞京白癜风医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.255991,
+      "lng": 120.641089,
+      "address": "迎春南路191号"
+    },
+    {
+      "id": "B0H3HS00TM",
+      "name": "苏州肛泰中医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.248652,
+      "lng": 120.668899,
+      "address": "郭新西路22号(郭巷地铁站1号口步行410米)"
+    },
+    {
+      "id": "B0IBLHH51Q",
+      "name": "苏州吴州医院(妇科)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.237068,
+      "lng": 120.634464,
+      "address": "吴中经济开发区城南街道东吴南路83号"
+    },
+    {
+      "id": "B0FFLA02HG",
+      "name": "苏州弘慈血液病医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.27111,
+      "lng": 120.651439,
+      "address": "东环南路与北港路交叉口西北220米"
+    },
+    {
+      "id": "B0FFH911PO",
+      "name": "苏州肤康皮肤病医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.277754,
+      "lng": 120.625759,
+      "address": "东吴北路219-223号101室苏州肤康皮肤病医院"
+    },
+    {
+      "id": "B0L1JM8DIV",
+      "name": "苏州皮肤病专科医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.277982,
+      "lng": 120.62556,
+      "address": "东吴北路219、223号"
+    },
+    {
+      "id": "B0K2FU70L8",
+      "name": "苏州爱尔眼科医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.269544,
+      "lng": 120.628796,
+      "address": "东吴北路98号一至五层商业"
+    },
+    {
+      "id": "B0FFIZQS7H",
+      "name": "苏州名仕医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.271689,
+      "lng": 120.638326,
+      "address": "迎春路175号(迎春路地铁站4西北口步行460米)"
+    },
+    {
+      "id": "B02000JE54",
+      "name": "苏州大学附属第一医院广慈分院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.269113,
+      "lng": 120.647951,
+      "address": "宝带东路80号"
+    },
+    {
+      "id": "B0FFJN7WM9",
+      "name": "中国中医科学院西苑医院苏州医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.242646,
+      "lng": 120.616925,
+      "address": "苏蠡路138号"
+    },
+    {
+      "id": "B020004F0D",
+      "name": "苏州市吴中人民医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.268829,
+      "lng": 120.626868,
+      "address": "东吴北路61号"
+    },
+    {
+      "id": "B0KD2A1DUZ",
+      "name": "苏州眼耳鼻喉科医院(南环新院)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280588,
+      "lng": 120.638275,
+      "address": "南环东路10号(汇邻广场斜对面)"
+    },
+    {
+      "id": "B0H2C5TWLL",
+      "name": "苏州同德康复医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.242972,
+      "lng": 120.630783,
+      "address": "南沿河巷与澄湖路交叉口北120米"
+    },
+    {
+      "id": "B0FFJ4YU4E",
+      "name": "上海市第十人民医院尹山湖分院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.249496,
+      "lng": 120.680381,
+      "address": "郭新东路75号(郭苑路地铁站4号口步行340米)"
+    },
+    {
+      "id": "B0FFFVL7CZ",
+      "name": "苏州市吴中区长桥人民医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.263933,
+      "lng": 120.623372,
+      "address": "水香街长兴街东首1号"
+    },
+    {
+      "id": "B0HD0ZY08Q",
+      "name": "苏州苏城医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.279222,
+      "lng": 120.614673,
+      "address": "南环西路36号"
+    },
+    {
+      "id": "B0LGPSMPWY",
+      "name": "苏州市德善中西医结合医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.243787,
+      "lng": 120.611792,
+      "address": "新蠡路208号"
+    },
+    {
+      "id": "B0FFGV49PX",
+      "name": "苏州乐桥皮肤专科医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.305008,
+      "lng": 120.621933,
+      "address": "憩桥巷9号"
+    },
+    {
+      "id": "B0200173MZ",
+      "name": "苏州乐桥医院·腋臭专科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.304993,
+      "lng": 120.621949,
+      "address": "憩桥巷9号(乐桥地铁站2号口旁)"
+    },
+    {
+      "id": "B02000IQY1",
+      "name": "苏州沧浪医院本院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.270242,
+      "lng": 120.60835,
+      "address": "吴中西路609号(友联地铁站1号口步行120米)"
+    },
+    {
+      "id": "B020006TD1",
+      "name": "苏州工业园区星海医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.287136,
+      "lng": 120.66909,
+      "address": "葑春街400号"
+    },
+    {
+      "id": "B020005TXR",
+      "name": "苏州市华夏口腔医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.298288,
+      "lng": 120.623195,
+      "address": "人民路829号(三元坊地铁站4号口)"
+    },
+    {
+      "id": "B0LU2YTDP1",
+      "name": "苏州金阊医院皮肤科(医保定点)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.308389,
+      "lng": 120.603404,
+      "address": "爱河桥9号金阊文化教育大厦、天福里58号1层"
+    },
+    {
+      "id": "B0LDZZN7VH",
+      "name": "苏州口腔医院石湖门诊部",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.261493,
+      "lng": 120.598219,
+      "address": "太湖西路1188号(世茂广场1栋404室)"
+    },
+    {
+      "id": "B0L3KSBC7A",
+      "name": "东吴医院24小时急诊碎石",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280053,
+      "lng": 120.599004,
+      "address": "桐泾南路81号(桐泾公园地铁站1号口步行130米)"
+    },
+    {
+      "id": "B0KUGHHLT9",
+      "name": "苏州口腔医院(金鸡湖分院)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.317161,
+      "lng": 120.678331,
+      "address": "星港街199号东方之门北楼5楼(地铁6号口TIMS咖啡楼上)"
+    },
+    {
+      "id": "B0KKX42QGH",
+      "name": "苏州苏城医院(妇科)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.27893,
+      "lng": 120.614906,
+      "address": "苏城医院西南3门旁"
+    },
+    {
+      "id": "B0K6ZDYXTJ",
+      "name": "苏州光明眼科医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.312999,
+      "lng": 120.671988,
+      "address": "吴中区工业园区星海街168号"
+    },
+    {
+      "id": "B0K2TRW99F",
+      "name": "苏州市华夏口腔医院新区分院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.277947,
+      "lng": 120.573895,
+      "address": "星韵宝龙广场2栋五楼(横山地铁站8西北口步行290米)"
+    },
+    {
+      "id": "B0JKBCEY07",
+      "name": "苏州东吴中西医结合医院胃肠专科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280092,
+      "lng": 120.599085,
+      "address": "桐泾南路81号苏州东吴中西医结合医院"
+    },
+    {
+      "id": "B0I6J5ZKLB",
+      "name": "苏州高新区中医医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.262998,
+      "lng": 120.568801,
+      "address": "青石路2号"
+    },
+    {
+      "id": "B0GKPMVNEG",
+      "name": "苏州金阊医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.308515,
+      "lng": 120.603337,
+      "address": "爱河桥路9号"
+    },
+    {
+      "id": "B0G0KPSJCJ",
+      "name": "星海医院(狂犬病暴露预防处置门诊)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.286825,
+      "lng": 120.669175,
+      "address": "葑春街400号苏州工业园区星海医院内"
+    },
+    {
+      "id": "B0FFM14B6K",
+      "name": "苏州一〇〇医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.295541,
+      "lng": 120.627093,
+      "address": "乌鹊桥路53号"
+    },
+    {
+      "id": "B0FFLBF0JJ",
+      "name": "苏州瑞颐老年病医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.213257,
+      "lng": 120.58278,
+      "address": "吴中大道1190号"
+    },
+    {
+      "id": "B0FFK02INY",
+      "name": "苏州大学附属儿童医院景德路院区",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.309767,
+      "lng": 120.612705,
+      "address": "景德路303号(近第十六中学)"
+    },
+    {
+      "id": "B0FFJVMYUS",
+      "name": "苏州口腔医院(园区星海分院)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.313501,
+      "lng": 120.668752,
+      "address": "苏惠路98号(国检大厦全家超市边上)"
+    },
+    {
+      "id": "B0FFIS5T03",
+      "name": "苏州沧浪医院东大街院区",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.296376,
+      "lng": 120.617828,
+      "address": "东大街471号"
+    },
+    {
+      "id": "B0FFHSHRGU",
+      "name": "苏州东吴医院妇科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280506,
+      "lng": 120.598816,
+      "address": "桐泾南路81号101(中国农业银行旁)"
+    },
+    {
+      "id": "B0FFH72W0T",
+      "name": "江苏省口腔医院苏州分院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.298266,
+      "lng": 120.62326,
+      "address": "人民路829号(三元坊地铁站4号西北口步行80米)"
+    },
+    {
+      "id": "B0FFG1QU2X",
+      "name": "苏州市立医院本部儿童综合楼",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.302626,
+      "lng": 120.62271,
+      "address": "苏州市立医院本部东门旁(乐桥地铁站3号口步行190米)"
+    },
+    {
+      "id": "B0FFFFMDI8",
+      "name": "苏州市立医院本部",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.302023,
+      "lng": 120.621205,
+      "address": "道前街26号(乐桥地铁站3号口步行180米)"
+    },
+    {
+      "id": "B0FFFE9DWO",
+      "name": "苏州眼耳鼻喉科医院口腔科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.300758,
+      "lng": 120.65091,
+      "address": "葑门街道葑门路72号苏州眼耳鼻喉科医院"
+    },
+    {
+      "id": "B02001BJKX",
+      "name": "苏州瑞华骨科医院住院部",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.20503,
+      "lng": 120.594848,
+      "address": "塔韵路5号(文溪路地铁站3号东北口步行320米)"
+    },
+    {
+      "id": "B02000K46L",
+      "name": "苏州大学理想眼科医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.311386,
+      "lng": 120.644371,
+      "address": "干将东路200号"
+    },
+    {
+      "id": "B02000JWAQ",
+      "name": "苏州市中医医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.268714,
+      "lng": 120.597862,
+      "address": "吴中西路889号"
+    },
+    {
+      "id": "B02000IUOZ",
+      "name": "苏州口腔医院(观前街院区)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.313144,
+      "lng": 120.620417,
+      "address": "人民路1505号"
+    },
+    {
+      "id": "B02000IS17",
+      "name": "苏州大学附属第一医院综合病区",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.295332,
+      "lng": 120.628521,
+      "address": "乌鹊桥路68号"
+    },
+    {
+      "id": "B02000ID3S",
+      "name": "苏州瑞华骨科医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.204714,
+      "lng": 120.595021,
+      "address": "越溪镇塔韵路5号(文溪路地铁站3号东北口步行120米)"
+    },
+    {
+      "id": "B02000IC8Y",
+      "name": "苏州东吴中西医结合医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280331,
+      "lng": 120.59883,
+      "address": "桐泾南路81号"
+    },
+    {
+      "id": "B02000HUL8",
+      "name": "苏州眼耳鼻喉科医院(葑门路)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.300742,
+      "lng": 120.650763,
+      "address": "葑门路72号"
+    },
+    {
+      "id": "B020006QJD",
+      "name": "苏州大学东校区医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.303663,
+      "lng": 120.644974,
+      "address": "莫邪路688号"
+    },
+    {
+      "id": "B020004KNW",
+      "name": "苏州市眼视光医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.297946,
+      "lng": 120.622736,
+      "address": "书院巷18号(三元坊地铁站1号西南口旁)"
+    },
+    {
+      "id": "B020003GXC",
+      "name": "苏州市立医院东区",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.318828,
+      "lng": 120.626775,
+      "address": "白塔西路16号"
+    },
+    {
+      "id": "B020002D0Q",
+      "name": "苏州大学附属第二医院三香路院区",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.295238,
+      "lng": 120.584395,
+      "address": "三香路1055号"
+    },
+    {
+      "id": "B0MGK5KFDX",
+      "name": "无锡嘉华医院-肛肠科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.477344,
+      "lng": 120.452345,
+      "address": "振发路137号"
+    },
+    {
+      "id": "B0MGK5K8CL",
+      "name": "无锡嘉华医院-腋臭科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.477389,
+      "lng": 120.452299,
+      "address": "振发路145号"
+    },
+    {
+      "id": "B0MBNHSHLE",
+      "name": "新吴区硕放医院急诊碎石",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.48236,
+      "lng": 120.447931,
+      "address": "墙宅路359号硕放医院"
+    },
+    {
+      "id": "B0MB6UNRXK",
+      "name": "苏州永鼎医院眼科·全飞秒·近视手术",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.143166,
+      "lng": 120.634009,
+      "address": "吴模路与体育路交叉口南160米"
+    },
+    {
+      "id": "B0MACSVG8W",
+      "name": "苏州东吴医院24小时结石科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280098,
+      "lng": 120.598933,
+      "address": "桐泾南路81号"
+    },
+    {
+      "id": "B0M6KHCCXN",
+      "name": "牙洁仕口腔(斜塘店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.296006,
+      "lng": 120.737543,
+      "address": "敦煌路28号联丰广场1幢1110-1室"
+    },
+    {
+      "id": "B0M6C5VJL3",
+      "name": "苏州东吴医院生殖不孕科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280085,
+      "lng": 120.599002,
+      "address": "桐泾南路81号"
+    },
+    {
+      "id": "B0M655I60B",
+      "name": "苏州东吴中西结合医院不孕不育",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280335,
+      "lng": 120.59883,
+      "address": "桐泾南路81-2号(桐泾公园地铁站1号口步行180米)"
+    },
+    {
+      "id": "B0LUP54BCW",
+      "name": "苏哈医院(精神心理咨询中心)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.347491,
+      "lng": 120.406561,
+      "address": "省苏州科技城漓江路1号(科技城医院南)"
+    },
+    {
+      "id": "B0LUO7KHTW",
+      "name": "苏州大学附属第一医院总院门诊(东)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.344695,
+      "lng": 120.608462,
+      "address": "平泷路86号(平泷路东地铁站出入口步行410米)"
+    },
+    {
+      "id": "B0LRFS6RYQ",
+      "name": "庆北米亚眼科(儿童近视防控)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.496658,
+      "lng": 120.324604,
+      "address": "悦园c区36号"
+    },
+    {
+      "id": "B0LR5A9K1B",
+      "name": "吴中医院碎石科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.26894,
+      "lng": 120.627661,
+      "address": "东吴北路61号(宝带路地铁站10东北口步行210米)"
+    },
+    {
+      "id": "B0LKBMS8N6",
+      "name": "苏州九龙医院医美中心",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.328525,
+      "lng": 120.727625,
+      "address": "苏州工业园区万盛街118号医技楼2层"
+    },
+    {
+      "id": "B0LK2MPUEU",
+      "name": "苏州瑞华骨科医院3号楼",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.204825,
+      "lng": 120.593975,
+      "address": "越溪镇塔韵路5号苏州瑞华骨科医院"
+    },
+    {
+      "id": "B0LK2AQNKD",
+      "name": "苏州九龙医院肛肠诊疗中心",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.328801,
+      "lng": 120.727047,
+      "address": "工业园区万盛街118号门诊大楼2楼"
+    },
+    {
+      "id": "B0LGUSAR1M",
+      "name": "苏州市立医院本部住院部",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.301231,
+      "lng": 120.620663,
+      "address": "道前街与金狮河沿交叉口东北60米"
+    },
+    {
+      "id": "B0LGGCU3M6",
+      "name": "苏州工业园区仁才哈齿口腔",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.286782,
+      "lng": 120.738323,
+      "address": "东延路106号104-105"
+    },
+    {
+      "id": "B0LDVASLPH",
+      "name": "苏州金阊医院门诊部",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.308381,
+      "lng": 120.603476,
+      "address": "爱河桥9号金阊文化教育大厦1层"
+    },
+    {
+      "id": "B0LD1GDU2W",
+      "name": "一目青禾·青禾明善眼科(饮马桥店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.301759,
+      "lng": 120.622838,
+      "address": "人民路1001号饮马桥商厦一楼"
+    },
+    {
+      "id": "B0LD19LCTB",
+      "name": "美奥口腔矫正种植中心(园区店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.325347,
+      "lng": 120.735305,
+      "address": "苏州大道东266号金融港商务中心1幢101室1-2层"
+    },
+    {
+      "id": "B0LD0MG2TL",
+      "name": "昆山诚南医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.360765,
+      "lng": 120.954512,
+      "address": "玉山镇人民南路1007-1029号"
+    },
+    {
+      "id": "B0LB9CWFBH",
+      "name": "美会口腔",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.380824,
+      "lng": 120.919148,
+      "address": "玉山镇前进西路1439号"
+    },
+    {
+      "id": "B0L6K4M99K",
+      "name": "苏州口腔医院1号楼",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.334287,
+      "lng": 120.615875,
+      "address": "苏站路1366号苏州口腔医院(苏站路院区)"
+    },
+    {
+      "id": "B0L3VUIII9",
+      "name": "苏州苏哈医院中医股骨头康复专科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.347531,
+      "lng": 120.406482,
+      "address": "武夷山路143号"
+    },
+    {
+      "id": "B0L3S93LT4",
+      "name": "SK无锡医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.487068,
+      "lng": 120.35676,
+      "address": "和风路与华谊路交叉口东北200米"
+    },
+    {
+      "id": "B0L2NRHYT9",
+      "name": "昆山原化工厂烧烫伤专科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.346743,
+      "lng": 120.953879,
+      "address": "枫景路7号"
+    },
+    {
+      "id": "B0L2FU1UZ1",
+      "name": "益美佳口腔",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.475544,
+      "lng": 120.339657,
+      "address": "华庄商业广场易家福超市北侧工商银行旁瑞景道296号"
+    },
+    {
+      "id": "B0L1ZZM3MD",
+      "name": "苏州大学附属第二医院17号楼",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.297289,
+      "lng": 120.582605,
+      "address": "三香路1128号"
+    },
+    {
+      "id": "B0L1AZIRRO",
+      "name": "苏州皮肤病医院专科门诊",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.30573,
+      "lng": 120.622941,
+      "address": "人民路1192号"
+    },
+    {
+      "id": "B0L14A0S73",
+      "name": "牙喜乐口腔(车坊店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.245117,
+      "lng": 120.736612,
+      "address": "普惠路1089号财富广场1幢102室B、103室B、104室B-1"
+    },
+    {
+      "id": "B0L06PMWSM",
+      "name": "新吴区定点妇科医院(嘉华医院)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.477449,
+      "lng": 120.45231,
+      "address": "硕放镇振发路139号无锡嘉华医院"
+    },
+    {
+      "id": "B0L021R81I",
+      "name": "德植口腔(相城店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.386021,
+      "lng": 120.621733,
+      "address": "元和街道书香路37、39号"
+    },
+    {
+      "id": "B0KUS5Q49U",
+      "name": "苏州星光耀口腔",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.35387,
+      "lng": 120.547884,
+      "address": "虎池路1498号(富强地铁站3号口步行380米)"
+    },
+    {
+      "id": "B0L1FZWIEX",
+      "name": "建院股份瑞兴医院(建设中)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.228768,
+      "lng": 120.707216,
+      "address": "黄寮路"
+    },
+    {
+      "id": "B0KUHCA1AG",
+      "name": "萌鹰眼科(繁花商业中心院)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.359501,
+      "lng": 120.607249,
+      "address": "人民路4555号繁花中心1F层"
+    },
+    {
+      "id": "B0KUDC3RIA",
+      "name": "仁众口腔",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.255333,
+      "lng": 120.518587,
+      "address": "中山东路4号1幢1楼"
+    },
+    {
+      "id": "B0KU7LGPW2",
+      "name": "牙洁仕口腔(吾悦店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.137653,
+      "lng": 120.616609,
+      "address": "东太湖生态旅游度假区(太湖新城)开平路2188号吾悦商业广场2F-001-2-2"
+    },
+    {
+      "id": "B0KU2D2EVX",
+      "name": "凤和口腔",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.26981,
+      "lng": 120.617336,
+      "address": "长桥街道龙西路267-3号"
+    },
+    {
+      "id": "B0KRKH8WOT",
+      "name": "苏州大学附属儿童医院甪直医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.262313,
+      "lng": 120.871744,
+      "address": "田肚江路与南塘河路交叉口东南120米"
+    },
+    {
+      "id": "B0KRFRLL03",
+      "name": "苏州东吴中西医结合医院中医科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.280103,
+      "lng": 120.599077,
+      "address": "桐泾南路与解放东路辅路交叉口西北160米"
+    },
+    {
+      "id": "B0KKL5ZN6D",
+      "name": "诺亚口腔(吴中太湖新城店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.186442,
+      "lng": 120.615841,
+      "address": "吴郡睦邻坊2楼209号"
+    },
+    {
+      "id": "B0KK4Z019J",
+      "name": "苏州市康复医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.32476,
+      "lng": 120.606798,
+      "address": "广济路286号"
+    },
+    {
+      "id": "B0KK2PV8GK",
+      "name": "苏州大学附属第一医院-肿瘤科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.30283,
+      "lng": 120.63398,
+      "address": "十梓街188号苏州大学附属第一医院"
+    },
+    {
+      "id": "B0KK0GAQXG",
+      "name": "苏州大学附属第一医院十梓街院区三十二区普外科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.304694,
+      "lng": 120.634736,
+      "address": "十梓街296号"
+    },
+    {
+      "id": "B0KGT7F30C",
+      "name": "原一妇产医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.329957,
+      "lng": 120.687033,
+      "address": "工业园区苏虹西路9号新虹产业园2栋"
+    },
+    {
+      "id": "B0KGSSFNX4",
+      "name": "苏州大学附属第一医院(十梓街院区)-胸外科",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.304925,
+      "lng": 120.633825,
+      "address": "十梓街296号苏州大学附属第一医院十梓街院区"
+    },
+    {
+      "id": "B0KDUZAI88",
+      "name": "苏州市精神卫生中心",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.392619,
+      "lng": 120.666918,
+      "address": "广前路11号"
+    },
+    {
+      "id": "B0KD1RMYTM",
+      "name": "苏州金阊医院结石门诊",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.308501,
+      "lng": 120.603352,
+      "address": "南阳里与东海里交叉口东南40米"
+    },
+    {
+      "id": "B0KBJ7HKQ3",
+      "name": "苏州华尔康口腔连锁(园区店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.31577,
+      "lng": 120.736703,
+      "address": "钟慧路66号"
+    },
+    {
+      "id": "B0KB3D4Y5J",
+      "name": "苏州弘德医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.315858,
+      "lng": 120.573018,
+      "address": "留园街道西园路636号"
+    },
+    {
+      "id": "B0KB1ZBH76",
+      "name": "苏州青禾眼科医院",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.292767,
+      "lng": 120.556332,
+      "address": "狮山路237号(狮山路地铁站1西南口步行90米)"
+    },
+    {
+      "id": "B0KAZ5EZUM",
+      "name": "苏州华尔康口腔连锁(姑苏店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.311445,
+      "lng": 120.647173,
+      "address": "干将东路19号85-107室"
+    },
+    {
+      "id": "B0KAFZJAOV",
+      "name": "苏州大学附属第一医院总院急诊",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.34443,
+      "lng": 120.605303,
+      "address": "苏州大学附属第一医院总院二期西区急诊急救大楼"
+    },
+    {
+      "id": "B0KAB49N80",
+      "name": "格朗眼科·城西机构",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.381457,
+      "lng": 120.93021,
+      "address": "鹿城路117号(江浦地铁站3B东北口步行50米)"
+    },
+    {
+      "id": "B0KA3HRKVT",
+      "name": "苏州工业园区星海医院门急诊住院大楼",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.286523,
+      "lng": 120.669112,
+      "address": "葑春街与环府路交叉口东南240米"
+    },
+    {
+      "id": "B0K6KUW90W",
+      "name": "亦贝口腔",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.304662,
+      "lng": 120.65251,
+      "address": "苏州工业园区中新大道西229号金域生活广场10幢202室L213b-1"
+    },
+    {
+      "id": "B0K6BCH6HN",
+      "name": "泰康拜博口腔-苏州玲珑",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.330032,
+      "lng": 120.700964,
+      "address": "苏州工业园区玲珑街58号1幢223室"
+    },
+    {
+      "id": "B0K65CHUV8",
+      "name": "苏州京东方医院门诊",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.139533,
+      "lng": 120.69139,
+      "address": "经济技术开发区庞东路600号苏州京东方医院"
+    },
+    {
+      "id": "B0K64AO6UM",
+      "name": "社区连锁·一点口腔(姑苏店)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.271041,
+      "lng": 120.606476,
+      "address": "吴中西路663号(友联地铁站1号口步行320米)"
+    },
+    {
+      "id": "B0K62H6ITH",
+      "name": "福乐氏口腔",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.288967,
+      "lng": 120.657729,
+      "address": "葑谊街168号"
+    },
+    {
+      "id": "B0K3CUEEMR",
+      "name": "苏州齿丽方口腔(牙齿矫正中心)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.222425,
+      "lng": 120.416214,
+      "address": "苏州太湖国家旅游度假区香山路16号540幢太湖中心MallL4-27/28/29/30"
+    },
+    {
+      "id": "B0K2N50KMU",
+      "name": "苏大附一院医疗集团广慈医院行政楼",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.269204,
+      "lng": 120.646912,
+      "address": "宝带东路106号"
+    },
+    {
+      "id": "B0K1XA1VOL",
+      "name": "芽米口腔(科技城文体中心)",
+      "type": "hospital",
+      "type_label": "医院",
+      "lat": 31.337895,
+      "lng": 120.417342,
+      "address": "苏州高新区文体中心美术馆一楼(P4入口)芽米口腔"
+    },
+    {
+      "id": "B0FFGBAE0H",
+      "name": "苏州市消防救援支队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.306814,
+      "lng": 120.660558,
+      "address": "中新大道西198号"
+    },
+    {
+      "id": "B0IKGCA40H",
+      "name": "吴中区消防救援大队城南消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.237489,
+      "lng": 120.630328,
+      "address": "东吴南路115号(红庄地铁站8号西北口步行420米)"
+    },
+    {
+      "id": "B0FFGZDY8X",
+      "name": "苏州市姑苏区消防救援大队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.328622,
+      "lng": 120.598638,
+      "address": "虎丘街道苏站西路1号(苏站路与平泉路口)"
+    },
+    {
+      "id": "B0FFG0B4NJ",
+      "name": "苏州市吴江区消防救援大队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.146565,
+      "lng": 120.654474,
+      "address": "体育路58号"
+    },
+    {
+      "id": "B0FFHJTXCI",
+      "name": "苏州市消防救援支队水上大队南环西路站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.271288,
+      "lng": 120.592145,
+      "address": "吴门桥街道南环西路1599号"
+    },
+    {
+      "id": "B0G26RM14L",
+      "name": "苏州工业园区消防救援大队独墅湖消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.260961,
+      "lng": 120.747823,
+      "address": "雪堂街2号"
+    },
+    {
+      "id": "B0GUMR8EGU",
+      "name": "姑苏区因果巷消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.31339,
+      "lng": 120.622759,
+      "address": "因果巷94号(察院场地铁站4东北口步行250米)"
+    },
+    {
+      "id": "B0HR3ZDLBY",
+      "name": "吴中区蠡墅卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.239683,
+      "lng": 120.615413,
+      "address": "苏蠡路跃进桥旁"
+    },
+    {
+      "id": "B0GDLNG1IY",
+      "name": "苏州市吴江区体育路消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.145977,
+      "lng": 120.653744,
+      "address": "体育路68号"
+    },
+    {
+      "id": "B0G3H77XXS",
+      "name": "苏州市吴中区消防救援大队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.191456,
+      "lng": 120.581988,
+      "address": "消防支队吴中区大队西门旁"
+    },
+    {
+      "id": "B0L12ATO35",
+      "name": "吴中区善浦路专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.21551,
+      "lng": 120.668349,
+      "address": "善浦路与尹中南路交叉口东220米"
+    },
+    {
+      "id": "B0IKSH1ADH",
+      "name": "苏州高新区横塘政府专职消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.276631,
+      "lng": 120.561212,
+      "address": "横山路与塔园路交叉口东80米"
+    },
+    {
+      "id": "B0G0AHVT1J",
+      "name": "苏州工业园区苏安消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.329334,
+      "lng": 120.645172,
+      "address": "苏州工业园区公安消防大队苏安中队西北门旁"
+    },
+    {
+      "id": "B0FFHW4P9R",
+      "name": "狮山消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.299129,
+      "lng": 120.552599,
+      "address": "虎丘区高新区邓尉路559号"
+    },
+    {
+      "id": "B0IG0S7OKU",
+      "name": "苏州工业园区消防救援大队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.333102,
+      "lng": 120.70551,
+      "address": "苏州工业园区公安消防大队西北门旁"
+    },
+    {
+      "id": "B0GDR1F0B7",
+      "name": "苏州市姑苏区消防救援西园路特勤站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.316546,
+      "lng": 120.587988,
+      "address": "西园路与桐泾北路交叉口西80米"
+    },
+    {
+      "id": "B0KRKU9ZFE",
+      "name": "苏州市姑苏区消防救援局",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.328466,
+      "lng": 120.598585,
+      "address": "平泉路与苏站路交叉口南80米"
+    },
+    {
+      "id": "B0JRRUUBEQ",
+      "name": "灵岩村卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.246423,
+      "lng": 120.521158,
+      "address": "翠坊南街33号"
+    },
+    {
+      "id": "B0FFI9NB1Q",
+      "name": "高铁新城消防中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.424046,
+      "lng": 120.652634,
+      "address": "联平路与澄阳路交叉口北100米"
+    },
+    {
+      "id": "B0GK6AR9HM",
+      "name": "苏州市吴中区龙翔路消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.191418,
+      "lng": 120.581953,
+      "address": "龙翔路与天鹅荡路交叉口北200米"
+    },
+    {
+      "id": "B0GK67SCGV",
+      "name": "狮山消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.299451,
+      "lng": 120.552715,
+      "address": "苏州市高新区邓尉路559号"
+    },
+    {
+      "id": "B0FFMDPSXQ",
+      "name": "吴中消防救援大队藏书中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.262999,
+      "lng": 120.472922,
+      "address": "藏中路1423号"
+    },
+    {
+      "id": "B0IAKCG6VL",
+      "name": "吴中区甪直镇前港消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.254192,
+      "lng": 120.791087,
+      "address": "长浜路北40米"
+    },
+    {
+      "id": "B0MGY76QCG",
+      "name": "吴中消防救援大队胥口中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.222636,
+      "lng": 120.509174,
+      "address": "新峰路119号"
+    },
+    {
+      "id": "B0K0GS5816",
+      "name": "苏州市吴中区横泾消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.172598,
+      "lng": 120.539264,
+      "address": "中兴路123号"
+    },
+    {
+      "id": "B0G33ZXNLG",
+      "name": "苏州市消防救援支队特勤大队三站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.333219,
+      "lng": 120.705795,
+      "address": "苏州工业园区公安消防大队西北门旁"
+    },
+    {
+      "id": "B0FFI9BRSA",
+      "name": "苏州高新区枫桥政府专职消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.31075,
+      "lng": 120.496317,
+      "address": "华山路500号"
+    },
+    {
+      "id": "B0LGZZPV5Q",
+      "name": "姑苏区葑门路政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.299782,
+      "lng": 120.648706,
+      "address": "葑门路175号"
+    },
+    {
+      "id": "B0J3MD6LK5",
+      "name": "苏州工业园区娄葑政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.279403,
+      "lng": 120.670929,
+      "address": "文潭路与东兴路交叉口东南40米"
+    },
+    {
+      "id": "B0G25OZG80",
+      "name": "苏州工业园区消防救援大队(湖东消防站)",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.308592,
+      "lng": 120.753434,
+      "address": "苏州工业园区中新大道东989号"
+    },
+    {
+      "id": "B0LDL9THJW",
+      "name": "澄阳政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.397702,
+      "lng": 120.649402,
+      "address": "泰元路76号"
+    },
+    {
+      "id": "B0H2VCWXHT",
+      "name": "高速公路阳澄湖消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.368488,
+      "lng": 120.769415,
+      "address": "阳澄湖服务区与G2京沪高速入口交叉口西北约180米"
+    },
+    {
+      "id": "B0FFGF9D4V",
+      "name": "苏州高新区消防救援大队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.321431,
+      "lng": 120.440461,
+      "address": "科灵路19号"
+    },
+    {
+      "id": "B0I1TH8IP9",
+      "name": "香溪社区卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.250901,
+      "lng": 120.509973,
+      "address": "明清街东侧王家村院内"
+    },
+    {
+      "id": "B0M6JSDR3H",
+      "name": "长桥消防龙西快速处置队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.264484,
+      "lng": 120.621372,
+      "address": "长桥街道水香街93号"
+    },
+    {
+      "id": "B0GDV56BPS",
+      "name": "苏州市消防救援支队凤阳路特勤站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.48318,
+      "lng": 120.685435,
+      "address": "524国道辅路与凤阳路交叉口西南320米"
+    },
+    {
+      "id": "B0JRBSTYD0",
+      "name": "苏州工业园区湖东政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.30857,
+      "lng": 120.753308,
+      "address": "中新大道东与星体街交叉口东100米"
+    },
+    {
+      "id": "B0FFIWK795",
+      "name": "新区消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.299561,
+      "lng": 120.553646,
+      "address": "易生活购物公园1号门东南60米"
+    },
+    {
+      "id": "B0MA2SQMBR",
+      "name": "苏州市吴中区太湖东路消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.263519,
+      "lng": 120.647822,
+      "address": "太湖东路26号"
+    },
+    {
+      "id": "B0KDZ7NWR7",
+      "name": "长巨村消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.227568,
+      "lng": 120.777975,
+      "address": "苏同黎公路3099号"
+    },
+    {
+      "id": "B0FFL9XZHO",
+      "name": "苏州市高新区浒关专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.358856,
+      "lng": 120.491158,
+      "address": "高新区浒墅关开发分区观山路4号"
+    },
+    {
+      "id": "B0IDAR18N5",
+      "name": "古镇消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.272416,
+      "lng": 120.878096,
+      "address": "育才路18号"
+    },
+    {
+      "id": "B0G23UD06E",
+      "name": "苏州市吴中消防救援大队甪直消防中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.266396,
+      "lng": 120.853787,
+      "address": "甪直镇鸣市路46号"
+    },
+    {
+      "id": "B0LB7ZCWAB",
+      "name": "苏州市相城区消防救援大队黄桥消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.390007,
+      "lng": 120.583968,
+      "address": "黄桥街道康复医院西侧"
+    },
+    {
+      "id": "B0JBNCZ092",
+      "name": "苏州市相城区消防救援大队望亭消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.413463,
+      "lng": 120.435495,
+      "address": "万丰路2号"
+    },
+    {
+      "id": "B0FFHFUWVY",
+      "name": "苏州市相城区消防救援大队黄埭消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.446404,
+      "lng": 120.55047,
+      "address": "黄埭镇康阳路360号"
+    },
+    {
+      "id": "B0MDCS2ZE3",
+      "name": "苏州市姑苏区虎北路政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.340878,
+      "lng": 120.576349,
+      "address": "城北西路58号"
+    },
+    {
+      "id": "B0JDJHB0UI",
+      "name": "黄埭镇东桥片区卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.423263,
+      "lng": 120.508977,
+      "address": "长和路186号"
+    },
+    {
+      "id": "B0K2FAE75W",
+      "name": "金山村卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.275299,
+      "lng": 120.524725,
+      "address": "新华路3-16号"
+    },
+    {
+      "id": "B0FFHXYV7R",
+      "name": "苏州市相城区消防救援大队北桥消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.495706,
+      "lng": 120.620391,
+      "address": "飞鸟路4号"
+    },
+    {
+      "id": "B0KGFZ42PY",
+      "name": "木渎经济开发区卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.258408,
+      "lng": 120.53637,
+      "address": "珠江南路888号"
+    },
+    {
+      "id": "B0MG7OJ34A",
+      "name": "姑苏区仓街政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.317175,
+      "lng": 120.637025,
+      "address": "历史街区社区西北门北140米"
+    },
+    {
+      "id": "B0HAUSPOYA",
+      "name": "甫田村消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.264574,
+      "lng": 120.831027,
+      "address": "甪直镇联谊路83号"
+    },
+    {
+      "id": "B0IDTHT1HU",
+      "name": "苏州国家高新技术产业开发区科技城政府专职消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.358286,
+      "lng": 120.410388,
+      "address": "漓江路普陀山路交界处中桥港街"
+    },
+    {
+      "id": "B0FFLPDCXX",
+      "name": "昆山市鹿城路消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.378744,
+      "lng": 120.930716,
+      "address": "玉山镇鹿城路55号"
+    },
+    {
+      "id": "B0FFG8AJWN",
+      "name": "昆山市巴城政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.438504,
+      "lng": 120.854521,
+      "address": "迎宾西路3388号"
+    },
+    {
+      "id": "B0MGBZSUNM",
+      "name": "太平专职消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.423477,
+      "lng": 120.697694,
+      "address": "兴太路12号"
+    },
+    {
+      "id": "B0FFLLFPQM",
+      "name": "张桥自然村消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.212378,
+      "lng": 120.570781,
+      "address": "张夏街与越城路交叉口西南60米"
+    },
+    {
+      "id": "B0GKLUJJPR",
+      "name": "通安消防救援中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.377494,
+      "lng": 120.449594,
+      "address": "通安镇华金路432号"
+    },
+    {
+      "id": "B0FFI9BPOT",
+      "name": "苏州市高新区枫桥专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.310492,
+      "lng": 120.496502,
+      "address": "华山路与区间路交叉口西40米"
+    },
+    {
+      "id": "B0KA6CLXIO",
+      "name": "苏州市吴中区木渎镇天平村卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.263508,
+      "lng": 120.516493,
+      "address": "木渎镇天平村卫星消防站"
+    },
+    {
+      "id": "B0M6YSQQW6",
+      "name": "苏州市吴江区八坼专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.065474,
+      "lng": 120.675803,
+      "address": "八坼街道久泳中路1119号"
+    },
+    {
+      "id": "B0GU3DJ0HM",
+      "name": "吴江消防救援大队横扇中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.034342,
+      "lng": 120.56787,
+      "address": "太湖新城镇横扇街道环河路小港里桥"
+    },
+    {
+      "id": "B0IDTUYRYS",
+      "name": "苏州高新区科技城特勤消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.358299,
+      "lng": 120.410325,
+      "address": "漓江路普陀山路交界处西北侧"
+    },
+    {
+      "id": "B0HRPA57ZE",
+      "name": "昆山市消防救援大队宏信路消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.2836,
+      "lng": 120.995807,
+      "address": "宏信路与七浦西路交叉口东南140米"
+    },
+    {
+      "id": "B0FFL0JTL7",
+      "name": "昆山市消防救援大队周庄中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.122424,
+      "lng": 120.847918,
+      "address": "大桥路与爱渡路交叉口东北80米"
+    },
+    {
+      "id": "B0FFGOBE62",
+      "name": "青浦区金泽消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.066249,
+      "lng": 120.92405,
+      "address": "沪青平公路8555号"
+    },
+    {
+      "id": "B0FFL9R5SC",
+      "name": "苏州市吴中区东山专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.044048,
+      "lng": 120.393228,
+      "address": "莫厘峰环山路与双湖路交叉口西60米"
+    },
+    {
+      "id": "B0LDL9H8J3",
+      "name": "苏相合作区漕湖专职专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.395439,
+      "lng": 120.648592,
+      "address": "漕湖大道1号"
+    },
+    {
+      "id": "B0FFH2NFT5",
+      "name": "昆山市经济开发区专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.370127,
+      "lng": 120.997233,
+      "address": "昆山市开发区景王路998号"
+    },
+    {
+      "id": "B0L097ELBH",
+      "name": "汾湖双珠路专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.028579,
+      "lng": 120.766626,
+      "address": "双珠路与临沪大道交叉口北120米"
+    },
+    {
+      "id": "B0FFHBVRL2",
+      "name": "苏州市工业园区唯亭专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.36502,
+      "lng": 120.795409,
+      "address": "苏州工业园区葑亭大道1号"
+    },
+    {
+      "id": "B0L3CAIN83",
+      "name": "泗塘小型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.48934,
+      "lng": 120.644822,
+      "address": "凤北荡路8号"
+    },
+    {
+      "id": "B0GKLUIY55",
+      "name": "苏州高新区通安专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.377267,
+      "lng": 120.449793,
+      "address": "通安镇华金路432号"
+    },
+    {
+      "id": "B0FFKUJM07",
+      "name": "苏州消防救援支队相城大队黄埭消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.446359,
+      "lng": 120.550674,
+      "address": "黄埭镇康阳路360号"
+    },
+    {
+      "id": "B0KRCHALXZ",
+      "name": "渭北小型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.469949,
+      "lng": 120.656523,
+      "address": "珍珠湖路119号"
+    },
+    {
+      "id": "B0J1RAQDLX",
+      "name": "太平街道卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.439392,
+      "lng": 120.68982,
+      "address": "苏州市恒顺纸塑有限公司新厂西北门南120米"
+    },
+    {
+      "id": "B0KDVAHMLG",
+      "name": "渭西小型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.46602,
+      "lng": 120.636723,
+      "address": "渭西路24号"
+    },
+    {
+      "id": "B0JGYSXSAM",
+      "name": "大渔村卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.410609,
+      "lng": 120.915498,
+      "address": "斜泾路415号"
+    },
+    {
+      "id": "B0IB15D93S",
+      "name": "昆山市高新区政府专职消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.358477,
+      "lng": 120.882929,
+      "address": "恒阳路与晨淞路交叉口北140米"
+    },
+    {
+      "id": "B0LDH1SVNI",
+      "name": "昆山市馨德路政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.302791,
+      "lng": 120.976556,
+      "address": "张浦镇馨德路7号"
+    },
+    {
+      "id": "B0FFLNJY2B",
+      "name": "无锡市新吴区硕放专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.47358,
+      "lng": 120.463763,
+      "address": "振发路322号"
+    },
+    {
+      "id": "B0FFHGH7FC",
+      "name": "昆山市消防救援大队巴城中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.438676,
+      "lng": 120.853994,
+      "address": "迎宾西路3388号昆山市巴城政府专职消防救援队"
+    },
+    {
+      "id": "B0FFIYVA7K",
+      "name": "金泽镇专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.121133,
+      "lng": 120.92685,
+      "address": "锦商公路商榻老街小区"
+    },
+    {
+      "id": "B0J1AZ2PGY",
+      "name": "汾湖专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.022816,
+      "lng": 120.830256,
+      "address": "越江路818号"
+    },
+    {
+      "id": "B0H0S75E3X",
+      "name": "昆山市消防救援大队周市消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.467415,
+      "lng": 120.992925,
+      "address": "周市镇和蔚路88号"
+    },
+    {
+      "id": "B0L6RZYK1A",
+      "name": "澄阳国际大型消防总队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.403665,
+      "lng": 120.647073,
+      "address": "澄阳路836号"
+    },
+    {
+      "id": "B0JABHSTRF",
+      "name": "无锡经济开发区金融街专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.47829,
+      "lng": 120.311369,
+      "address": "立智道119号(吴都路地铁站10号口步行450米)"
+    },
+    {
+      "id": "B0HRDRXJCX",
+      "name": "淞南村消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.284653,
+      "lng": 120.872624,
+      "address": "甪直镇淞南村富民路"
+    },
+    {
+      "id": "B02001IK71",
+      "name": "苏州传化公路港物流有限公司义务消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.35429,
+      "lng": 120.536296,
+      "address": "白洋湾街道金筑街588号"
+    },
+    {
+      "id": "B0JG1ZFHO8",
+      "name": "池渔泾卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.37826,
+      "lng": 120.916698,
+      "address": "震川西路574号(共青地铁站1号口步行490米)"
+    },
+    {
+      "id": "B0FFM61082",
+      "name": "苏州科技城(东渚街道)森林消防中队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.334414,
+      "lng": 120.402999,
+      "address": "东渚街道渚镇路41号水利大楼三楼"
+    },
+    {
+      "id": "B0J3USZMTH",
+      "name": "苏州高新区通安政府专职消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.377312,
+      "lng": 120.449887,
+      "address": "华金路与华圩路交叉口西260米"
+    },
+    {
+      "id": "B02000699F",
+      "name": "苏州市吴中区光福镇消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.283321,
+      "lng": 120.392914,
+      "address": "宝泉路苏州市光福派出所"
+    },
+    {
+      "id": "B0FFHRJP4B",
+      "name": "高新区浒关工业园专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.394505,
+      "lng": 120.513096,
+      "address": "牌楼路与华桥路交叉口西南120米"
+    },
+    {
+      "id": "B0FFJBCT37",
+      "name": "柏庐政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.378514,
+      "lng": 120.962832,
+      "address": "月城湾新村北门西南60米"
+    },
+    {
+      "id": "B0J22SXBUK",
+      "name": "金庭政府专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.134167,
+      "lng": 120.323007,
+      "address": "林屋路9号"
+    },
+    {
+      "id": "B0FFHCNH58",
+      "name": "兆丰公司微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.347713,
+      "lng": 120.659883,
+      "address": "苏州工业园区申通快递(和顺路南)"
+    },
+    {
+      "id": "B0FFLJMQ65",
+      "name": "微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.318703,
+      "lng": 120.678846,
+      "address": "星港街辅路与樟香路交叉口南100米"
+    },
+    {
+      "id": "B0IBR7ZPF1",
+      "name": "杜桥卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.423575,
+      "lng": 120.946892,
+      "address": "杜桥路与永丰余路交叉口东北260米"
+    },
+    {
+      "id": "B0FFJWYA6R",
+      "name": "微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.481458,
+      "lng": 120.679013,
+      "address": "508乡道与凤南路交叉口东北100米"
+    },
+    {
+      "id": "B0K1PMEDA4",
+      "name": "五联卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.437729,
+      "lng": 120.942727,
+      "address": "五联路451-2号"
+    },
+    {
+      "id": "B0MDSSDFMQ",
+      "name": "苏州市吴中区临湖专职消防救援队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.125297,
+      "lng": 120.484918,
+      "address": "银藏路与临创路交叉口西南100米"
+    },
+    {
+      "id": "B0FFJXXD1W",
+      "name": "娄北社区微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.343601,
+      "lng": 120.645158,
+      "address": "225村道与312国道交叉口西150米娄北社区居委会附近"
+    },
+    {
+      "id": "B0JGVA1GZV",
+      "name": "昆山开发区政府专职消防救援站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.369788,
+      "lng": 120.997066,
+      "address": "景王路与青阳南路辅路交叉口东北60米"
+    },
+    {
+      "id": "B0LAC5JBEE",
+      "name": "广福村卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.413703,
+      "lng": 120.936258,
+      "address": "寰庆路与角里路交叉口西北200米"
+    },
+    {
+      "id": "B0H0JUYY1O",
+      "name": "高新区曹里浜卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.422802,
+      "lng": 120.957625,
+      "address": "雅博路与益胜路交叉口东160米"
+    },
+    {
+      "id": "B0FFHNS9QD",
+      "name": "钱万里桥小商品市场有限公司义务消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.344341,
+      "lng": 120.558518,
+      "address": "虎池路88号苏州钱万里桥小商品市场"
+    },
+    {
+      "id": "B0FFHGVGQ6",
+      "name": "泰元社区义务消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.383341,
+      "lng": 120.638777,
+      "address": "通达模具厂西南门北50米"
+    },
+    {
+      "id": "B0HD57GFCA",
+      "name": "力量社区卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.403474,
+      "lng": 120.945564,
+      "address": "萧林路1043号永丰大厦(萧林中路)"
+    },
+    {
+      "id": "B0L1A7JHYO",
+      "name": "丁泾卫星消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.374993,
+      "lng": 120.937523,
+      "address": "震川西路辅路与旺财路交叉口南180米"
+    },
+    {
+      "id": "B0MA2UQKG9",
+      "name": "院子消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.328875,
+      "lng": 120.645225,
+      "address": "苏州市园区苏安新村苏安路2号"
+    },
+    {
+      "id": "B0FFI9ZNWE",
+      "name": "泰元微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.404383,
+      "lng": 120.640528,
+      "address": "泰元商业街西100米"
+    },
+    {
+      "id": "B0KBPDYZ9O",
+      "name": "江苏无锡经济开发区消防救援大队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.481136,
+      "lng": 120.322271,
+      "address": "清舒道77号"
+    },
+    {
+      "id": "B0FFK7O9AL",
+      "name": "木渎镇天平村义务消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.265378,
+      "lng": 120.523818,
+      "address": "新华路新华工业区"
+    },
+    {
+      "id": "B0FFI5KYN8",
+      "name": "望亭镇项路村微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.409854,
+      "lng": 120.44274,
+      "address": "项路村村委会东北门旁"
+    },
+    {
+      "id": "B0H3JR85S6",
+      "name": "昆山高新区柏庐专职消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.3781,
+      "lng": 120.962962,
+      "address": "月城湾新村北门南110米"
+    },
+    {
+      "id": "B0FFHUY1FZ",
+      "name": "兆丰微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.343106,
+      "lng": 120.682133,
+      "address": "娄葑创投·临芳苑商业广场41幢"
+    },
+    {
+      "id": "B0FFI9FJR7",
+      "name": "声远光电科技(昆山)有限公司微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.43448,
+      "lng": 120.996263,
+      "address": "市东河路与城北路辅路交叉口北60米"
+    },
+    {
+      "id": "B0J155QZNS",
+      "name": "微型消防站",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.357732,
+      "lng": 120.965653,
+      "address": "中华北村西南1门旁"
+    },
+    {
+      "id": "B0FFJWXAGW",
+      "name": "相城区渭塘镇凤凰泾村义务消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.492435,
+      "lng": 120.656813,
+      "address": "苏州市兴诺工程塑料厂西北门旁"
+    },
+    {
+      "id": "B0FFM6UTZ3",
+      "name": "渭西村应急消防队",
+      "type": "fire_station",
+      "type_label": "消防站/局",
+      "lat": 31.461944,
+      "lng": 120.636518,
+      "address": "渭西路与庄头河路交叉口东北20米"
+    },
+    {
+      "id": "B0K1PA9HI9",
+      "name": "苏州市急救中心",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.289174,
+      "lng": 120.609406,
+      "address": "胥江路89号(新市桥地铁站3西北口步行260米)"
+    },
+    {
+      "id": "B0FFGFC1MJ",
+      "name": "上海交通大学医学院苏州九龙医院急救中心",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.328719,
+      "lng": 120.726409,
+      "address": "苏州工业园区万盛街上海交通大学医学院附属苏州九龙医院"
+    },
+    {
+      "id": "B0FFKVTKDM",
+      "name": "苏州市第九人民医院120急救站(流虹路急救点)",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.159057,
+      "lng": 120.648232,
+      "address": "松陵镇流虹路与公园路往东30米"
+    },
+    {
+      "id": "B0JKRZTGA9",
+      "name": "昆山市急救中心",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.378048,
+      "lng": 120.891722,
+      "address": "巴城镇通澄南路559号公共卫生中心2期"
+    },
+    {
+      "id": "B0KRRAVBP0",
+      "name": "光福人民医院120急救分站",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.295832,
+      "lng": 120.385382,
+      "address": "邓尉山路与虎山弄交叉口北20米"
+    },
+    {
+      "id": "B0K6NU5ET4",
+      "name": "通安急救分站",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.387429,
+      "lng": 120.477001,
+      "address": "真山路174号"
+    },
+    {
+      "id": "B0MB2R1FGK",
+      "name": "无锡市120急救网络新安分站",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.481656,
+      "lng": 120.382477,
+      "address": "城南路2号"
+    },
+    {
+      "id": "B0J1GCCVO5",
+      "name": "红十字救护站周庄景区站",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.11396,
+      "lng": 120.848972,
+      "address": "周庄镇全福路42号周庄古镇"
+    },
+    {
+      "id": "B0I0LDATJF",
+      "name": "周庄人民医院夜急诊",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.135457,
+      "lng": 120.834887,
+      "address": "周庄镇龙蚬路188号"
+    },
+    {
+      "id": "B0FFH6L5PC",
+      "name": "昆山市第六人民医院急诊",
+      "type": "emergency_center",
+      "type_label": "急救中心",
+      "lat": 31.287287,
+      "lng": 120.956196,
+      "address": "张浦镇茶风街2号昆山市第六人民医院"
+    },
+    {
+      "id": "B0FFGA1UZM",
+      "name": "轨道交通石湖路站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.250447,
+      "lng": 120.648464,
+      "address": "石湖东路58号(轨交2号线宝带桥南站对面)"
+    },
+    {
+      "id": "B02000JISV",
+      "name": "南区派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.237479,
+      "lng": 120.638298,
+      "address": "枫津路2-1号"
+    },
+    {
+      "id": "B0FFM9WEG1",
+      "name": "长桥派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.267547,
+      "lng": 120.646655,
+      "address": "宝带东路83号"
+    },
+    {
+      "id": "B02000HTRC",
+      "name": "汽车南站地区派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.277068,
+      "lng": 120.637739,
+      "address": "南环东路601号"
+    },
+    {
+      "id": "B02001INW4",
+      "name": "郭巷派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.249974,
+      "lng": 120.686946,
+      "address": "尹鸿路333号(郭苑路地铁站3号口步行420米)"
+    },
+    {
+      "id": "B0FFK16K3W",
+      "name": "葑门派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.289084,
+      "lng": 120.650005,
+      "address": "北城湾街89号"
+    },
+    {
+      "id": "B020008F64",
+      "name": "吴门桥派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.285422,
+      "lng": 120.626568,
+      "address": "南门路1001号西门"
+    },
+    {
+      "id": "B020008H1U",
+      "name": "友新派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.272015,
+      "lng": 120.608166,
+      "address": "吴中西路680号(友联地铁站3号口步行130米)"
+    },
+    {
+      "id": "B0FFGHF5U0",
+      "name": "双塔派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.298749,
+      "lng": 120.640211,
+      "address": "相王路188号"
+    },
+    {
+      "id": "B0FFFP3G36",
+      "name": "石湖景区派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.257237,
+      "lng": 120.588368,
+      "address": "吴越路99号(石湖北地铁站1B东南口步行330米)"
+    },
+    {
+      "id": "B020005ODY",
+      "name": "胥江派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.292347,
+      "lng": 120.609755,
+      "address": "泰南路53号(新市桥地铁站2东北口步行320米)"
+    },
+    {
+      "id": "B0JDRUJ1EX",
+      "name": "苏州市公安局姑苏分局沧浪派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.304245,
+      "lng": 120.620239,
+      "address": "大石头巷33号(乐桥地铁站3号口步行230米)"
+    },
+    {
+      "id": "B0KB2UPLZT",
+      "name": "横塘派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.251902,
+      "lng": 120.575449,
+      "address": "学府路110号"
+    },
+    {
+      "id": "B0200166GZ",
+      "name": "运西派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.185424,
+      "lng": 120.647461,
+      "address": "吴江经济技术开发区中山北路1439号"
+    },
+    {
+      "id": "B02000IS4V",
+      "name": "观前派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.311182,
+      "lng": 120.623075,
+      "address": "承德里2号(察院场地铁站2东南口步行150米)"
+    },
+    {
+      "id": "B020008H94",
+      "name": "越溪派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.212412,
+      "lng": 120.585144,
+      "address": "吴山街1号"
+    },
+    {
+      "id": "B0KG6CX9GC",
+      "name": "南湖派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.278778,
+      "lng": 120.721461,
+      "address": "独墅湖大道出口与星湖街辅路交叉口西320米"
+    },
+    {
+      "id": "B0FFG0IUUA",
+      "name": "水上派出所(独墅湖大道)",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.278635,
+      "lng": 120.721545,
+      "address": "独墅湖大道苏州独墅湖图书馆北200米"
+    },
+    {
+      "id": "B0FFGZB2D4",
+      "name": "石路派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.308605,
+      "lng": 120.603341,
+      "address": "爱河桥路9号金阊文化教育大厦1层"
+    },
+    {
+      "id": "B020001263",
+      "name": "桃花坞派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.319819,
+      "lng": 120.613046,
+      "address": "桃花坞大街诚达律师楼1层"
+    },
+    {
+      "id": "B02000ITPG",
+      "name": "平江派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.325277,
+      "lng": 120.631742,
+      "address": "百家巷8号"
+    },
+    {
+      "id": "B0H39ST0XO",
+      "name": "湖西派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.325194,
+      "lng": 120.671152,
+      "address": "苏州工业园区苏虹西路99号"
+    },
+    {
+      "id": "B0H3OZ0X7E",
+      "name": "狮山派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.275768,
+      "lng": 120.561031,
+      "address": "塔园路110号"
+    },
+    {
+      "id": "B02001H6S7",
+      "name": "金阊派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.304105,
+      "lng": 120.579644,
+      "address": "馨泓路(西环路地铁站3号口步行480米)"
+    },
+    {
+      "id": "B0FFH6MPV8",
+      "name": "斜塘派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.292136,
+      "lng": 120.731128,
+      "address": "莲塘路8号"
+    },
+    {
+      "id": "B0FFM80I67",
+      "name": "吴中公安分局太湖新城派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.184189,
+      "lng": 120.5909,
+      "address": "东太湖路66号2栋"
+    },
+    {
+      "id": "B0FFFFAZLR",
+      "name": "上海铁路公安局上海公安处苏州站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.329081,
+      "lng": 120.613158,
+      "address": "苏站路27号苏州站"
+    },
+    {
+      "id": "B0JG4RHD26",
+      "name": "永安桥派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.243957,
+      "lng": 120.749449,
+      "address": "蔺谊路155号"
+    },
+    {
+      "id": "B0FFG4K8NL",
+      "name": "火车站地区派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.332176,
+      "lng": 120.620552,
+      "address": "半爿营街7号"
+    },
+    {
+      "id": "B020001250",
+      "name": "留园派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.320195,
+      "lng": 120.586763,
+      "address": "虎丘路110号"
+    },
+    {
+      "id": "B0FFHNCKMT",
+      "name": "苏州市公安局姑苏分局虎丘派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.327907,
+      "lng": 120.596746,
+      "address": "清塘路199号"
+    },
+    {
+      "id": "B0IKUC9LCD",
+      "name": "娄葑派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.342169,
+      "lng": 120.66607,
+      "address": "扬东路180号1号楼"
+    },
+    {
+      "id": "B0J1A5227X",
+      "name": "苏州市公安局姑苏分局娄门派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.343796,
+      "lng": 120.631164,
+      "address": "洋泾角路1号"
+    },
+    {
+      "id": "B0KK1UPD73",
+      "name": "苏州市公安局轨道公交分局苏州火车站站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.344061,
+      "lng": 120.631566,
+      "address": "洋泾角路1号"
+    },
+    {
+      "id": "B02001612J",
+      "name": "苏锦派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.337607,
+      "lng": 120.605687,
+      "address": "广济北路566号(苏锦地铁站3号东北口步行80米)"
+    },
+    {
+      "id": "B0MB4KXQ78",
+      "name": "湖东派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.327034,
+      "lng": 120.724686,
+      "address": "九华路65号景城邻里中心"
+    },
+    {
+      "id": "B02000JJMK",
+      "name": "吴江经济开发区派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.156182,
+      "lng": 120.699092,
+      "address": "绣湖东路110号公安大厦"
+    },
+    {
+      "id": "B020008D9A",
+      "name": "松陵派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.147061,
+      "lng": 120.653697,
+      "address": "笠泽路19号"
+    },
+    {
+      "id": "B02001H6G3",
+      "name": "城北派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.34275,
+      "lng": 120.596066,
+      "address": "平泷路1278号"
+    },
+    {
+      "id": "B0FFG8Q0GN",
+      "name": "唯亭派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.346773,
+      "lng": 120.693679,
+      "address": "蠡塘路98号"
+    },
+    {
+      "id": "B0HBNMWQ21",
+      "name": "星塘街站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.324725,
+      "lng": 120.745585,
+      "address": "天仙圩路中新·汇金大厦西边"
+    },
+    {
+      "id": "B0G2K5TEGU",
+      "name": "车坊派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.253359,
+      "lng": 120.783157,
+      "address": "马前路"
+    },
+    {
+      "id": "B020001KOM",
+      "name": "木渎派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.27048,
+      "lng": 120.518506,
+      "address": "金山路209号(木渎地铁站1号口步行480米)"
+    },
+    {
+      "id": "B0FFK84TPC",
+      "name": "跨塘派出所(青剑湖二社区警务室)",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.357332,
+      "lng": 120.706982,
+      "address": "苏州工业园区唯和路65号附近"
+    },
+    {
+      "id": "B0FFF6PZ38",
+      "name": "同里派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.147288,
+      "lng": 120.724498,
+      "address": "同里镇富土路1999号"
+    },
+    {
+      "id": "B0FFFEYUGM",
+      "name": "中心商贸城派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.364206,
+      "lng": 120.596175,
+      "address": "聚贤路555号"
+    },
+    {
+      "id": "B0I67SQDPP",
+      "name": "广济南路站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.274571,
+      "lng": 120.507414,
+      "address": "竹园路880号"
+    },
+    {
+      "id": "B0I0CCFM1H",
+      "name": "滨湖新城派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.125278,
+      "lng": 120.626686,
+      "address": "联杨路2211号"
+    },
+    {
+      "id": "B0200087I2",
+      "name": "横泾派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.169995,
+      "lng": 120.53557,
+      "address": "朝阳路128号"
+    },
+    {
+      "id": "B0FFL0YPC9",
+      "name": "苏州市公安局城市轨道交通治安分局庞金路站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.136246,
+      "lng": 120.715049,
+      "address": ""
+    },
+    {
+      "id": "B0MANRR7PN",
+      "name": "苏州工业园区唯亭派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.368289,
+      "lng": 120.711547,
+      "address": "唯青路与亭隆街交叉口西北100米"
+    },
+    {
+      "id": "B0HB3A6F6V",
+      "name": "苏州市公安局吴中分局森林派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.259494,
+      "lng": 120.498288,
+      "address": "木渎镇穹灵路310号"
+    },
+    {
+      "id": "B0FFHVJL66",
+      "name": "城南派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.115891,
+      "lng": 120.661148,
+      "address": "芦荡路288号"
+    },
+    {
+      "id": "B0FFJ3U24K",
+      "name": "东沙湖派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.328858,
+      "lng": 120.780452,
+      "address": "龙潭路218号"
+    },
+    {
+      "id": "B020008EH6",
+      "name": "屯村同里派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.156509,
+      "lng": 120.766524,
+      "address": "同里镇屯村社区屯溪路66号"
+    },
+    {
+      "id": "B02000K1SM",
+      "name": "元和派出所(庆元路)",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.386221,
+      "lng": 120.627918,
+      "address": "庆元路9号"
+    },
+    {
+      "id": "B0FFHGTUEA",
+      "name": "屯村同里派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.153201,
+      "lng": 120.767656,
+      "address": "同里镇屯村社区屯溪路66号"
+    },
+    {
+      "id": "B0JA5AHOO0",
+      "name": "白洋湾派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.36373,
+      "lng": 120.55181,
+      "address": "虎殿路1390号"
+    },
+    {
+      "id": "B02001725H",
+      "name": "枫桥派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.314189,
+      "lng": 120.50168,
+      "address": "马涧朝红路166号"
+    },
+    {
+      "id": "B02000JGU6",
+      "name": "胥口派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.239892,
+      "lng": 120.477684,
+      "address": "一箭河路8号"
+    },
+    {
+      "id": "B0FFGRFX8N",
+      "name": "澄阳派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.399108,
+      "lng": 120.653408,
+      "address": "澄云路与富元路交汇处东南角"
+    },
+    {
+      "id": "B0FFIA36FK",
+      "name": "苏州市公安局相城分局开发区派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.399237,
+      "lng": 120.653527,
+      "address": "相城区开发区澄云路888号"
+    },
+    {
+      "id": "B0H03CVB42",
+      "name": "胥口派出所(子胥社区警务室)",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.229051,
+      "lng": 120.475016,
+      "address": "新胥路与孙武路交叉口东220米"
+    },
+    {
+      "id": "B0FFM84KL7",
+      "name": "苏州市公安局城市轨道交通治安分局惠昌路站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.361571,
+      "lng": 120.530248,
+      "address": "榆荫路99号(虎泉路与榆荫路交叉口南270米路东)"
+    },
+    {
+      "id": "B0FFLAHYFZ",
+      "name": "亭苑警务室苏州工业园区公安分局阳澄湖半岛派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.364559,
+      "lng": 120.767336,
+      "address": "亭苑街与夷苑路交叉口东南140米"
+    },
+    {
+      "id": "B0FFGKGMQL",
+      "name": "甪直派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.266761,
+      "lng": 120.829719,
+      "address": "东方大道110号"
+    },
+    {
+      "id": "B0KKVAYYKX",
+      "name": "胜浦派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.304497,
+      "lng": 120.821618,
+      "address": "苏州工业园区中胜路8号"
+    },
+    {
+      "id": "B0FFGFP3OF",
+      "name": "苏州市公安局水上分局东郊派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.29639,
+      "lng": 120.825131,
+      "address": "苏州工业园区吴胜路55号"
+    },
+    {
+      "id": "B0JU1SMVB0",
+      "name": "戈巷街站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.364789,
+      "lng": 120.777841,
+      "address": "畅苑环路66号(戈巷街与畅苑环路交叉口)"
+    },
+    {
+      "id": "B0JG0M7HTE",
+      "name": "苏州市公安局城市轨道交通治安分局花墩站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.223972,
+      "lng": 120.46528,
+      "address": "孙武路990号(花墩地铁站2西北口步行70米)"
+    },
+    {
+      "id": "B0IGFR008B",
+      "name": "高铁新城派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.409889,
+      "lng": 120.675895,
+      "address": "开泰路18号苏州影视产业园12幢"
+    },
+    {
+      "id": "B0HGUMC755",
+      "name": "同里派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.135977,
+      "lng": 120.78553,
+      "address": "邱舍路与东古路交叉口南20米"
+    },
+    {
+      "id": "B0MGJYBEVJ",
+      "name": "公安派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.357625,
+      "lng": 120.793825,
+      "address": "312国道辅路与镇中北路交叉口东北80米"
+    },
+    {
+      "id": "B0FFG0JWJO",
+      "name": "浒墅关派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.370297,
+      "lng": 120.519794,
+      "address": "惠昌路与闻鼓路交汇处"
+    },
+    {
+      "id": "B0FFJI4O6G",
+      "name": "阳澄湖中路站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.416115,
+      "lng": 120.628989,
+      "address": "蠡太路666号(高铁吾悦广场斜对面)"
+    },
+    {
+      "id": "B02001G4ZK",
+      "name": "苏州市公安局苏州工业园区分局综合保税区派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.354089,
+      "lng": 120.803919,
+      "address": "唯亭街道亭和路88号"
+    },
+    {
+      "id": "B0FFI9KK75",
+      "name": "上海铁路公安处苏州北站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.422329,
+      "lng": 120.642242,
+      "address": "苏州北站(高铁苏州北站地铁站2号口步行240米)"
+    },
+    {
+      "id": "B0200083NQ",
+      "name": "藏书派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.277489,
+      "lng": 120.44766,
+      "address": "穹灵路2360号"
+    },
+    {
+      "id": "B0FFFCQ82Q",
+      "name": "浒墅关经济技术开发区派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.368513,
+      "lng": 120.489337,
+      "address": "兴贤路666号"
+    },
+    {
+      "id": "B020008DRL",
+      "name": "太平派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.427524,
+      "lng": 120.705592,
+      "address": "济民路1号"
+    },
+    {
+      "id": "B020008IUE",
+      "name": "菀坪派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.067144,
+      "lng": 120.607476,
+      "address": "开发东路62号"
+    },
+    {
+      "id": "B0FFG7ITB0",
+      "name": "临湖派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.127065,
+      "lng": 120.47029,
+      "address": "东山大道3077号"
+    },
+    {
+      "id": "B02001C4ET",
+      "name": "金家坝派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.089717,
+      "lng": 120.784587,
+      "address": "金家坝金鼎东路"
+    },
+    {
+      "id": "B0FFHYDRH6",
+      "name": "阳澄湖半岛派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.406386,
+      "lng": 120.792824,
+      "address": "慈云路68号"
+    },
+    {
+      "id": "B0HRHC41ZD",
+      "name": "阳澄人家警务室苏州工业园区公安分局阳澄湖半岛派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.416455,
+      "lng": 120.777626,
+      "address": "苏州工业园区"
+    },
+    {
+      "id": "B020008EE0",
+      "name": "通安派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.366767,
+      "lng": 120.453605,
+      "address": "通浒路143号"
+    },
+    {
+      "id": "B02000JK3H",
+      "name": "黄埭派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.435901,
+      "lng": 120.544775,
+      "address": "春丰路408号"
+    },
+    {
+      "id": "B0J1GCC8YH",
+      "name": "周庄派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.129094,
+      "lng": 120.852077,
+      "address": "全旺路100号"
+    },
+    {
+      "id": "B02001797D",
+      "name": "渭塘派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.463628,
+      "lng": 120.650214,
+      "address": "渭塘镇渭中路"
+    },
+    {
+      "id": "B0200186C2",
+      "name": "科技城派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.360132,
+      "lng": 120.432131,
+      "address": "昆仑山路68号"
+    },
+    {
+      "id": "B020008FEU",
+      "name": "香山派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.22869,
+      "lng": 120.397962,
+      "address": "舟山路8号"
+    },
+    {
+      "id": "B02000JGIW",
+      "name": "漕湖派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.459819,
+      "lng": 120.585819,
+      "address": "漕湖大道51号"
+    },
+    {
+      "id": "B0JDJ5EG3T",
+      "name": "正仪派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.36845,
+      "lng": 120.862712,
+      "address": "震川西路2000号"
+    },
+    {
+      "id": "B020016HDR",
+      "name": "锦溪派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.179456,
+      "lng": 120.896843,
+      "address": "普庆路116号"
+    },
+    {
+      "id": "B02000870X",
+      "name": "光福镇派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.283233,
+      "lng": 120.392501,
+      "address": "光福镇宝泉路2号"
+    },
+    {
+      "id": "B0KKCZ6S75",
+      "name": "上海铁路公安局苏州南站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.064406,
+      "lng": 120.802801,
+      "address": "芦墟路110号"
+    },
+    {
+      "id": "B02000854J",
+      "name": "东渚派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.335429,
+      "lng": 120.402788,
+      "address": "东渚街道西渚路5号"
+    },
+    {
+      "id": "B0200068BL",
+      "name": "北厍派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.053632,
+      "lng": 120.786038,
+      "address": "育才路612号"
+    },
+    {
+      "id": "B0G3A5DWTS",
+      "name": "望亭派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.407812,
+      "lng": 120.45689,
+      "address": "新华村路与堰头路交叉口南260米"
+    },
+    {
+      "id": "B02000K1H5",
+      "name": "吴淞江派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.339239,
+      "lng": 120.908473,
+      "address": "玉山镇锦淞路398号"
+    },
+    {
+      "id": "B0FFMHUBM4",
+      "name": "吴江区公安局黎里派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.009545,
+      "lng": 120.70302,
+      "address": "阳塌路与黎坟线交叉口北180米"
+    },
+    {
+      "id": "B020008HKX",
+      "name": "张浦派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.273184,
+      "lng": 120.936673,
+      "address": "阳光路与银河路交汇处东北150米"
+    },
+    {
+      "id": "B02000JFKH",
+      "name": "阳澄湖派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.488631,
+      "lng": 120.72413,
+      "address": "阳澄湖镇思贤路110号"
+    },
+    {
+      "id": "B0KB4SVAVA",
+      "name": "祖冲之路轨道交通派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.368708,
+      "lng": 120.904353,
+      "address": "明星路115号"
+    },
+    {
+      "id": "B020015Z1E",
+      "name": "科技教育园派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.403798,
+      "lng": 120.880088,
+      "address": "萧林西路886号"
+    },
+    {
+      "id": "B02000IGAF",
+      "name": "望亭派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.428469,
+      "lng": 120.440562,
+      "address": "问渡路11号"
+    },
+    {
+      "id": "B020005QK4",
+      "name": "横扇派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.01508,
+      "lng": 120.537188,
+      "address": "横扇社区南举路358号"
+    },
+    {
+      "id": "B020008IUB",
+      "name": "莘塔派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.052088,
+      "lng": 120.846516,
+      "address": "新传路313号"
+    },
+    {
+      "id": "B0FFJY5UAL",
+      "name": "虎丘分局镇湖派出所查报站",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.340757,
+      "lng": 120.361548,
+      "address": "渚镇路与258乡道交叉口西80米"
+    },
+    {
+      "id": "B0FFGAF943",
+      "name": "车之吕派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.081928,
+      "lng": 120.412245,
+      "address": "洞庭路16号"
+    },
+    {
+      "id": "B0GK7C1Z1R",
+      "name": "东山派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.082173,
+      "lng": 120.411314,
+      "address": "洞庭路14号"
+    },
+    {
+      "id": "B01FE0K9M4",
+      "name": "无锡市公安局新吴分局后宅派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.481041,
+      "lng": 120.494859,
+      "address": "鸿山街道兴宅路172号"
+    },
+    {
+      "id": "B020008HOV",
+      "name": "镇湖派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.329299,
+      "lng": 120.347309,
+      "address": "镇湖街道西华路333号"
+    },
+    {
+      "id": "B0FFH88BY7",
+      "name": "汾湖派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.022761,
+      "lng": 120.830683,
+      "address": "汾湖开发区越江路818号"
+    },
+    {
+      "id": "B0200084D7",
+      "name": "城西派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.385779,
+      "lng": 120.930251,
+      "address": "鹿城路229号"
+    },
+    {
+      "id": "B020008DR0",
+      "name": "太湖派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.26519,
+      "lng": 120.326174,
+      "address": "太湖镇湖东村"
+    },
+    {
+      "id": "B0G0SDZBZ3",
+      "name": "巴城派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.459166,
+      "lng": 120.869713,
+      "address": "临湖路8号"
+    },
+    {
+      "id": "B0FFGH8QIY",
+      "name": "昆山市公安局公交派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.366844,
+      "lng": 120.954048,
+      "address": "峨眉山路666号"
+    },
+    {
+      "id": "B0FFGFC2BG",
+      "name": "昆山站派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.368589,
+      "lng": 120.954759,
+      "address": "合兴西路65号"
+    },
+    {
+      "id": "B01FE0K9L6",
+      "name": "硕放派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.481202,
+      "lng": 120.45029,
+      "address": "硕放政通路1号"
+    },
+    {
+      "id": "B020008IIP",
+      "name": "中华园派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.349088,
+      "lng": 120.968367,
+      "address": "昆山市开发区泰山路18号"
+    },
+    {
+      "id": "B0J26AOR9T",
+      "name": "城中派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.388029,
+      "lng": 120.956165,
+      "address": "玉山镇环城北路148号"
+    },
+    {
+      "id": "B0KK044C6Q",
+      "name": "无锡机场派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.478764,
+      "lng": 120.421162,
+      "address": "墙宅路与机场南路交叉口东320米"
+    },
+    {
+      "id": "B0200084C9",
+      "name": "城北派出所",
+      "type": "police",
+      "type_label": "派出所",
+      "lat": 31.421738,
+      "lng": 120.951045,
+      "address": "玉山镇北门路1315号"
+    }
+  ]
+}

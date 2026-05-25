@@ -891,3 +891,32 @@ export interface EnterpriseMapMarkersResponse {
   markers: EnterpriseMapMarker[];
   meta: EnterpriseMapMeta;
 }
+
+export type EmergencyFacilityType = "hospital" | "fire_station" | "emergency_center" | "police";
+
+export interface EmergencyFacility {
+  id: string;
+  name: string;
+  type: EmergencyFacilityType;
+  type_label: string;
+  lat: number;
+  lng: number;
+  address: string;
+}
+
+export interface EmergencyFacilitiesMeta {
+  source: "static" | "empty" | "amap" | string;
+  cached: boolean;
+  returned: number;
+  supported_types: string[];
+  dataset_path?: string;
+  total_in_dataset?: number;
+  hint?: string;
+  error?: string;
+}
+
+export interface EmergencyFacilitiesResponse {
+  success: boolean;
+  facilities: EmergencyFacility[];
+  meta: EmergencyFacilitiesMeta;
+}

@@ -24,6 +24,8 @@ from mining_risk_serve.api.schemas.prediction import BatchDecisionResponse, VALI
 from mining_risk_serve.api.security import require_admin_token
 from mining_risk_serve.api.services.decision_batch_service import get_batch_service
 from mining_risk_serve.api.services.decision_store import DecisionStore, get_decision_settings
+from mining_risk_serve.api.services.dependencies import mock_fallback_enabled
+from mining_risk_serve.api.services.amap_poi import AmapPoiError, PoiBounds, search_emergency_facilities
 from mining_risk_serve.api.services.prediction_service import PredictionService, get_prediction_service
 
 logger = get_logger(__name__)
@@ -1015,6 +1017,22 @@ class EnterpriseMapMarkersResponse(BaseModel):
     meta: EnterpriseMapMeta
 
 
+class EmergencyFacility(BaseModel):
+    id: str
+    name: str
+    type: str
+    type_label: str
+    lat: float
+    lng: float
+    address: str = ""
+
+
+class EmergencyFacilitiesResponse(BaseModel):
+    success: bool
+    facilities: List[EmergencyFacility]
+    meta: Dict[str, Any] = Field(default_factory=dict)
+
+
 def _as_float(value: Any) -> Optional[float]:
     if value in (None, ""):
         return None
@@ -1393,6 +1411,39 @@ async def get_enterprise_map_markers(
         success=True,
         markers=filtered,
         meta=EnterpriseMapMeta(**{**meta, "returned": len(filtered)}),
+    )
+
+
+@router.get("/emergency-facilities", response_model=EmergencyFacilitiesResponse)
+async def get_emergency_facilities(
+    min_lat: float = Query(..., ge=-90, le=90),
+    min_lng: float = Query(..., ge=-180, le=180),
+    max_lat: float = Query(..., ge=-90, le=90),
+    max_lng: float = Query(..., ge=-180, le=180),
+    types: str = Query("hospital,fire_station,emergency_center"),
+) -> EmergencyFacilitiesResponse:
+    bounds = PoiBounds(min_lat=min_lat, min_lng=min_lng, max_lat=max_lat, max_lng=max_lng)
+    facility_types = [item.strip() for item in types.split(",") if item.strip()]
+    try:
+        facilities, meta = search_emergency_facilities(
+            bounds,
+            facility_types,
+            allow_mock=mock_fallback_enabled(),
+        )
+    except AmapPoiError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "message": str(exc),
+                "code": exc.code,
+                "hint": exc.hint,
+                "key_source": exc.key_source,
+            },
+        ) from exc
+    return EmergencyFacilitiesResponse(
+        success=True,
+        facilities=[EmergencyFacility(**item) for item in facilities],
+        meta={**meta, "returned": len(facilities)},
     )
 
 

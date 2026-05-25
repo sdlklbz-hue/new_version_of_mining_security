@@ -437,7 +437,7 @@ mining_risk_agent/
 | ---------- | ----------------------------- |
 | 企业风险预测     | 场景切换、上传/模拟数据、SHAP、决策卡片、SSE    |
 | 数据可视化      | 预警趋势、热力图、企业统计                 |
-| 风险地图       | OpenStreetMap 落点、模型等级着色、已跟踪侧栏 |
+| 风险地图       | 高德 2D/3D 底图、模型等级着色、急救设施与风险场图层 |
 | 企业多维画像     | `enterprise_db` 档案与详情         |
 | 预警经验与记忆    | 六库预览、P0–P3、长期 RAG             |
 | 模型迭代 CI/CD | 时间线、审批、灰度、Demo 动画             |
@@ -482,6 +482,18 @@ pytest tests/ -q --ignore=tests/test_nlp_pipeline.py --ignore=tests/test_crawler
 
 **地图没有点？**  
 检查 `datasets/enterprise_db` 经纬度；调用 `GET /api/v1/visualization/enterprise-map/markers`。
+
+**风险场与急救设施图层？**
+风险场是基于企业模型等级的 IDW 空间插值示意层，可在地图页开关。急救设施（医院、消防、急救中心、派出所）采用**预构建静态 JSON + 运行时 bbox 本地过滤**，地图拖动时不再逐次调用高德 HTTP。仓库已附带演示数据 `datasets/demo/emergency_facilities_suzhou.json`；需刷新真实 POI 时配置 `AMAP_WEB_SERVICE_KEY` 后执行：
+
+```bash
+export MINING_PROJECT_ROOT="$(pwd)"
+python scripts/fetch_emergency_facilities.py
+```
+
+可选 `--output datasets/processed/emergency_facilities.json` 或环境变量 `EMERGENCY_FACILITIES_DATA_PATH` 指定读取路径。无静态文件且 `MRA_ENABLE_MOCK_FALLBACK=true` 时 API 才回退少量演示点位。
+
+高德 **Web 服务 QPS/并发配额**较紧：多类型 × 多页 polygon 查询易触发 `infocode=10021`（`CUQPS_HAS_EXCEEDED_THE_LIMIT`）。脚本默认每种类型最多 **5 页**（`--max-pages`）、请求间隔 **0.4s**（`AMAP_POI_REQUEST_INTERVAL_SEC`），并对限流做 **2s→4s→8s** 指数退避重试；仍失败时会**保存已抓取部分**并标记 `partial: true`，可稍后重跑补全。大范围可试 `--tile-grid`（2×2 分片）。
 
 **知识库乱码？**  
 文件须 UTF-8。

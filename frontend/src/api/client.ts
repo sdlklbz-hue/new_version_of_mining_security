@@ -23,6 +23,7 @@ import type {
   DemoReplayLoadResponse,
   EnterpriseDetailResponse,
   EnterpriseDecisionPayloadResponse,
+  EmergencyFacilitiesResponse,
   EnterpriseListResponse,
   EnterpriseMapBatchPredictRequest,
   EnterpriseMapMarkersResponse,
@@ -1359,6 +1360,42 @@ export async function fetchEnterpriseMapMarkers(params: {
   }
 }
 
+export async function fetchEmergencyFacilities(params: {
+  min_lat: number;
+  min_lng: number;
+  max_lat: number;
+  max_lng: number;
+  types: string[];
+}): Promise<EmergencyFacilitiesResponse | null> {
+  try {
+    const usp = new URLSearchParams();
+    usp.set("min_lat", String(params.min_lat));
+    usp.set("min_lng", String(params.min_lng));
+    usp.set("max_lat", String(params.max_lat));
+    usp.set("max_lng", String(params.max_lng));
+    usp.set("types", params.types.join(","));
+    const resp = await fetch(url(`/api/v1/visualization/emergency-facilities?${usp.toString()}`));
+    if (!resp.ok) {
+      const body = await resp.json().catch(() => null);
+      const detail = body?.detail;
+      const hint =
+        typeof detail === "object" && detail && typeof detail.hint === "string"
+          ? detail.hint
+          : typeof detail === "string"
+            ? detail
+            : "急救设施数据加载失败。";
+      throw new Error(hint);
+    }
+    return jsonOrThrow<EmergencyFacilitiesResponse>(resp);
+  } catch (e) {
+    if (e instanceof Error) {
+      throw e;
+    }
+    console.error("获取急救设施点位失败:", e);
+    throw new Error("急救设施数据加载失败。");
+  }
+}
+
 export async function fetchIndustryList(): Promise<{ success: boolean; industries: string[] } | null> {
   try {
     const resp = await fetch(url("/api/v1/visualization/enterprise-db/industries"));
@@ -1373,6 +1410,7 @@ export async function fetchIndustryList(): Promise<{ success: boolean; industrie
 export type {
   EnterpriseDetailResponse,
   EnterpriseDecisionPayloadResponse,
+  EmergencyFacilitiesResponse,
   EnterpriseMapMarkersResponse,
   IndustryWarningResponse,
   EnterpriseListResponse,
