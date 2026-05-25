@@ -21,7 +21,10 @@ import type {
   DemoBatch,
   DemoIterationStepResponse,
   DemoReplayLoadResponse,
+  EnterpriseDetailResponse,
+  EnterpriseListResponse,
   HealthResponse,
+  IndustryWarningResponse,
   IterationRecord,
   IterationAuditResponse,
   IterationReportResponse,
@@ -1158,6 +1161,32 @@ export interface EnterpriseCategoryResponse {
   matrix: number[][];
 }
 
+export interface IndustryWarningItem {
+  industry: string;
+  total_enterprises: number;
+  red_count: number;
+  orange_count: number;
+  yellow_count: number;
+  blue_count: number;
+  avg_risk_score: number;
+  avg_safety_score: number;
+  inspection_count: number;
+  violation_count: number;
+}
+
+export interface EnterpriseListItem {
+  name: string;
+  folder: string;
+  category_count: number;
+  record_count: number;
+  categories: string[];
+  industry: string;
+  risk_level: string;
+  region: string;
+  scale: string;
+  legal_person: string;
+}
+
 export async function fetchModuleTrend(): Promise<ModuleTrendResponse | null> {
   try {
     const resp = await fetch(url("/api/v1/visualization/module-trend"));
@@ -1201,3 +1230,60 @@ export async function fetchEnterpriseCategoryHeatmap(): Promise<EnterpriseCatego
     return null;
   }
 }
+
+export async function fetchIndustryWarning(): Promise<IndustryWarningResponse | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/industry-warning"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<IndustryWarningResponse>(resp);
+  } catch (e) {
+    console.error("获取行业预警对比数据失败:", e);
+    return null;
+  }
+}
+
+export async function fetchEnterpriseDbList(params: {
+  keyword?: string;
+  industry?: string;
+  risk_level?: string;
+  page?: number;
+  page_size?: number;
+} = {}): Promise<EnterpriseListResponse | null> {
+  try {
+    const usp = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") usp.set(k, String(v));
+    });
+    const qs = usp.toString();
+    const resp = await fetch(url(`/api/v1/visualization/enterprise-db/list${qs ? `?${qs}` : ""}`));
+    if (!resp.ok) return null;
+    return jsonOrThrow<EnterpriseListResponse>(resp);
+  } catch (e) {
+    console.error("获取企业列表失败:", e);
+    return null;
+  }
+}
+
+export async function fetchEnterpriseDbDetail(folderName: string): Promise<EnterpriseDetailResponse | null> {
+  try {
+    const resp = await fetch(url(`/api/v1/visualization/enterprise-db/detail/${encodeURIComponent(folderName)}`));
+    if (!resp.ok) return null;
+    return jsonOrThrow<EnterpriseDetailResponse>(resp);
+  } catch (e) {
+    console.error("获取企业详情失败:", e);
+    return null;
+  }
+}
+
+export async function fetchIndustryList(): Promise<{ success: boolean; industries: string[] } | null> {
+  try {
+    const resp = await fetch(url("/api/v1/visualization/enterprise-db/industries"));
+    if (!resp.ok) return null;
+    return jsonOrThrow<{ success: boolean; industries: string[] }>(resp);
+  } catch (e) {
+    console.error("获取行业列表失败:", e);
+    return null;
+  }
+}
+
+export type { EnterpriseDetailResponse, IndustryWarningResponse, EnterpriseListResponse };

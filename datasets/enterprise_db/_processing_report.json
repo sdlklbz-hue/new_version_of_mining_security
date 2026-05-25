@@ -1,0 +1,129 @@
+{
+  "处理开始时间": "2026-05-24 18:48:48",
+  "处理文件列表": [
+    "事故数据（不一定都是火灾的）.xlsx",
+    "enterprise_routine_check_log.xlsx",
+    "st_ds_aczf_enterprise.xlsx",
+    "st_enterprise_directory.xlsx",
+    "st_enterprise_production_status_record.xlsx",
+    "st_enterprise_rating_information_filling.xlsx",
+    "szs_business_address.xlsx",
+    "szs_enterprise_dust_clear_record.xlsx",
+    "szs_enterprise_industry_category.xlsx",
+    "szs_enterprise_information.xlsx",
+    "szs_enterprise_risk_history.xlsx",
+    "szs_enterprise_safety.xlsx",
+    "szs_enterprise_volkswirtschaft.xlsx",
+    "szs_ent_label_report_history.xlsx",
+    "zjj_house_base_info.xlsx",
+    "zjstreet2_gcj02.xlsx"
+  ],
+  "处理文件数量": 16,
+  "企业数量": 530,
+  "数据记录总数": 22274,
+  "异常情况": [
+    "文件 事故数据（不一定都是火灾的）.xlsx 未找到企业标识列，跳过归类",
+    "文件 zjj_house_base_info.xlsx 未找到企业标识列，跳过归类",
+    "文件 zjstreet2_gcj02.xlsx 未找到企业标识列，跳过归类"
+  ],
+  "各文件处理详情": {
+    "事故数据（不一定都是火灾的）.xlsx": {
+      "状态": "成功",
+      "行数": 499,
+      "列数": 36
+    },
+    "enterprise_routine_check_log.xlsx": {
+      "状态": "成功",
+      "行数": 7393,
+      "列数": 35
+    },
+    "st_ds_aczf_enterprise.xlsx": {
+      "状态": "成功",
+      "行数": 134,
+      "列数": 188
+    },
+    "st_enterprise_directory.xlsx": {
+      "状态": "成功",
+      "行数": 500,
+      "列数": 41
+    },
+    "st_enterprise_production_status_record.xlsx": {
+      "状态": "成功",
+      "行数": 44,
+      "列数": 15
+    },
+    "st_enterprise_rating_information_filling.xlsx": {
+      "状态": "成功",
+      "行数": 1374,
+      "列数": 38
+    },
+    "szs_business_address.xlsx": {
+      "状态": "成功",
+      "行数": 2013,
+      "列数": 20
+    },
+    "szs_enterprise_dust_clear_record.xlsx": {
+      "状态": "成功",
+      "行数": 617,
+      "列数": 18
+    },
+    "szs_enterprise_industry_category.xlsx": {
+      "状态": "成功",
+      "行数": 1797,
+      "列数": 44
+    },
+    "szs_enterprise_information.xlsx": {
+      "状态": "成功",
+      "行数": 1799,
+      "列数": 64
+    },
+    "szs_enterprise_risk_history.xlsx": {
+      "状态": "成功",
+      "行数": 2455,
+      "列数": 46
+    },
+    "szs_enterprise_safety.xlsx": {
+      "状态": "成功",
+      "行数": 1970,
+      "列数": 37
+    },
+    "szs_enterprise_volkswirtschaft.xlsx": {
+      "状态": "成功",
+      "行数": 2070,
+      "列数": 16
+    },
+    "szs_ent_label_report_history.xlsx": {
+      "状态": "成功",
+      "行数": 834,
+      "列数": 10
+    },
+    "zjj_house_base_info.xlsx": {
+      "状态": "成功",
+      "行数": 153,
+      "列数": 58
+    },
+    "zjstreet2_gcj02.xlsx": {
+      "状态": "成功",
+      "行数": 153,
+      "列数": 31
+    }
+  },
+  "处理结束时间": "2026-05-24 18:49:49",
+  "处理耗时（秒）": 60.55,
+  "成功生成企业数据库数量": 530,
+  "各类别数据统计": {
+    "企业日常检查记录": 7393,
+    "行政执法企业信息": 134,
+    "企业目录": 499,
+    "企业评级信息填报": 1374,
+    "企业生产经营地址": 2013,
+    "企业除尘记录": 617,
+    "企业行业分类": 1620,
+    "企业基本信息": 1799,
+    "企业风险报告历史": 2448,
+    "企业安全信息": 1763,
+    "企业国民经济分类": 1736,
+    "企业标签报告历史": 834,
+    "企业生产状态记录": 44
+  }
+}

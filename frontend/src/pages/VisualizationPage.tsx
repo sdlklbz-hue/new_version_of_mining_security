@@ -8,6 +8,7 @@ import {
   fetchStorageTrend,
   fetchCategoryPriorityHeatmap,
   fetchEnterpriseCategoryHeatmap,
+  fetchIndustryWarning,
   type TrendDataPoint,
   type ScatterDataPoint,
   type HeatmapResponse,
@@ -15,6 +16,7 @@ import {
   type StorageTrendPoint,
   type CategoryPriorityResponse,
   type EnterpriseCategoryResponse,
+  type IndustryWarningItem,
 } from "../api/client";
 import {
   EarlyWarningTrendChart,
@@ -24,8 +26,14 @@ import {
   StorageTrendChart,
   CategoryPriorityHeatmapChart,
   EnterpriseCategoryHeatmapChart,
+  IndustryWarningComparisonChart,
+  IndustryWarning3DBarChart,
+  IndustryRiskRadarChart,
+  IndustryInspectionViolationChart,
+  IndustryWarning3DSurface,
 } from "../components/charts";
 import ReactECharts from "echarts-for-react";
+import "echarts-gl";
 import * as echarts from "echarts";
 
 export default function VisualizationDashboard() {
@@ -41,6 +49,7 @@ export default function VisualizationDashboard() {
   const [storageTrendData, setStorageTrendData] = useState<StorageTrendPoint[] | null>(null);
   const [categoryPriorityData, setCategoryPriorityData] = useState<CategoryPriorityResponse | null>(null);
   const [enterpriseCategoryData, setEnterpriseCategoryData] = useState<EnterpriseCategoryResponse | null>(null);
+  const [industryWarningData, setIndustryWarningData] = useState<IndustryWarningItem[] | null>(null);
   const [enterpriseStats, setEnterpriseStats] = useState<{
     success: boolean;
     industry_distribution: Array<{ name: string; value: number; color: string }>;
@@ -63,7 +72,8 @@ export default function VisualizationDashboard() {
       try {
         const [
           trendResp, scatterResp, heatmapResp, statsResp,
-          moduleResp, storageResp, catPriResp, entCatResp
+          moduleResp, storageResp, catPriResp, entCatResp,
+          industryWarningResp
         ] = await Promise.all([
           fetchEarlyWarningTrend(),
           fetchCorrelationScatter(),
@@ -73,6 +83,7 @@ export default function VisualizationDashboard() {
           fetchStorageTrend(),
           fetchCategoryPriorityHeatmap(),
           fetchEnterpriseCategoryHeatmap(),
+          fetchIndustryWarning(),
         ]);
 
         if (trendResp?.success) setTrendData(trendResp.data);
@@ -90,6 +101,7 @@ export default function VisualizationDashboard() {
         if (catPriResp?.success) setCategoryPriorityData(catPriResp);
         if (entCatResp?.success) setEnterpriseCategoryData(entCatResp);
         if (statsResp?.success) setEnterpriseStats(statsResp);
+        if (industryWarningResp?.success) setIndustryWarningData(industryWarningResp.data);
 
         if (!trendResp?.success && !scatterResp?.success && !heatmapResp?.success && !statsResp?.success) {
           setError("无法加载可视化数据，请检查后端服务");
@@ -908,6 +920,136 @@ export default function VisualizationDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* 工业大类预警情况可视化对比 */}
+      {industryWarningData && industryWarningData.length > 0 && (
+        <div style={{ marginTop: "40px" }}>
+          <h3 style={{
+            color: "#e5e7eb",
+            fontSize: "20px",
+            fontWeight: "bold",
+            marginBottom: "8px",
+            paddingBottom: "12px",
+            borderBottom: "2px solid #f97316"
+          }}>
+            🔬 工业大类预警情况深度对比分析
+          </h3>
+          <p style={{
+            color: "#9ca3af",
+            fontSize: "13px",
+            marginBottom: "24px"
+          }}>
+            基于企业数据库的各行业预警等级分布、风险评分、检查违规数据对比 | Industry Warning Deep Comparison
+          </p>
+
+          <div style={{ marginBottom: "32px" }}>
+            <IndustryWarningComparisonChart data={industryWarningData} />
+          </div>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(600px, 1fr))",
+            gap: "24px",
+            marginBottom: "32px"
+          }}>
+            <IndustryRiskRadarChart data={industryWarningData} />
+            <IndustryInspectionViolationChart data={industryWarningData} />
+          </div>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(600px, 1fr))",
+            gap: "24px",
+            marginBottom: "32px"
+          }}>
+            <IndustryWarning3DBarChart data={industryWarningData} />
+            <IndustryWarning3DSurface data={industryWarningData} />
+          </div>
+
+          <div style={{
+            backgroundColor: "rgba(31, 41, 55, 0.5)",
+            borderRadius: "12px",
+            padding: "24px",
+            border: "1px solid #374151",
+            marginBottom: "32px"
+          }}>
+            <h4 style={{
+              color: "#e5e7eb",
+              fontSize: "16px",
+              fontWeight: "bold",
+              marginTop: 0,
+              marginBottom: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}>
+              <span>📋</span> 工业大类预警数据明细表
+            </h4>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: "13px"
+              }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #f97316" }}>
+                    <th style={{ padding: "10px", textAlign: "left", color: "#9ca3af", fontWeight: 600 }}>行业类别</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#9ca3af", fontWeight: 600 }}>企业数</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#ef4444", fontWeight: 600 }}>红色</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#f97316", fontWeight: 600 }}>橙色</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#eab308", fontWeight: 600 }}>黄色</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#3b82f6", fontWeight: 600 }}>蓝色</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#9ca3af", fontWeight: 600 }}>平均风险分</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#9ca3af", fontWeight: 600 }}>平均安全分</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#9ca3af", fontWeight: 600 }}>检查次数</th>
+                    <th style={{ padding: "10px", textAlign: "center", color: "#9ca3af", fontWeight: 600 }}>违规次数</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {industryWarningData.map((item, idx) => (
+                    <tr key={idx} style={{ borderBottom: "1px solid #374151" }}>
+                      <td style={{ padding: "10px", color: "#e5e7eb", fontWeight: 500 }}>{item.industry}</td>
+                      <td style={{ padding: "10px", textAlign: "center", color: "#e5e7eb" }}>{item.total_enterprises}</td>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
+                        <span style={{ color: "#ef4444", fontWeight: "bold" }}>{item.red_count}</span>
+                      </td>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
+                        <span style={{ color: "#f97316", fontWeight: "bold" }}>{item.orange_count}</span>
+                      </td>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
+                        <span style={{ color: "#eab308", fontWeight: "bold" }}>{item.yellow_count}</span>
+                      </td>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
+                        <span style={{ color: "#3b82f6", fontWeight: "bold" }}>{item.blue_count}</span>
+                      </td>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
+                        <span style={{
+                          color: item.avg_risk_score >= 60 ? "#ef4444" : item.avg_risk_score >= 40 ? "#f97316" : "#10b981",
+                          fontWeight: "bold"
+                        }}>
+                          {item.avg_risk_score}
+                        </span>
+                      </td>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
+                        <span style={{
+                          color: item.avg_safety_score >= 80 ? "#10b981" : item.avg_safety_score >= 60 ? "#eab308" : "#ef4444",
+                          fontWeight: "bold"
+                        }}>
+                          {item.avg_safety_score}
+                        </span>
+                      </td>
+                      <td style={{ padding: "10px", textAlign: "center", color: "#9ca3af" }}>{item.inspection_count}</td>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
+                        <span style={{ color: item.violation_count > 0 ? "#ef4444" : "#10b981" }}>{item.violation_count}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

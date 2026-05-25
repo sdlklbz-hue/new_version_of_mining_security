@@ -24,6 +24,14 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: false,
-    chunkSizeWarningLimit: 1500,
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "echarts-vendor": ["echarts", "echarts-for-react", "echarts-gl"],
+          "react-vendor": ["react", "react-dom"],
+        },
+      },
+    },
   },
 });

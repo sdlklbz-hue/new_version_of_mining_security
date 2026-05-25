@@ -802,3 +802,46 @@ export interface ModelEvaluationReport {
   level_distribution: Record<string, number>;
   improvement_suggestions: string[];
 }
+
+export interface IndustryWarningItem {
+  industry: string;
+  total_enterprises: number;
+  red_count: number;
+  orange_count: number;
+  yellow_count: number;
+  blue_count: number;
+  avg_risk_score: number;
+  avg_safety_score: number;
+  inspection_count: number;
+  violation_count: number;
+}
+
+export interface IndustryWarningResponse {
+  success: boolean;
+  data: IndustryWarningItem[];
+}
+
+export interface EnterpriseListItem {
+  name: string;
+  folder: string;
+  category_count: number;
+  record_count: number;
+  categories: string[];
+  industry: string;
+  risk_level: string;
+  region: string;
+  scale: string;
+  legal_person: string;
+}
+
+export interface EnterpriseListResponse {
+  success: boolean;
+  total: number;
+  enterprises: EnterpriseListItem[];
+}
+
+export interface EnterpriseDetailResponse {
+  success: boolean;
+  name: string;
+  data: Record<string, unknown>;
+}

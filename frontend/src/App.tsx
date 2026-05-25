@@ -19,10 +19,12 @@ import KnowledgeMemoryPage from "./pages/KnowledgeMemoryPage";
 import IterationPage from "./pages/IterationPage";
 import SystemConfigPage from "./pages/SystemConfigPage";
 import VisualizationDashboard from "./pages/VisualizationPage";
+import EnterpriseProfilePage from "./pages/EnterpriseProfilePage";
 
 const TAB_DEFS = [
   { id: "risk", label: "企业风险预测" },
   { id: "visualization", label: "数据可视化" },
+  { id: "enterprise", label: "企业多维画像" },
   { id: "knowledge", label: "预警经验与记忆" },
   { id: "iteration", label: "模型迭代与 CI/CD" },
   { id: "config", label: "系统配置与 API" },
@@ -136,6 +138,7 @@ export default function App() {
           >
             {activeTab === "risk" && <RiskPredictionPage scenario={scenario} />}
             {activeTab === "visualization" && <VisualizationDashboard />}
+            {activeTab === "enterprise" && <EnterpriseProfilePage />}
             {activeTab === "knowledge" && <KnowledgeMemoryPage />}
             {activeTab === "iteration" && <IterationPage />}
             {activeTab === "config" && (

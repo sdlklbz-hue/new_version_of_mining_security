@@ -1260,3 +1260,483 @@ export function EnterpriseCategoryHeatmapChart({ enterprises, categories, matrix
     </div>
   );
 }
+
+interface IndustryWarningData {
+  industry: string;
+  total_enterprises: number;
+  red_count: number;
+  orange_count: number;
+  yellow_count: number;
+  blue_count: number;
+  avg_risk_score: number;
+  avg_safety_score: number;
+  inspection_count: number;
+  violation_count: number;
+}
+
+export function IndustryWarningComparisonChart({ data }: { data: IndustryWarningData[] }) {
+  const industries = data.map(d => d.industry);
+  const option = {
+    backgroundColor: "transparent",
+    title: {
+      text: "各工业大类预警情况可视化对比",
+      subtext: "Industry Warning Comparison Dashboard",
+      left: "center",
+      textStyle: { color: "#e5e7eb", fontSize: 18, fontWeight: "bold" },
+      subtextStyle: { color: "#9ca3af", fontSize: 12 }
+    },
+    tooltip: {
+      trigger: "axis" as const,
+      backgroundColor: "rgba(15, 23, 42, 0.95)",
+      borderColor: "#3b82f6",
+      borderWidth: 1,
+      textStyle: { color: "#e5e7eb" },
+      formatter: (params: any[]) => {
+        let html = `<div style="font-weight:bold;margin-bottom:6px;color:#f1f5f9">${params[0].axisValue}</div>`;
+        params.forEach((p: any) => {
+          html += `<div style="display:flex;align-items:center;gap:6px;margin:2px 0">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${p.color}"></span>
+            ${p.seriesName}: <strong>${p.value}</strong></div>`;
+        });
+        return html;
+      }
+    },
+    legend: {
+      data: ["红色预警", "橙色预警", "黄色预警", "蓝色预警", "平均风险分", "平均安全分"],
+      top: 50,
+      textStyle: { color: "#9ca3af", fontSize: 11 }
+    },
+    grid: {
+      left: "4%",
+      right: "4%",
+      bottom: "12%",
+      top: "22%",
+      containLabel: true
+    },
+    xAxis: {
+      type: "category" as const,
+      data: industries,
+      axisLine: { lineStyle: { color: "#374151" } },
+      axisLabel: {
+        color: "#e5e7eb",
+        fontSize: 10,
+        rotate: industries.length > 6 ? 30 : 0,
+        interval: 0
+      }
+    },
+    yAxis: [
+      {
+        type: "value" as const,
+        name: "企业数量",
+        nameTextStyle: { color: "#9ca3af" },
+        axisLine: { lineStyle: { color: "#374151" } },
+        axisLabel: { color: "#9ca3af" },
+        splitLine: { lineStyle: { color: "#1f2937" } }
+      },
+      {
+        type: "value" as const,
+        name: "分数",
+        nameTextStyle: { color: "#9ca3af" },
+        axisLine: { lineStyle: { color: "#374151" } },
+        axisLabel: { color: "#9ca3af" },
+        splitLine: { show: false }
+      }
+    ],
+    dataZoom: [{ type: "inside" as const }, { type: "slider" as const, height: 18, bottom: 4 }],
+    series: [
+      {
+        name: "红色预警",
+        type: "bar",
+        stack: "warning",
+        data: data.map(d => d.red_count),
+        itemStyle: { color: "#ef4444", borderRadius: [0, 0, 0, 0] },
+        barMaxWidth: 40
+      },
+      {
+        name: "橙色预警",
+        type: "bar",
+        stack: "warning",
+        data: data.map(d => d.orange_count),
+        itemStyle: { color: "#f97316" },
+        barMaxWidth: 40
+      },
+      {
+        name: "黄色预警",
+        type: "bar",
+        stack: "warning",
+        data: data.map(d => d.yellow_count),
+        itemStyle: { color: "#eab308" },
+        barMaxWidth: 40
+      },
+      {
+        name: "蓝色预警",
+        type: "bar",
+        stack: "warning",
+        data: data.map(d => d.blue_count),
+        itemStyle: { color: "#3b82f6", borderRadius: [4, 4, 0, 0] },
+        barMaxWidth: 40
+      },
+      {
+        name: "平均风险分",
+        type: "line",
+        yAxisIndex: 1,
+        data: data.map(d => d.avg_risk_score),
+        smooth: true,
+        symbol: "circle",
+        symbolSize: 8,
+        lineStyle: { width: 3, color: "#f43f5e" },
+        itemStyle: { color: "#f43f5e", borderWidth: 2, borderColor: "#fff" },
+        areaStyle: {
+          color: {
+            type: "linear" as const, x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(244, 63, 94, 0.25)" },
+              { offset: 1, color: "rgba(244, 63, 94, 0.02)" }
+            ]
+          }
+        }
+      },
+      {
+        name: "平均安全分",
+        type: "line",
+        yAxisIndex: 1,
+        data: data.map(d => d.avg_safety_score),
+        smooth: true,
+        symbol: "diamond",
+        symbolSize: 8,
+        lineStyle: { width: 3, color: "#10b981" },
+        itemStyle: { color: "#10b981", borderWidth: 2, borderColor: "#fff" },
+        areaStyle: {
+          color: {
+            type: "linear" as const, x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(16, 185, 129, 0.25)" },
+              { offset: 1, color: "rgba(16, 185, 129, 0.02)" }
+            ]
+          }
+        }
+      }
+    ]
+  };
+  return (
+    <div className="scada-card" style={{ padding: 8 }}>
+      <ReactECharts option={option} style={{ height: 480 }} />
+    </div>
+  );
+}
+
+export function IndustryWarning3DBarChart({ data }: { data: IndustryWarningData[] }) {
+  const industries = data.map(d => d.industry);
+  const option = {
+    backgroundColor: "transparent",
+    title: {
+      text: "工业大类预警三维对比图",
+      subtext: "3D Industry Warning Comparison",
+      left: "center",
+      textStyle: { color: "#e5e7eb", fontSize: 18, fontWeight: "bold" },
+      subtextStyle: { color: "#9ca3af", fontSize: 12 }
+    },
+    tooltip: {},
+    visualMap: {
+      max: Math.max(...data.map(d => d.red_count + d.orange_count + d.yellow_count + d.blue_count)),
+      color: ["#ef4444", "#f97316", "#eab308", "#3b82f6"],
+      textStyle: { color: "#9ca3af" }
+    },
+    xAxis3D: {
+      type: "category" as const,
+      data: industries,
+      axisLabel: { color: "#e5e7eb", fontSize: 9, rotate: 30 },
+      axisLine: { lineStyle: { color: "#374151" } }
+    },
+    yAxis3D: {
+      type: "category" as const,
+      data: ["红色", "橙色", "黄色", "蓝色"],
+      axisLabel: { color: "#e5e7eb", fontSize: 11 },
+      axisLine: { lineStyle: { color: "#374151" } }
+    },
+    zAxis3D: {
+      type: "value" as const,
+      name: "数量",
+      axisLabel: { color: "#9ca3af" },
+      axisLine: { lineStyle: { color: "#374151" } }
+    },
+    grid3D: {
+      boxWidth: 180,
+      boxDepth: 80,
+      viewControl: { autoRotate: true, autoRotateSpeed: 6 },
+      light: {
+        main: { intensity: 1.2, shadow: true },
+        ambient: { intensity: 0.4 }
+      },
+      environment: "transparent" as any
+    },
+    series: [
+      {
+        type: "bar3D",
+        data: data.flatMap((d, i) => [
+          [i, 0, d.red_count, "#ef4444"],
+          [i, 1, d.orange_count, "#f97316"],
+          [i, 2, d.yellow_count, "#eab308"],
+          [i, 3, d.blue_count, "#3b82f6"],
+        ]).map(item => ({
+          value: [item[0], item[1], item[2]],
+          itemStyle: { color: item[3] as string }
+        })),
+        shading: "lambert",
+        label: { show: false },
+        itemStyle: { opacity: 0.85 },
+        emphasis: {
+          label: { show: true, formatter: (p: any) => p.value[2], color: "#fff" }
+        }
+      }
+    ]
+  };
+  return (
+    <div className="scada-card" style={{ padding: 8 }}>
+      <ReactECharts option={option} style={{ height: 500 }}
+        opts={{ renderer: "canvas" }}
+        onEvents={{
+          rendered: () => {}
+        }}
+      />
+    </div>
+  );
+}
+
+export function IndustryRiskRadarChart({ data }: { data: IndustryWarningData[] }) {
+  const top6 = data.slice(0, 6);
+  const indicators = [
+    { name: "红色预警", max: Math.max(...top6.map(d => d.red_count), 1) },
+    { name: "橙色预警", max: Math.max(...top6.map(d => d.orange_count), 1) },
+    { name: "黄色预警", max: Math.max(...top6.map(d => d.yellow_count), 1) },
+    { name: "蓝色预警", max: Math.max(...top6.map(d => d.blue_count), 1) },
+    { name: "平均风险分", max: 100 },
+    { name: "违规次数", max: Math.max(...top6.map(d => d.violation_count), 1) },
+  ];
+  const colors = ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#8b5cf6", "#06b6d4"];
+  const option = {
+    backgroundColor: "transparent",
+    title: {
+      text: "工业大类风险雷达图",
+      subtext: "Industry Risk Radar",
+      left: "center",
+      textStyle: { color: "#e5e7eb", fontSize: 16, fontWeight: "bold" },
+      subtextStyle: { color: "#9ca3af", fontSize: 12 }
+    },
+    tooltip: {
+      backgroundColor: "rgba(15, 23, 42, 0.95)",
+      borderColor: "#3b82f6",
+      textStyle: { color: "#e5e7eb" }
+    },
+    legend: {
+      data: top6.map(d => d.industry),
+      bottom: 0,
+      textStyle: { color: "#9ca3af", fontSize: 10 }
+    },
+    radar: {
+      indicator: indicators,
+      shape: "polygon",
+      splitNumber: 5,
+      axisName: { color: "#e5e7eb", fontSize: 11 },
+      splitLine: { lineStyle: { color: "#1e293b" } },
+      splitArea: { areaStyle: { color: ["rgba(59,130,246,0.05)", "rgba(59,130,246,0.1)"] } },
+      axisLine: { lineStyle: { color: "#374151" } }
+    },
+    series: [{
+      type: "radar",
+      data: top6.map((d, i) => ({
+        name: d.industry,
+        value: [d.red_count, d.orange_count, d.yellow_count, d.blue_count, d.avg_risk_score, d.violation_count],
+        lineStyle: { color: colors[i % colors.length], width: 2 },
+        areaStyle: { color: colors[i % colors.length], opacity: 0.15 },
+        itemStyle: { color: colors[i % colors.length] },
+        symbol: "circle",
+        symbolSize: 5
+      }))
+    }]
+  };
+  return (
+    <div className="scada-card" style={{ padding: 8 }}>
+      <ReactECharts option={option} style={{ height: 420 }} />
+    </div>
+  );
+}
+
+export function IndustryInspectionViolationChart({ data }: { data: IndustryWarningData[] }) {
+  const option = {
+    backgroundColor: "transparent",
+    title: {
+      text: "各行业检查与违规对比",
+      subtext: "Inspection vs Violation by Industry",
+      left: "center",
+      textStyle: { color: "#e5e7eb", fontSize: 16, fontWeight: "bold" },
+      subtextStyle: { color: "#9ca3af", fontSize: 12 }
+    },
+    tooltip: {
+      trigger: "axis" as const,
+      backgroundColor: "rgba(15, 23, 42, 0.95)",
+      borderColor: "#3b82f6",
+      textStyle: { color: "#e5e7eb" }
+    },
+    legend: {
+      data: ["检查次数", "违规次数", "违规率"],
+      top: 45,
+      textStyle: { color: "#9ca3af" }
+    },
+    grid: { left: "4%", right: "4%", bottom: "12%", top: "22%", containLabel: true },
+    xAxis: {
+      type: "category" as const,
+      data: data.map(d => d.industry),
+      axisLine: { lineStyle: { color: "#374151" } },
+      axisLabel: { color: "#e5e7eb", fontSize: 10, rotate: data.length > 6 ? 25 : 0, interval: 0 }
+    },
+    yAxis: [
+      {
+        type: "value" as const,
+        name: "次数",
+        axisLine: { lineStyle: { color: "#374151" } },
+        axisLabel: { color: "#9ca3af" },
+        splitLine: { lineStyle: { color: "#1f2937" } }
+      },
+      {
+        type: "value" as const,
+        name: "违规率%",
+        axisLine: { lineStyle: { color: "#374151" } },
+        axisLabel: { color: "#9ca3af" },
+        splitLine: { show: false }
+      }
+    ],
+    dataZoom: [{ type: "inside" as const }, { type: "slider" as const, height: 18, bottom: 4 }],
+    series: [
+      {
+        name: "检查次数",
+        type: "bar",
+        data: data.map(d => d.inspection_count),
+        itemStyle: {
+          color: {
+            type: "linear" as const, x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "#3b82f6" },
+              { offset: 1, color: "#1d4ed8" }
+            ]
+          },
+          borderRadius: [4, 4, 0, 0]
+        },
+        barMaxWidth: 36
+      },
+      {
+        name: "违规次数",
+        type: "bar",
+        data: data.map(d => d.violation_count),
+        itemStyle: {
+          color: {
+            type: "linear" as const, x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "#ef4444" },
+              { offset: 1, color: "#b91c1c" }
+            ]
+          },
+          borderRadius: [4, 4, 0, 0]
+        },
+        barMaxWidth: 36
+      },
+      {
+        name: "违规率",
+        type: "line",
+        yAxisIndex: 1,
+        data: data.map(d => d.inspection_count > 0 ? +((d.violation_count / d.inspection_count) * 100).toFixed(1) : 0),
+        smooth: true,
+        symbol: "circle",
+        symbolSize: 8,
+        lineStyle: { width: 3, color: "#f59e0b" },
+        itemStyle: { color: "#f59e0b", borderWidth: 2, borderColor: "#fff" }
+      }
+    ]
+  };
+  return (
+    <div className="scada-card" style={{ padding: 8 }}>
+      <ReactECharts option={option} style={{ height: 420 }} />
+    </div>
+  );
+}
+
+export function IndustryWarning3DSurface({ data }: { data: IndustryWarningData[] }) {
+  const industries = data.map(d => d.industry);
+  const warningTypes = ["红色预警", "橙色预警", "黄色预警", "蓝色预警"];
+  const warningCounts = [data.map(d => d.red_count), data.map(d => d.orange_count), data.map(d => d.yellow_count), data.map(d => d.blue_count)];
+  const surfaceData: number[][] = [];
+  for (let j = 0; j < warningTypes.length; j++) {
+    for (let i = 0; i < industries.length; i++) {
+      surfaceData.push([i, j, warningCounts[j][i]]);
+    }
+  }
+  const option = {
+    backgroundColor: "transparent",
+    title: {
+      text: "行业预警三维曲面图",
+      subtext: "3D Warning Surface Visualization",
+      left: "center",
+      textStyle: { color: "#e5e7eb", fontSize: 18, fontWeight: "bold" },
+      subtextStyle: { color: "#9ca3af", fontSize: 12 }
+    },
+    tooltip: {},
+    visualMap: {
+      show: true,
+      min: 0,
+      max: Math.max(...data.map(d => Math.max(d.red_count, d.orange_count, d.yellow_count, d.blue_count))),
+      inRange: { color: ["#1e3a5f", "#3b82f6", "#eab308", "#f97316", "#ef4444"] },
+      textStyle: { color: "#9ca3af" }
+    },
+    xAxis3D: {
+      type: "category" as const,
+      data: industries,
+      axisLabel: { color: "#e5e7eb", fontSize: 9, rotate: 30 },
+      axisLine: { lineStyle: { color: "#374151" } }
+    },
+    yAxis3D: {
+      type: "category" as const,
+      data: warningTypes,
+      axisLabel: { color: "#e5e7eb", fontSize: 11 },
+      axisLine: { lineStyle: { color: "#374151" } }
+    },
+    zAxis3D: {
+      type: "value" as const,
+      name: "数量",
+      axisLabel: { color: "#9ca3af" },
+      axisLine: { lineStyle: { color: "#374151" } }
+    },
+    grid3D: {
+      boxWidth: 180,
+      boxDepth: 80,
+      viewControl: { autoRotate: true, autoRotateSpeed: 4, distance: 220 },
+      light: {
+        main: { intensity: 1.2, shadow: true },
+        ambient: { intensity: 0.3 }
+      },
+      environment: "transparent" as any
+    },
+    series: [{
+      type: "surface",
+      wireframe: { show: true, lineStyle: { color: "rgba(59,130,246,0.3)", width: 1 } },
+      equation: {
+        x: { min: 0, max: industries.length - 1, step: 1 },
+        y: { min: 0, max: warningTypes.length - 1, step: 1 },
+        z: (x: number, y: number) => {
+          const xi = Math.round(x);
+          const yi = Math.round(y);
+          if (xi >= 0 && xi < industries.length && yi >= 0 && yi < warningTypes.length) {
+            return warningCounts[yi][xi];
+          }
+          return 0;
+        }
+      },
+      itemStyle: { opacity: 0.85 },
+      shading: "color"
+    }]
+  };
+  return (
+    <div className="scada-card" style={{ padding: 8 }}>
+      <ReactECharts option={option} style={{ height: 500 }} opts={{ renderer: "canvas" }} />
+    </div>
+  );
+}

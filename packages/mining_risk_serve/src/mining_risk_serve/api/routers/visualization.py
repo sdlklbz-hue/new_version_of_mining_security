@@ -3,6 +3,7 @@
 提供前端图表所需的真实数据（从 new_data 目录读取）
 """
 
+import json
 import os
 from typing import Any, Dict, List, Optional
 
@@ -802,3 +803,267 @@ async def get_enterprise_statistics():
     except Exception as e:
         logger.error(f"生成企业统计数据失败: {e}")
         raise HTTPException(status_code=500, detail=f"统计数据生成失败: {str(e)}")
+
+
+# ==================== 企业数据库 API ====================
+
+ENTERPRISE_DB_DIR = str(resolve_project_path("datasets/enterprise_db"))
+
+INDUSTRY_CODE_MAP: Dict[str, str] = {
+    "A": "专用设备制造业",
+    "E": "其他制造业",
+    "E,A": "医药制造业",
+    "G": "铁路、船舶、航空航天和其他运输设备制造业",
+    "H": "铁路、船舶、航空航天和其他运输设备制造业",
+    "J": "电力、热力生产和供应业",
+    "L": "其他制造业",
+    "M": "其他制造业",
+    "N": "废弃资源综合利用业",
+    "O": "装卸搬运和仓储业",
+}
+
+_enterprise_cache: Dict[str, Any] = {}
+_cache_timestamp: float = 0.0
+_CACHE_TTL = 300.0
+
+
+def _is_cache_valid() -> bool:
+    import time
+    return (time.time() - _cache_timestamp) < _CACHE_TTL
+
+
+def _get_cached_enterprises() -> List[Dict[str, Any]]:
+    global _enterprise_cache, _cache_timestamp
+    if _is_cache_valid() and "list" in _enterprise_cache:
+        return _enterprise_cache["list"]
+    index_data = _load_enterprise_db_index()
+    result = []
+    for item in index_data:
+        name = item.get("企业名称", "")
+        folder = item.get("文件夹名称", name)
+        cats = item.get("数据类别", [])
+        rec_count = item.get("数据记录数", 0)
+        cat_count = item.get("数据类别数", 0)
+        detail = _load_enterprise_detail(folder)
+        ind = ""
+        rl = ""
+        reg = ""
+        sc = ""
+        lp = ""
+        if detail:
+            basic = detail.get("详细数据", {}).get("企业基本信息", [])
+            if basic:
+                b = basic[-1]
+                ind = b.get("INDUS_TYPE_LAGRE_NAME", b.get("行业监管大类", ""))
+                reg = b.get("注册地址", b.get("生产经营地址", "") or b.get("办公地址", ""))
+                sc_val = b.get("企业规模")
+                scale_map = {1: "大型", 2: "中型", 3: "小型", 4: "微型"}
+                sc = scale_map.get(sc_val, "") if sc_val else ""
+                lp = b.get("法定代表人", "")
+            if not ind:
+                cat_info = detail.get("详细数据", {}).get("企业行业分类", [])
+                if cat_info:
+                    c = cat_info[-1]
+                    ind = c.get("INDUS_TYPE_LAGRE_NAME", c.get("行业监管大类", ""))
+            cat_data = detail.get("详细数据", {}).get("企业评级信息填报", [])
+            if cat_data:
+                latest = cat_data[-1]
+                rl = latest.get("NEW_LEVEL", "")
+        if ind and ind in INDUSTRY_CODE_MAP:
+            ind = INDUSTRY_CODE_MAP[ind]
+        elif not ind:
+            ind = "其他行业"
+        result.append({
+            "name": name, "folder": folder, "category_count": cat_count,
+            "record_count": rec_count, "categories": cats, "industry": ind,
+            "risk_level": rl, "region": reg, "scale": sc, "legal_person": lp,
+        })
+    import time
+    _enterprise_cache["list"] = result
+    _cache_timestamp = time.time()
+    return result
+
+
+def _load_enterprise_db_index() -> List[Dict[str, Any]]:
+    index_path = os.path.join(ENTERPRISE_DB_DIR, "_enterprise_index.json")
+    if os.path.exists(index_path):
+        with open(index_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+
+def _load_category_statistics() -> Dict[str, int]:
+    stat_path = os.path.join(ENTERPRISE_DB_DIR, "_category_statistics.json")
+    if os.path.exists(stat_path):
+        with open(stat_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def _load_enterprise_detail(folder_name: str) -> Optional[Dict[str, Any]]:
+    detail_path = os.path.join(ENTERPRISE_DB_DIR, folder_name, f"{folder_name}.json")
+    if os.path.exists(detail_path):
+        with open(detail_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return None
+
+
+class EnterpriseListItem(BaseModel):
+    name: str
+    folder: str
+    category_count: int = 0
+    record_count: int = 0
+    categories: List[str] = []
+    industry: str = ""
+    risk_level: str = ""
+    region: str = ""
+    scale: str = ""
+    legal_person: str = ""
+
+
+class EnterpriseListResponse(BaseModel):
+    success: bool
+    total: int
+    enterprises: List[EnterpriseListItem]
+
+
+class IndustryWarningItem(BaseModel):
+    industry: str
+    total_enterprises: int
+    red_count: int
+    orange_count: int
+    yellow_count: int
+    blue_count: int
+    avg_risk_score: float
+    avg_safety_score: float
+    inspection_count: int
+    violation_count: int
+
+
+class IndustryWarningResponse(BaseModel):
+    success: bool
+    data: List[IndustryWarningItem]
+
+
+class EnterpriseDetailResponse(BaseModel):
+    success: bool
+    name: str
+    data: Dict[str, Any]
+
+
+@router.get("/enterprise-db/list", response_model=EnterpriseListResponse)
+async def list_enterprise_db(
+    keyword: str = "",
+    industry: str = "",
+    risk_level: str = "",
+    page: int = 1,
+    page_size: int = 50,
+):
+    all_enterprises = _get_cached_enterprises()
+    results = []
+    for ent in all_enterprises:
+        if keyword and keyword not in ent["name"]:
+            continue
+        if industry and industry not in ent["industry"]:
+            continue
+        if risk_level and risk_level != ent["risk_level"]:
+            continue
+        results.append(EnterpriseListItem(**ent))
+    total = len(results)
+    start = (page - 1) * page_size
+    end = start + page_size
+    return EnterpriseListResponse(
+        success=True, total=total, enterprises=results[start:end]
+    )
+
+
+@router.get("/enterprise-db/detail/{folder_name:path}", response_model=EnterpriseDetailResponse)
+async def get_enterprise_detail(folder_name: str):
+    detail = _load_enterprise_detail(folder_name)
+    if not detail:
+        raise HTTPException(status_code=404, detail="企业数据未找到")
+    return EnterpriseDetailResponse(
+        success=True, name=detail.get("企业名称", folder_name), data=detail
+    )
+
+
+@router.get("/industry-warning", response_model=IndustryWarningResponse)
+async def get_industry_warning_comparison():
+    index_data = _load_enterprise_db_index()
+    industry_map: Dict[str, Dict] = {}
+    for item in index_data:
+        folder = item.get("文件夹名称", item.get("企业名称", ""))
+        detail = _load_enterprise_detail(folder)
+        if not detail:
+            continue
+        basic_list = detail.get("详细数据", {}).get("企业基本信息", [])
+        rating_list = detail.get("详细数据", {}).get("企业评级信息填报", [])
+        check_list = detail.get("详细数据", {}).get("企业日常检查记录", [])
+        ind = "其他行业"
+        if basic_list:
+            b = basic_list[-1]
+            ind = b.get("INDUS_TYPE_LAGRE_NAME", b.get("行业监管大类", "")) or "其他行业"
+        if ind == "其他行业" or not ind:
+            cat_info = detail.get("详细数据", {}).get("企业行业分类", [])
+            if cat_info:
+                c = cat_info[-1]
+                ind = c.get("INDUS_TYPE_LAGRE_NAME", c.get("行业监管大类", "")) or "其他行业"
+        if ind in INDUSTRY_CODE_MAP:
+            ind = INDUSTRY_CODE_MAP[ind]
+        elif not ind:
+            ind = "其他行业"
+        rl = ""
+        if rating_list:
+            latest_r = rating_list[-1]
+            rl = latest_r.get("NEW_LEVEL", "")
+        if ind not in industry_map:
+            industry_map[ind] = {
+                "total": 0, "red": 0, "orange": 0, "yellow": 0, "blue": 0,
+                "risk_scores": [], "safety_scores": [],
+                "inspections": 0, "violations": 0,
+            }
+        industry_map[ind]["total"] += 1
+        if rl == "A":
+            industry_map[ind]["blue"] += 1
+        elif rl == "B":
+            industry_map[ind]["yellow"] += 1
+        elif rl == "C":
+            industry_map[ind]["orange"] += 1
+        elif rl == "D":
+            industry_map[ind]["red"] += 1
+        else:
+            industry_map[ind]["blue"] += 1
+        level_score_map = {"A": 20, "B": 45, "C": 70, "D": 90}
+        industry_map[ind]["risk_scores"].append(level_score_map.get(rl, 30))
+        safety_map = {"A": 95, "B": 78, "C": 60, "D": 35}
+        industry_map[ind]["safety_scores"].append(safety_map.get(rl, 70))
+        industry_map[ind]["inspections"] += len(check_list)
+        violation_count = sum(1 for c in check_list if c.get("TROUBLE_FLAG", 0) == 1)
+        industry_map[ind]["violations"] += violation_count
+    data = []
+    for ind_name, stats in sorted(industry_map.items(), key=lambda x: -x[1]["total"]):
+        rs = stats["risk_scores"]
+        ss = stats["safety_scores"]
+        data.append(IndustryWarningItem(
+            industry=ind_name,
+            total_enterprises=stats["total"],
+            red_count=stats["red"],
+            orange_count=stats["orange"],
+            yellow_count=stats["yellow"],
+            blue_count=stats["blue"],
+            avg_risk_score=round(sum(rs) / len(rs), 1) if rs else 0,
+            avg_safety_score=round(sum(ss) / len(ss), 1) if ss else 0,
+            inspection_count=stats["inspections"],
+            violation_count=stats["violations"],
+        ))
+    return IndustryWarningResponse(success=True, data=data)
+
+
+@router.get("/enterprise-db/industries")
+async def get_industry_list():
+    all_enterprises = _get_cached_enterprises()
+    industries = set()
+    for ent in all_enterprises:
+        if ent["industry"]:
+            industries.add(ent["industry"])
+    return {"success": True, "industries": sorted(industries)}

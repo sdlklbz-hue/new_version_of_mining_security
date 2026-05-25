@@ -10900,3 +10900,59 @@ json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 16217556 (c
 2026-05-23 23:45:32,759 - mining_risk_serve.llm.glm5_client - INFO - glm5 JSON 生成成功 (attempt 1)
 2026-05-23 23:45:32,780 - mining_risk_serve.harness.vector_store - INFO - 加载嵌入模型: BAAI/bge-large-zh-v1.5
 2026-05-23 23:45:44,503 - mining_risk_serve.harness.monte_carlo - INFO - 蒙特卡洛采样完成: 20/20 通过, 置信度 1.0000, 阈值 0.9, 状态 APPROVE
+2026-05-25 08:31:05,804 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-25 08:31:05,804 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 long_term.json，使用空数据
+2026-05-25 08:31:05,804 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 short_term.json，使用空数据
+2026-05-25 08:31:05,805 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 warning_experience.json，使用空数据
+2026-05-25 08:31:05,805 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 iteration_history.json，使用空数据
+2026-05-25 08:31:05,805 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 approval_store.json，使用空数据
+2026-05-25 08:31:05,805 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 audit_log.json，使用空数据
+2026-05-25 08:31:05,805 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 enterprise_risk_history.json，使用空数据
+2026-05-25 08:31:08,932 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-25 08:31:08,933 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 long_term.json，使用空数据
+2026-05-25 08:31:08,933 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 short_term.json，使用空数据
+2026-05-25 08:31:08,933 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 warning_experience.json，使用空数据
+2026-05-25 08:31:08,933 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 iteration_history.json，使用空数据
+2026-05-25 08:31:08,933 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 approval_store.json，使用空数据
+2026-05-25 08:31:08,933 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 audit_log.json，使用空数据
+2026-05-25 08:31:08,933 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 enterprise_risk_history.json，使用空数据
+2026-05-25 08:31:09,657 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-25 08:31:09,660 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（C:\Users\sdlkl\Desktop\a_new_version\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-25 08:32:21,249 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-25 08:34:42,622 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-25 08:34:42,623 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-25 08:34:42,623 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-25 08:34:42,625 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-25 08:34:42,625 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-25 08:34:42,626 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-25 08:34:42,626 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-25 08:34:42,626 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-25 08:34:45,739 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-25 08:34:45,741 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-25 08:34:45,742 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-25 08:34:45,742 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-25 08:34:45,743 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-25 08:34:45,743 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-25 08:34:45,744 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-25 08:34:45,744 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-25 08:34:46,576 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-25 08:34:46,578 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（C:\Users\sdlkl\Desktop\a_new_version\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-25 08:35:37,935 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-25 08:37:26,034 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-25 08:37:26,037 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-25 08:37:26,038 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-25 08:37:26,038 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-25 08:37:26,039 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-25 08:37:26,040 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-25 08:37:26,040 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-25 08:37:26,041 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-25 08:37:29,893 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-25 08:37:29,894 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-25 08:37:29,895 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-25 08:37:29,896 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-25 08:37:29,896 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-25 08:37:29,897 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-25 08:37:29,897 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-25 08:37:29,897 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-25 08:37:30,971 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-25 08:37:30,978 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（C:\Users\sdlkl\Desktop\a_new_version\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
