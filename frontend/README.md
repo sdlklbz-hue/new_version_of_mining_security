@@ -38,6 +38,20 @@ npm install
 npm run dev          # http://localhost:5173 ，Vite 代理 /api 至 http://localhost:8000
 ```
 
+**管理接口（批量预测、知识库写入等）**需在本地配置管理员令牌：
+
+```bash
+# 1. 仓库根目录 .env（API 启动时由 scripts/run_api.sh 加载）
+cp ../.env.example ../.env
+# 编辑 MRA_ADMIN_TOKEN=dev-admin-token（或与 MRA_ALLOW_UNAUTHENTICATED_ADMIN=true 二选一）
+
+# 2. 前端 Vite 环境（须与 MRA_ADMIN_TOKEN 一致；无鉴权模式可留空）
+cp .env.example .env.local
+# 编辑 VITE_ADMIN_API_TOKEN=dev-admin-token
+
+# 3. 重启 API 与 npm run dev 后重试批量预测
+```
+
 可通过 `VITE_DEV_API_TARGET` 改写后端地址：
 
 ```bash

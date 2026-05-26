@@ -5,6 +5,13 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 export MINING_PROJECT_ROOT="$ROOT"
 
+if [[ -f "$ROOT/.env" ]]; then
+  set -a
+  # shellcheck source=/dev/null
+  source "$ROOT/.env"
+  set +a
+fi
+
 if [[ -f "$ROOT/.venv/bin/activate" ]]; then
   # shellcheck source=/dev/null
   source "$ROOT/.venv/bin/activate"

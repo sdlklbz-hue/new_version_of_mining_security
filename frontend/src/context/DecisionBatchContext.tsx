@@ -105,12 +105,22 @@ export function DecisionBatchProvider({ children }: { children: ReactNode }) {
       cancelRequestedRef.current = false;
       setBatchStatus(null);
       const { scenario, ...rest } = params;
-      const resp = await createEnterpriseMapBatchPredict({
+      const result = await createEnterpriseMapBatchPredict({
         ...rest,
         scenario_id: scenario,
       });
-      if (!resp?.success) {
-        setBatchInfo("批量模型预测任务创建失败，请确认后端服务与管理员令牌（X-Admin-Token）配置。");
+      if (!result.ok) {
+        const tokenHint =
+          result.status === 401 || result.status === 503
+            ? "请在后端 .env 设置 MRA_ADMIN_TOKEN（或 MRA_ALLOW_UNAUTHENTICATED_ADMIN=true），并在 frontend/.env.local 设置相同值的 VITE_ADMIN_API_TOKEN，然后重启 API 与 npm run dev。"
+            : "请确认后端服务已启动（http://localhost:8000/health）。";
+        setBatchInfo(`批量模型预测任务创建失败：${result.detail}。${tokenHint}`);
+        setBatchLoading(false);
+        return;
+      }
+      const resp = result.data;
+      if (!resp.success) {
+        setBatchInfo(resp.message || "批量模型预测任务创建失败。");
         setBatchLoading(false);
         return;
       }

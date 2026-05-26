@@ -1,12 +1,24 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CircleMarker as LeafletCircleMarker, LatLngBoundsExpression } from "leaflet";
-import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
-import { fetchEnterpriseDecisionPayload, fetchEnterpriseMapMarkers } from "../api/client";
-import type { EnterpriseMapMarker, EnterpriseMapMeta, ScenarioId } from "../api/types";
+import { CircleMarker, MapContainer, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { fetchEmergencyFacilities, fetchEnterpriseDecisionPayload, fetchEnterpriseMapMarkers } from "../api/client";
+import type { EmergencyFacilitiesMeta, EmergencyFacility, EmergencyFacilityType, EnterpriseMapMarker, EnterpriseMapMeta, ScenarioId } from "../api/types";
 import BatchDecisionPanel from "../components/BatchDecisionPanel";
+import EmergencyFacilitiesLayer from "../components/EmergencyFacilitiesLayer";
 import EnterpriseAmap3DMap from "../components/EnterpriseAmap3DMap";
+import RiskFieldLeafletLayer from "../components/RiskFieldLeafletLayer";
 import { useDecisionBatch } from "../context/DecisionBatchContext";
+import { purgeAmapDomArtifacts } from "../lib/amapLoader";
+import { AMAP_TILE_ATTRIBUTION, AMAP_TILE_SUBDOMAINS, AMAP_TILE_URL } from "../lib/amapTiles";
+import { EMERGENCY_FACILITY_COLORS, EMERGENCY_FACILITY_OPTIONS } from "../lib/emergencyFacilities";
+import {
+  emergencyTypesToSet,
+  loadEnterpriseMapSettings,
+  saveEnterpriseMapSettings,
+  type MapEngine,
+} from "../lib/enterpriseMapSettings";
 import { saveEnterprisePredictionImport } from "../lib/enterprisePredictionImport";
+import { normalizeMapBounds, SUZHOU_VIEW_BOUNDS, type RiskFieldBounds } from "../lib/riskField";
 import { LEVEL_GLOW, RISK_LEVELS_CONFIG, riskLevelColor } from "../lib/riskLevels";
 import "../styles/enterprise-map.css";
 
@@ -16,7 +28,6 @@ interface Props {
 
 const SUZHOU_CENTER: [number, number] = [31.298886, 120.585316];
 const REFRESH_MS = 30_000;
-type MapEngine = "2d" | "3d";
 
 function markerTag(level?: string | null): string {
   if (level === "红") return "tag-red";
@@ -58,32 +69,113 @@ function FlyToSelected({
   return null;
 }
 
-function FitToMarkers({ markers }: { markers: EnterpriseMapMarker[] }) {
+function FitToMarkers({
+  markers,
+  fitKey,
+  ready,
+}: {
+  markers: EnterpriseMapMarker[];
+  fitKey: string;
+  ready: boolean;
+}) {
+  const map = useMap();
+  const lastFittedFitKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!ready || !markers.length) return;
+    if (lastFittedFitKeyRef.current === fitKey) return;
+    lastFittedFitKeyRef.current = fitKey;
+    const bounds: LatLngBoundsExpression = markers.map((m) => [m.lat, m.lng]);
+    map.fitBounds(bounds, { padding: [32, 32], maxZoom: 13 });
+  }, [map, markers, fitKey, ready]);
+
+  return null;
+}
+
+/** 3D 卸载后 Leaflet 常在 0 尺寸容器内初始化，需主动 invalidateSize 才能加载瓦片。 */
+function LeafletMapResizer() {
   const map = useMap();
 
   useEffect(() => {
-    if (!markers.length) return;
-    const bounds: LatLngBoundsExpression = markers.map((m) => [m.lat, m.lng]);
-    map.fitBounds(bounds, { padding: [32, 32], maxZoom: 13 });
-  }, [map, markers]);
+    const invalidate = () => map.invalidateSize({ animate: false });
+
+    invalidate();
+    const raf1 = requestAnimationFrame(() => {
+      invalidate();
+      requestAnimationFrame(invalidate);
+    });
+    const timers = [80, 200, 400].map((ms) => window.setTimeout(invalidate, ms));
+
+    const container = map.getContainer();
+    const observer = typeof ResizeObserver !== "undefined"
+      ? new ResizeObserver(() => invalidate())
+      : null;
+    observer?.observe(container);
+
+    return () => {
+      cancelAnimationFrame(raf1);
+      timers.forEach((id) => window.clearTimeout(id));
+      observer?.disconnect();
+    };
+  }, [map]);
+
+  return null;
+}
+
+function MapBoundsReporter({ onBoundsChange }: { onBoundsChange: (bounds: RiskFieldBounds) => void }) {
+  const map = useMap();
+
+  const reportBounds = useCallback(() => {
+    const bounds = map.getBounds();
+    const normalized = normalizeMapBounds({
+      north: bounds.getNorth(),
+      south: bounds.getSouth(),
+      east: bounds.getEast(),
+      west: bounds.getWest(),
+    });
+    if (normalized) onBoundsChange(normalized);
+  }, [map, onBoundsChange]);
+
+  useMapEvents({
+    moveend: reportBounds,
+    zoomend: reportBounds,
+  });
+
+  useEffect(() => {
+    reportBounds();
+  }, [reportBounds]);
 
   return null;
 }
 
 export default function EnterpriseMapPage({ scenario }: Props) {
+  const storedSettings = useMemo(() => loadEnterpriseMapSettings(), []);
   const [markers, setMarkers] = useState<EnterpriseMapMarker[]>([]);
   const [meta, setMeta] = useState<EnterpriseMapMeta | null>(null);
-  const [keyword, setKeyword] = useState("");
-  const [level, setLevel] = useState("");
-  const [trackedOnly, setTrackedOnly] = useState(false);
+  const [keyword, setKeyword] = useState(storedSettings.keyword);
+  const [level, setLevel] = useState(storedSettings.level);
+  const [trackedOnly, setTrackedOnly] = useState(storedSettings.trackedOnly);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
-  const [mapEngine, setMapEngine] = useState<MapEngine>("2d");
+  const [mapEngine, setMapEngine] = useState<MapEngine>(storedSettings.mapEngine);
+  const [mapSurfaceReady, setMapSurfaceReady] = useState(true);
+  const prevMapEngineRef = useRef<MapEngine>(storedSettings.mapEngine);
   const [listExpanded, setListExpanded] = useState(false);
   const [importingFolder, setImportingFolder] = useState<string | null>(null);
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [checkedFolders, setCheckedFolders] = useState<Set<string>>(new Set());
+  const [showRiskField, setShowRiskField] = useState(storedSettings.showRiskField);
+  const [riskFieldOpacity, setRiskFieldOpacity] = useState(storedSettings.riskFieldOpacity);
+  const [riskFieldRadiusKm, setRiskFieldRadiusKm] = useState(storedSettings.riskFieldRadiusKm);
+  const [showEmergencyFacilities, setShowEmergencyFacilities] = useState(storedSettings.showEmergencyFacilities);
+  const [emergencyFacilityTypes, setEmergencyFacilityTypes] = useState<Set<EmergencyFacilityType>>(
+    () => emergencyTypesToSet(storedSettings.emergencyFacilityTypes),
+  );
+  const [emergencyFacilities, setEmergencyFacilities] = useState<EmergencyFacility[]>([]);
+  const [emergencyMeta, setEmergencyMeta] = useState<EmergencyFacilitiesMeta | null>(null);
+  const [emergencyError, setEmergencyError] = useState("");
+  const [mapBounds, setMapBounds] = useState<RiskFieldBounds | null>(null);
   const markerRefs = useRef<Record<string, LeafletCircleMarker | null>>({});
   const {
     batchLoading,
@@ -94,8 +186,8 @@ export default function EnterpriseMapPage({ scenario }: Props) {
     clearBatch,
   } = useDecisionBatch();
 
-  const loadMarkers = useCallback(async () => {
-    setLoading(true);
+  const loadMarkers = useCallback(async (options?: { silent?: boolean }) => {
+    if (!options?.silent) setLoading(true);
     setError("");
     const resp = await fetchEnterpriseMapMarkers({
       keyword: keyword || undefined,
@@ -106,12 +198,12 @@ export default function EnterpriseMapPage({ scenario }: Props) {
       setError("企业地图数据加载失败，请检查后端服务。");
       setMarkers([]);
       setMeta(null);
-      setLoading(false);
+      if (!options?.silent) setLoading(false);
       return;
     }
     setMarkers(resp.markers);
     setMeta(resp.meta);
-    setLoading(false);
+    if (!options?.silent) setLoading(false);
   }, [keyword, level, trackedOnly]);
 
   useEffect(() => {
@@ -119,10 +211,51 @@ export default function EnterpriseMapPage({ scenario }: Props) {
   }, [loadMarkers]);
 
   useEffect(() => {
+    const prev = prevMapEngineRef.current;
+    if (prev === mapEngine) return;
+    prevMapEngineRef.current = mapEngine;
+
+    if (prev === "3d" && mapEngine === "2d") {
+      setMapSurfaceReady(false);
+      const timer = window.setTimeout(() => {
+        purgeAmapDomArtifacts();
+        setMapSurfaceReady(true);
+      }, 120);
+      return () => window.clearTimeout(timer);
+    }
+
+    setMapSurfaceReady(true);
+  }, [mapEngine]);
+
+  useEffect(() => {
+    saveEnterpriseMapSettings({
+      showRiskField,
+      riskFieldOpacity,
+      riskFieldRadiusKm,
+      showEmergencyFacilities,
+      emergencyFacilityTypes: [...emergencyFacilityTypes],
+      mapEngine,
+      keyword,
+      level,
+      trackedOnly,
+    });
+  }, [
+    showRiskField,
+    riskFieldOpacity,
+    riskFieldRadiusKm,
+    showEmergencyFacilities,
+    emergencyFacilityTypes,
+    mapEngine,
+    keyword,
+    level,
+    trackedOnly,
+  ]);
+
+  useEffect(() => {
     const intervalMs = batchStatus && !["completed", "completed_with_errors", "cancelled"].includes(batchStatus.status)
       ? 10_000
       : REFRESH_MS;
-    const id = window.setInterval(loadMarkers, intervalMs);
+    const id = window.setInterval(() => loadMarkers({ silent: true }), intervalMs);
     return () => window.clearInterval(id);
   }, [loadMarkers, batchStatus?.status]);
 
@@ -132,6 +265,52 @@ export default function EnterpriseMapPage({ scenario }: Props) {
       loadMarkers();
     }
   }, [batchStatus?.status, loadMarkers]);
+
+  const queryBounds = useMemo(() => {
+    const normalized = mapBounds ? normalizeMapBounds(mapBounds) : null;
+    return normalized ?? (mapEngine === "2d" ? SUZHOU_VIEW_BOUNDS : null);
+  }, [mapBounds, mapEngine]);
+
+  useEffect(() => {
+    if (!showEmergencyFacilities || !queryBounds || emergencyFacilityTypes.size === 0) {
+      setEmergencyFacilities([]);
+      setEmergencyMeta(null);
+      setEmergencyError("");
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const resp = await fetchEmergencyFacilities({
+          min_lat: queryBounds.south,
+          min_lng: queryBounds.west,
+          max_lat: queryBounds.north,
+          max_lng: queryBounds.east,
+          types: [...emergencyFacilityTypes],
+        });
+        if (cancelled) return;
+        if (!resp?.success) {
+          setEmergencyFacilities([]);
+          setEmergencyMeta(null);
+          setEmergencyError("急救设施数据加载失败。");
+          return;
+        }
+        setEmergencyFacilities(resp.facilities);
+        setEmergencyMeta(resp.meta);
+        setEmergencyError("");
+      } catch (err) {
+        if (cancelled) return;
+        setEmergencyFacilities([]);
+        setEmergencyMeta(null);
+        setEmergencyError(err instanceof Error ? err.message : "急救设施数据加载失败。");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [emergencyFacilityTypes, queryBounds, showEmergencyFacilities]);
 
   const selectedMarker = useMemo(
     () => markers.find((m) => m.folder === selectedFolder),
@@ -176,6 +355,15 @@ export default function EnterpriseMapPage({ scenario }: Props) {
       const next = new Set(prev);
       if (checked) next.add(folder);
       else next.delete(folder);
+      return next;
+    });
+  }
+
+  function toggleEmergencyFacilityType(type: EmergencyFacilityType, checked: boolean) {
+    setEmergencyFacilityTypes((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(type);
+      else next.delete(type);
       return next;
     });
   }
@@ -231,7 +419,11 @@ export default function EnterpriseMapPage({ scenario }: Props) {
     window.location.hash = "risk";
   }
 
-  const mapSourceLabel = mapEngine === "3d" ? "高德 3D 底图" : "OpenStreetMap 底图";
+  const mapSourceLabel = mapEngine === "3d" ? "高德 3D 底图" : "高德平面底图";
+  const markerFitKey = useMemo(
+    () => `${keyword}|${level}|${trackedOnly}`,
+    [keyword, level, trackedOnly],
+  );
 
   return (
     <div className="enterprise-map-page">
@@ -240,7 +432,7 @@ export default function EnterpriseMapPage({ scenario }: Props) {
           <p className="section-kicker">实时空间态势</p>
           <h2>企业风险地图</h2>
           <p className="muted">
-            {mapSourceLabel} · 当前场景 {scenario} · 批量预测仅调用 Stacking 模型（不调 GLM）
+            {mapSourceLabel} · 当前场景 {scenario} · 批量预测仅调用 Stacking 模型
           </p>
         </div>
         <div className="enterprise-map-stats">
@@ -367,6 +559,80 @@ export default function EnterpriseMapPage({ scenario }: Props) {
             </label>
           </div>
 
+          <div className="enterprise-map-layer-controls">
+            <div className="enterprise-map-layer-group">
+              <label className="enterprise-map-checkbox">
+                <input
+                  type="checkbox"
+                  checked={showRiskField}
+                  onChange={(e) => setShowRiskField(e.target.checked)}
+                />
+                显示风险场
+              </label>
+              <label>
+                透明度 {Math.round(riskFieldOpacity * 100)}%
+                <input
+                  type="range"
+                  min="0.2"
+                  max="0.7"
+                  step="0.05"
+                  value={riskFieldOpacity}
+                  disabled={!showRiskField}
+                  onChange={(e) => setRiskFieldOpacity(Number(e.target.value))}
+                />
+              </label>
+              <label>
+                影响半径
+                <select
+                  className="scada-select"
+                  value={riskFieldRadiusKm}
+                  disabled={!showRiskField}
+                  onChange={(e) => setRiskFieldRadiusKm(Number(e.target.value))}
+                >
+                  <option value={2}>2 km</option>
+                  <option value={5}>5 km</option>
+                  <option value={10}>10 km</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="enterprise-map-layer-group">
+              <label className="enterprise-map-checkbox">
+                <input
+                  type="checkbox"
+                  checked={showEmergencyFacilities}
+                  onChange={(e) => setShowEmergencyFacilities(e.target.checked)}
+                />
+                显示急救设施
+              </label>
+              {EMERGENCY_FACILITY_OPTIONS.map((item) => (
+                <label key={item.type} className="enterprise-map-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={emergencyFacilityTypes.has(item.type)}
+                    disabled={!showEmergencyFacilities}
+                    onChange={(e) => toggleEmergencyFacilityType(item.type, e.target.checked)}
+                  />
+                  {item.label}
+                </label>
+              ))}
+              {showEmergencyFacilities && (
+                <>
+                  <span className="enterprise-map-layer-meta">
+                    {emergencyError
+                      || (emergencyFacilities.length === 0
+                        ? "暂无设施数据，请运行 python scripts/fetch_emergency_facilities.py"
+                        : `设施 ${emergencyFacilities.length} 个${
+                            emergencyMeta?.source === "static" && emergencyMeta.cached
+                              ? "（缓存）"
+                              : ""
+                          }`)}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+
           <div className="enterprise-map-legend">
             {RISK_LEVELS_CONFIG.map((item) => (
               <span key={item.key} className="legend-item">
@@ -378,6 +644,12 @@ export default function EnterpriseMapPage({ scenario }: Props) {
               <i className="legend-unknown" />
               未预测 {levelCounts["未预测"] || 0}
             </span>
+            {showEmergencyFacilities && EMERGENCY_FACILITY_OPTIONS.map((item) => (
+              <span key={item.type} className="legend-item">
+                <i style={{ background: EMERGENCY_FACILITY_COLORS[item.type] }} />
+                {item.label}
+              </span>
+            ))}
           </div>
         </section>
 
@@ -398,13 +670,33 @@ export default function EnterpriseMapPage({ scenario }: Props) {
               3D 倾斜
             </button>
           </div>
-          {mapEngine === "2d" ? (
-            <MapContainer center={SUZHOU_CENTER} zoom={12} scrollWheelZoom className="enterprise-leaflet-map">
-              <TileLayer
-                attribution="&copy; OpenStreetMap"
-                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          <div key={`${mapEngine}-${mapSurfaceReady ? "ready" : "pending"}`} className="enterprise-map-engine-host">
+            {!mapSurfaceReady ? (
+              <div className="enterprise-map-engine-placeholder" aria-hidden />
+            ) : mapEngine === "2d" ? (
+              <MapContainer
+                key="enterprise-leaflet-2d"
+                center={SUZHOU_CENTER}
+                zoom={12}
+                scrollWheelZoom
+                className="enterprise-leaflet-map"
+              >
+                <LeafletMapResizer />
+                <TileLayer
+                  attribution={AMAP_TILE_ATTRIBUTION}
+                  url={AMAP_TILE_URL}
+                  subdomains={AMAP_TILE_SUBDOMAINS}
+                />
+                {!selectedFolder && (
+                <FitToMarkers markers={markers} fitKey={markerFitKey} ready={!loading} />
+              )}
+              <MapBoundsReporter onBoundsChange={setMapBounds} />
+              <RiskFieldLeafletLayer
+                markers={markers}
+                visible={showRiskField}
+                opacity={riskFieldOpacity}
+                radiusKm={riskFieldRadiusKm}
               />
-              {!selectedFolder && <FitToMarkers markers={markers} />}
               <FlyToSelected folder={selectedFolder} markers={markers} />
               {markers.map((marker) => {
                 const color = riskLevelColor(marker.predicted_level);
@@ -439,14 +731,22 @@ export default function EnterpriseMapPage({ scenario }: Props) {
                   </CircleMarker>
                 );
               })}
-            </MapContainer>
-          ) : (
-            <EnterpriseAmap3DMap
-              markers={markers}
-              selectedFolder={selectedFolder}
-              onSelect={selectMarker}
-            />
-          )}
+                {showEmergencyFacilities && <EmergencyFacilitiesLayer facilities={emergencyFacilities} />}
+              </MapContainer>
+            ) : (
+              <EnterpriseAmap3DMap
+                key="enterprise-amap-3d"
+                markers={markers}
+                selectedFolder={selectedFolder}
+                onSelect={selectMarker}
+                showRiskField={showRiskField}
+                riskFieldOpacity={riskFieldOpacity}
+                riskFieldRadiusKm={riskFieldRadiusKm}
+                facilities={showEmergencyFacilities ? emergencyFacilities : []}
+                onBoundsChange={setMapBounds}
+              />
+            )}
+          </div>
         </section>
 
         <section className={`enterprise-map-list-panel scada-card ${listExpanded ? "expanded" : "collapsed"}`}>

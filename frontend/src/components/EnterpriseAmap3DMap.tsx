@@ -1,12 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { EnterpriseMapMarker } from "../api/types";
-import { loadAmap, type AMapNamespace } from "../lib/amapLoader";
+import type { EmergencyFacility, EnterpriseMapMarker } from "../api/types";
+import { loadAmap, purgeAmapDomArtifacts, type AMapNamespace } from "../lib/amapLoader";
+import { EMERGENCY_FACILITY_COLORS, EMERGENCY_FACILITY_SHORT_LABELS } from "../lib/emergencyFacilities";
+import { createRiskFieldDataUrl, normalizeMapBounds, type RiskFieldBounds } from "../lib/riskField";
 import { riskLevelColor } from "../lib/riskLevels";
 
 interface Props {
   markers: EnterpriseMapMarker[];
   selectedFolder: string | null;
   onSelect: (marker: EnterpriseMapMarker) => void;
+  showRiskField?: boolean;
+  riskFieldOpacity?: number;
+  riskFieldRadiusKm?: number;
+  facilities?: EmergencyFacility[];
+  onBoundsChange?: (bounds: RiskFieldBounds) => void;
 }
 
 const SUZHOU_CENTER_LNG_LAT: [number, number] = [120.585316, 31.298886];
@@ -22,6 +29,19 @@ function markerSetSignature(markers: EnterpriseMapMarker[]): string {
 function formatProbability(value?: number | null): string {
   if (value === null || value === undefined) return "暂无";
   return `${Math.round(value * 100)}%`;
+}
+
+function amapBoundsToRiskBounds(bounds: any): RiskFieldBounds | null {
+  const southWest = typeof bounds?.getSouthWest === "function" ? bounds.getSouthWest() : null;
+  const northEast = typeof bounds?.getNorthEast === "function" ? bounds.getNorthEast() : null;
+  if (!southWest || !northEast) return null;
+
+  const west = typeof southWest.getLng === "function" ? southWest.getLng() : southWest.lng;
+  const south = typeof southWest.getLat === "function" ? southWest.getLat() : southWest.lat;
+  const east = typeof northEast.getLng === "function" ? northEast.getLng() : northEast.lng;
+  const north = typeof northEast.getLat === "function" ? northEast.getLat() : northEast.lat;
+  if ([north, south, east, west].some((value) => typeof value !== "number")) return null;
+  return { north, south, east, west };
 }
 
 function createInfoContent(marker: EnterpriseMapMarker): HTMLDivElement {
@@ -49,11 +69,40 @@ function createInfoContent(marker: EnterpriseMapMarker): HTMLDivElement {
   return content;
 }
 
-export default function EnterpriseAmap3DMap({ markers, selectedFolder, onSelect }: Props) {
+function createFacilityInfoContent(facility: EmergencyFacility): HTMLDivElement {
+  const content = document.createElement("div");
+  content.className = "enterprise-map-popup enterprise-amap-popup";
+
+  const title = document.createElement("strong");
+  title.textContent = `${EMERGENCY_FACILITY_SHORT_LABELS[facility.type] || "设"} ${facility.name}`;
+  content.appendChild(title);
+
+  [facility.type_label, facility.address].filter(Boolean).forEach((field) => {
+    const item = document.createElement("span");
+    item.textContent = field;
+    content.appendChild(item);
+  });
+
+  return content;
+}
+
+export default function EnterpriseAmap3DMap({
+  markers,
+  selectedFolder,
+  onSelect,
+  showRiskField = false,
+  riskFieldOpacity = 0.45,
+  riskFieldRadiusKm = 5,
+  facilities = [],
+  onBoundsChange,
+}: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const amapRef = useRef<AMapNamespace | null>(null);
   const mapRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
+  const facilityOverlaysRef = useRef<any[]>([]);
+  const riskFieldLayerRef = useRef<any>(null);
+  const riskFieldTimerRef = useRef<number | null>(null);
   const infoWindowRef = useRef<any>(null);
   const onSelectRef = useRef(onSelect);
   const fitSignatureRef = useRef("");
@@ -98,16 +147,133 @@ export default function EnterpriseAmap3DMap({ markers, selectedFolder, onSelect 
     return () => {
       cancelled = true;
       overlaysRef.current = [];
+      facilityOverlaysRef.current = [];
+      riskFieldLayerRef.current = null;
+      if (riskFieldTimerRef.current !== null) window.clearTimeout(riskFieldTimerRef.current);
+
+      const map = mapRef.current;
+      const infoWindow = infoWindowRef.current;
       infoWindowRef.current = null;
-      if (mapRef.current) {
-        mapRef.current.destroy();
-        mapRef.current = null;
+      mapRef.current = null;
+
+      if (infoWindow) {
+        try {
+          infoWindow.close();
+        } catch {
+          // ignore teardown errors
+        }
+        try {
+          if (typeof infoWindow.destroy === "function") infoWindow.destroy();
+        } catch {
+          // ignore teardown errors
+        }
       }
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
+
+      if (map) {
+        try {
+          if (typeof map.clearInfoWindow === "function") map.clearInfoWindow();
+        } catch {
+          // ignore teardown errors
+        }
+        try {
+          map.clearMap();
+        } catch {
+          // ignore teardown errors
+        }
+        try {
+          map.destroy();
+        } catch {
+          // ignore teardown errors
+        }
       }
+
+      const container = containerRef.current;
+      if (container) {
+        container.replaceChildren();
+      }
+      purgeAmapDomArtifacts();
     };
   }, []);
+
+  useEffect(() => {
+    const AMap = amapRef.current;
+    const map = mapRef.current;
+    if (!ready || !AMap || !map) return;
+
+    const clearRiskField = () => {
+      if (riskFieldLayerRef.current) {
+        map.remove(riskFieldLayerRef.current);
+        riskFieldLayerRef.current = null;
+      }
+    };
+
+    const redrawRiskField = () => {
+      if (!showRiskField) {
+        clearRiskField();
+        return;
+      }
+
+      const mapBounds = map.getBounds();
+      const riskBounds = amapBoundsToRiskBounds(mapBounds);
+      if (!riskBounds) {
+        clearRiskField();
+        return;
+      }
+
+      const dataUrl = createRiskFieldDataUrl(markers, riskBounds, {
+        opacity: riskFieldOpacity,
+        radiusKm: riskFieldRadiusKm,
+      });
+
+      clearRiskField();
+      if (!dataUrl) return;
+
+      const southWest = new AMap.LngLat(riskBounds.west, riskBounds.south);
+      const northEast = new AMap.LngLat(riskBounds.east, riskBounds.north);
+      riskFieldLayerRef.current = new AMap.ImageLayer({
+        url: dataUrl,
+        bounds: new AMap.Bounds(southWest, northEast),
+        opacity: 1,
+        zIndex: 40,
+        zooms: [2, 20],
+      });
+      map.add(riskFieldLayerRef.current);
+    };
+
+    const scheduleRiskField = () => {
+      if (riskFieldTimerRef.current !== null) window.clearTimeout(riskFieldTimerRef.current);
+      riskFieldTimerRef.current = window.setTimeout(redrawRiskField, 180);
+    };
+
+    scheduleRiskField();
+    map.on("moveend", scheduleRiskField);
+    map.on("zoomend", scheduleRiskField);
+    return () => {
+      if (riskFieldTimerRef.current !== null) window.clearTimeout(riskFieldTimerRef.current);
+      map.off("moveend", scheduleRiskField);
+      map.off("zoomend", scheduleRiskField);
+      clearRiskField();
+    };
+  }, [markers, ready, riskFieldOpacity, riskFieldRadiusKm, showRiskField]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map || !onBoundsChange) return;
+
+    const reportBounds = () => {
+      const bounds = amapBoundsToRiskBounds(map.getBounds());
+      const normalized = bounds ? normalizeMapBounds(bounds) : null;
+      if (normalized) onBoundsChange(normalized);
+    };
+
+    reportBounds();
+    map.on("moveend", reportBounds);
+    map.on("zoomend", reportBounds);
+    return () => {
+      map.off("moveend", reportBounds);
+      map.off("zoomend", reportBounds);
+    };
+  }, [onBoundsChange, ready]);
 
   const openInfoWindow = useCallback((marker: EnterpriseMapMarker) => {
     const AMap = amapRef.current;
@@ -119,6 +285,18 @@ export default function EnterpriseAmap3DMap({ markers, selectedFolder, onSelect 
     }
     infoWindowRef.current.setContent(createInfoContent(marker));
     infoWindowRef.current.open(map, [marker.lng, marker.lat]);
+  }, []);
+
+  const openFacilityInfoWindow = useCallback((facility: EmergencyFacility) => {
+    const AMap = amapRef.current;
+    const map = mapRef.current;
+    if (!AMap || !map) return;
+
+    if (!infoWindowRef.current) {
+      infoWindowRef.current = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -8) });
+    }
+    infoWindowRef.current.setContent(createFacilityInfoContent(facility));
+    infoWindowRef.current.open(map, [facility.lng, facility.lat]);
   }, []);
 
   useEffect(() => {
@@ -170,6 +348,46 @@ export default function EnterpriseAmap3DMap({ markers, selectedFolder, onSelect 
       fitSignatureRef.current = signature;
     }
   }, [markers, openInfoWindow, ready, selectedFolder]);
+
+  useEffect(() => {
+    const AMap = amapRef.current;
+    const map = mapRef.current;
+    if (!ready || !AMap || !map) return;
+
+    if (facilityOverlaysRef.current.length) {
+      map.remove(facilityOverlaysRef.current);
+      facilityOverlaysRef.current = [];
+    }
+
+    const overlays = facilities.map((facility) => {
+      const color = EMERGENCY_FACILITY_COLORS[facility.type] || "#94a3b8";
+      const overlay = new AMap.CircleMarker({
+        center: [facility.lng, facility.lat],
+        cursor: "pointer",
+        fillColor: color,
+        fillOpacity: 0.78,
+        radius: 11,
+        strokeColor: color,
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        zIndex: 130,
+      });
+      overlay.on("click", () => openFacilityInfoWindow(facility));
+      return overlay;
+    });
+
+    facilityOverlaysRef.current = overlays;
+    if (overlays.length) {
+      map.add(overlays);
+    }
+
+    return () => {
+      if (facilityOverlaysRef.current.length) {
+        map.remove(facilityOverlaysRef.current);
+        facilityOverlaysRef.current = [];
+      }
+    };
+  }, [facilities, openFacilityInfoWindow, ready]);
 
   useEffect(() => {
     const AMap = amapRef.current;

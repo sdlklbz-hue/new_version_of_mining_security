@@ -35,3 +35,25 @@ export function loadAmap(): Promise<AMapNamespace> {
 
   return amapPromise;
 }
+
+/** 3D 地图 destroy 后 InfoWindow / 遮罩可能挂在 body，切回 2D 前需清理。 */
+export function purgeAmapDomArtifacts(): void {
+  const selectors = [
+    ".amap-info-window",
+    ".amap-info-sharp",
+    ".amap-info-contentContainer",
+    ".amap-info-outer",
+    ".amap-layers",
+    ".amap-maps",
+  ];
+  for (const selector of selectors) {
+    document.querySelectorAll(selector).forEach((node) => {
+      if (node.closest(".enterprise-amap-map")) return;
+      node.remove();
+    });
+  }
+  document.querySelectorAll("div.amap-container").forEach((node) => {
+    if (node.closest(".enterprise-amap-shell")) return;
+    node.remove();
+  });
+}

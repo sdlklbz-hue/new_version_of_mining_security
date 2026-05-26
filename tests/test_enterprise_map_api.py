@@ -127,6 +127,8 @@ def test_build_latest_predictions_index_uses_enterprise_id(monkeypatch):
 
 
 def test_enterprise_map_batch_predict_creates_job(monkeypatch):
+    monkeypatch.setenv("MRA_ADMIN_TOKEN", "test-admin")
+    monkeypatch.delenv("MRA_ALLOW_UNAUTHENTICATED_ADMIN", raising=False)
     client = TestClient(create_app())
     mock_service = MagicMock()
     mock_batch = MagicMock()

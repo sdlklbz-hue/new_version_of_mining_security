@@ -22,7 +22,7 @@ var/**
 
 # Logs
 *.log
-logs/*.log
+logs/*
 
 # Training intermediates
 catboost_info/
