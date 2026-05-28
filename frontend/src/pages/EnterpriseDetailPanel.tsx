@@ -4,6 +4,7 @@ import "echarts-gl";
 import * as echarts from "echarts";
 import type { EnterpriseDetailResponse } from "../api/client";
 import ProcessFlowDiagram, { parseProcessFlowContent } from "../components/ProcessFlowDiagram";
+import IndustrialIcon from "../components/IndustrialIcon";
 
 interface Props {
   data: EnterpriseDetailResponse;
@@ -156,12 +157,12 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
         marginBottom: 28
       }}>
         {[
-          { label: "风险等级", value: riskInfo.label, icon: "⚠️", color: riskInfo.color, bg: `${riskInfo.color}15` },
-          { label: "风险评分", value: riskInfo.score, icon: "📊", color: "#3b82f6", bg: "rgba(59,130,246,0.1)" },
-          { label: "数据类别", value: detailData?.数据类别数 || 0, icon: "📁", color: "#8b5cf6", bg: "rgba(139,92,246,0.1)" },
-          { label: "数据记录", value: detailData?.数据总记录数 || 0, icon: "📋", color: "#06b6d4", bg: "rgba(6,182,212,0.1)" },
-          { label: "检查次数", value: checkStats.total, icon: "🔍", color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
-          { label: "问题记录", value: checkStats.issues, icon: "🚨", color: "#ef4444", bg: "rgba(239,68,68,0.1)" },
+          { label: "风险等级", value: riskInfo.label, icon: "warning", color: riskInfo.color, bg: `${riskInfo.color}15` },
+          { label: "风险评分", value: riskInfo.score, icon: "chart", color: "#3b82f6", bg: "rgba(59,130,246,0.1)" },
+          { label: "数据类别", value: detailData?.数据类别数 || 0, icon: "file", color: "#8b5cf6", bg: "rgba(139,92,246,0.1)" },
+          { label: "数据记录", value: detailData?.数据总记录数 || 0, icon: "list", color: "#06b6d4", bg: "rgba(6,182,212,0.1)" },
+          { label: "检查次数", value: checkStats.total, icon: "search", color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
+          { label: "问题记录", value: checkStats.issues, icon: "block", color: "#ef4444", bg: "rgba(239,68,68,0.1)" },
         ].map((item, idx) => (
           <div
             key={idx}
@@ -176,7 +177,9 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
               transition: "transform 0.2s"
             }}
           >
-            <div style={{ fontSize: 28, marginBottom: 6, animation: "floatUp 3s ease-in-out infinite", animationDelay: `${idx * 0.3}s` }}>{item.icon}</div>
+            <div className="metric-industrial-icon" style={{ color: item.color, animation: "floatUp 3s ease-in-out infinite", animationDelay: `${idx * 0.3}s` }}>
+              <IndustrialIcon name={item.icon as any} />
+            </div>
             <div style={{ color: item.color, fontSize: 24, fontWeight: "bold", marginBottom: 2 }}>{item.value}</div>
             <div style={{ color: "#9ca3af", fontSize: 12 }}>{item.label}</div>
           </div>
@@ -197,7 +200,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.1s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#3b82f6" }}>📊</span> 风险评分仪表盘
+            <IndustrialIcon name="chart" /> 风险评分仪表盘
           </h3>
           <ReactECharts
             option={{
@@ -239,7 +242,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.2s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#8b5cf6" }}>📁</span> 数据类别分布
+            <IndustrialIcon name="file" /> 数据类别分布
           </h3>
           <ReactECharts
             option={{
@@ -275,7 +278,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.3s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#f97316" }}>📈</span> 风险评级变化趋势
+            <IndustrialIcon name="trend" /> 风险评级变化趋势
           </h3>
           <ReactECharts
             option={{
@@ -337,7 +340,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.4s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#10b981" }}>🔍</span> 检查记录统计
+            <IndustrialIcon name="search" /> 检查记录统计
           </h3>
           <ReactECharts
             option={{
@@ -368,7 +371,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.5s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#ec4899" }}>🌐</span> 企业数据三维全景
+            <IndustrialIcon name="radar" /> 企业数据三维全景
           </h3>
           <ReactECharts
             option={{
@@ -420,7 +423,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
         animationDelay: "0.6s"
       }}>
         <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ color: "#3b82f6" }}>🏢</span> 企业基本信息
+          <IndustrialIcon name="enterprise" /> 企业基本信息
         </h3>
         <div style={{
           display: "grid",
@@ -584,7 +587,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.65s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#06b6d4" }}>⚙️</span> 工艺流程图
+            <IndustrialIcon name="gear" /> 工艺流程图
           </h3>
           <ProcessFlowDiagram raw={processFlowRaw} />
         </div>
@@ -600,7 +603,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.7s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#ef4444" }}>🛡️</span> 安全与防护设施信息
+            <IndustrialIcon name="shield" /> 安全与防护设施信息
           </h3>
           <div style={{
             display: "grid",
@@ -669,7 +672,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.8s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#f59e0b" }}>📋</span> 日常检查记录
+            <IndustrialIcon name="list" /> 日常检查记录
           </h3>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
@@ -714,7 +717,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "0.9s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#ef4444" }}>⚠️</span> 风险报告历史
+            <IndustrialIcon name="warning" /> 风险报告历史
           </h3>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
@@ -759,7 +762,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "1s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#8b5cf6" }}>🏅</span> 评级信息填报记录
+            <IndustrialIcon name="check" /> 评级信息填报记录
           </h3>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
@@ -808,7 +811,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "1.1s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#06b6d4" }}>🏷️</span> 行业分类信息
+            <IndustrialIcon name="tag" /> 行业分类信息
           </h3>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
@@ -852,7 +855,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "1.2s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#14b8a6" }}>📍</span> 生产经营地址
+            <IndustrialIcon name="location" /> 生产经营地址
           </h3>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
@@ -896,7 +899,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           animationDelay: "1.3s"
         }}>
           <h3 style={{ color: "#e5e7eb", fontSize: 16, fontWeight: "bold", marginTop: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#f43f5e" }}>🔖</span> 标签报告历史
+            <IndustrialIcon name="tag" /> 标签报告历史
           </h3>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>

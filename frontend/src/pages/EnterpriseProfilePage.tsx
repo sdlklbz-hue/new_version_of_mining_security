@@ -7,6 +7,7 @@ import {
   type EnterpriseDetailResponse,
 } from "../api/client";
 import EnterpriseDetailPanel from "./EnterpriseDetailPanel";
+import IndustrialIcon from "../components/IndustrialIcon";
 
 const RISK_LEVEL_CONFIG: Record<string, { label: string; color: string; bg: string; glow: string }> = {
   D: { label: "重大风险", color: "#ef4444", bg: "rgba(239,68,68,0.15)", glow: "0 0 20px rgba(239,68,68,0.4)" },
@@ -16,10 +17,10 @@ const RISK_LEVEL_CONFIG: Record<string, { label: string; color: string; bg: stri
 };
 
 const SCALE_CONFIG: Record<string, { icon: string; color: string }> = {
-  "大型": { icon: "🏢", color: "#3b82f6" },
-  "中型": { icon: "🏗️", color: "#f97316" },
-  "小型": { icon: "🏠", color: "#eab308" },
-  "微型": { icon: "🏪", color: "#10b981" },
+  "大型": { icon: "enterprise", color: "#3b82f6" },
+  "中型": { icon: "factory", color: "#f97316" },
+  "小型": { icon: "database", color: "#eab308" },
+  "微型": { icon: "knowledge", color: "#10b981" },
 };
 
 export default function EnterpriseProfilePage() {
@@ -100,33 +101,6 @@ export default function EnterpriseProfilePage() {
 
   return (
     <div style={{ padding: "0 0 24px 0" }}>
-      <div style={{ marginBottom: "24px" }}>
-        <h2 style={{
-          color: "#e5e7eb",
-          fontSize: "24px",
-          fontWeight: "bold",
-          marginBottom: "8px",
-          display: "flex",
-          alignItems: "center",
-          gap: "12px"
-        }}>
-          <span style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
-            fontSize: 20
-          }}>🏢</span>
-          企业多维画像
-        </h2>
-        <p style={{ color: "#9ca3af", fontSize: "14px", margin: 0 }}>
-          企业全量多维度数据画像展示 | Enterprise Multi-Dimensional Portrait
-        </p>
-      </div>
-
       <div style={{
         display: "flex",
         gap: "12px",
@@ -162,9 +136,11 @@ export default function EnterpriseProfilePage() {
             left: 12,
             top: "50%",
             transform: "translateY(-50%)",
-            fontSize: 16,
-            opacity: 0.6
-          }}>🔍</span>
+            opacity: 0.6,
+            color: "#94a3b8"
+          }}>
+            <IndustrialIcon name="search" />
+          </span>
         </div>
         <select
           value={industryFilter}
@@ -247,7 +223,9 @@ export default function EnterpriseProfilePage() {
           fontSize: "16px"
         }}>
           <div>
-            <div style={{ fontSize: "24px", marginBottom: "10px" }}>📊</div>
+            <div className="loading-industrial-icon">
+              <IndustrialIcon name="enterprise" />
+            </div>
             正在加载企业数据...
           </div>
         </div>
@@ -261,7 +239,7 @@ export default function EnterpriseProfilePage() {
           }}>
             {enterprises.map((ent, idx) => {
               const riskCfg = RISK_LEVEL_CONFIG[ent.risk_level] || RISK_LEVEL_CONFIG["A"];
-              const scaleCfg = SCALE_CONFIG[ent.scale] || { icon: "🏢", color: "#9ca3af" };
+              const scaleCfg = SCALE_CONFIG[ent.scale] || { icon: "enterprise", color: "#9ca3af" };
               return (
                 <div
                   key={ent.folder}
@@ -335,7 +313,7 @@ export default function EnterpriseProfilePage() {
                             color: scaleCfg.color,
                             fontSize: 11
                           }}>
-                            {scaleCfg.icon} {ent.scale}
+                            <IndustrialIcon name={scaleCfg.icon as any} /> {ent.scale}
                           </span>
                         )}
                       </div>
@@ -390,7 +368,10 @@ export default function EnterpriseProfilePage() {
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap"
                     }}>
-                      📍 {ent.region}
+                      <span className="title-with-icon">
+                        <IndustrialIcon name="location" />
+                        {ent.region}
+                      </span>
                     </div>
                   )}
 

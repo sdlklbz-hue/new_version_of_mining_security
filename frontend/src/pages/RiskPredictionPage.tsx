@@ -36,6 +36,7 @@ import {
 } from "../lib/workflowNodes";
 import JsonView from "../components/JsonView";
 import ReactECharts from "echarts-for-react";
+import IndustrialIcon from "../components/IndustrialIcon";
 
 interface Props {
   scenario: ScenarioId;
@@ -110,6 +111,7 @@ export default function RiskPredictionPage({ scenario }: Props) {
   const [streamLog, setStreamLog] = useState<NodeStatus[]>([]);
   const [useStream, setUseStream] = useState(true);
   const [mockSource, setMockSource] = useState<MockSource>(null);
+  const [inputCollapsed, setInputCollapsed] = useState(false);
   const { batchLoading, batchInfo, batchStatus, startBatch, cancelBatch, clearBatch } =
     useDecisionBatch();
   const batchFinished =
@@ -191,6 +193,7 @@ export default function RiskPredictionPage({ scenario }: Props) {
     }
     payload.scenario_id = scenario;
 
+    setInputCollapsed(true);
     setLoading(true);
     setStreamLog(createPendingWorkflowNodes());
     setDecision(null);
@@ -246,239 +249,230 @@ export default function RiskPredictionPage({ scenario }: Props) {
 
   return (
     <div>
-      <div className="section-title">
-        🎯 企业风险预测 — 上传数据 → 模型预测 → 决策建议 → 三重风控拦截
+      <div className="section-title section-title-with-icon">
+        <IndustrialIcon name="risk" />
+        <span>企业风险预测 — 上传数据 → 模型预测 → 决策建议 → 三重风控拦截</span>
       </div>
 
-      <div className="row predict">
-        {/* 左侧输入面板 */}
-        <div>
-          <div className="subtitle">输入面板</div>
-          <label className="scada-label">企业 ID</label>
-          <input
-            className="scada-input"
-            value={enterpriseId}
-            onChange={(e) => setEnterpriseId(e.target.value)}
-          />
+      <section className={`prediction-input-panel ${inputCollapsed ? "collapsed" : ""}`}>
+        <button
+          type="button"
+          className="prediction-input-toggle"
+          onClick={() => setInputCollapsed((v) => !v)}
+          aria-expanded={!inputCollapsed}
+        >
+          <span className="prediction-input-title">
+            <IndustrialIcon name="upload" />
+            上传预测数据
+          </span>
+          <span className="prediction-input-summary">
+            {uploadedFile ? uploadedFile.name : `${enterpriseId} / ${SCENARIO_NAMES[scenario]}`}
+          </span>
+          <IndustrialIcon name={inputCollapsed ? "expand" : "collapse"} />
+        </button>
 
-          <div style={{ fontSize: 12, color: "#6b7280", margin: "10px 0" }}>
-            当前场景:{" "}
-            <b style={{ color: "#e5e7eb" }}>{SCENARIO_NAMES[scenario]}</b>
-          </div>
-          <p className="muted" style={{ fontSize: 12, margin: "0 0 10px" }}>
-            企业库 JSON 为嵌套结构，请先在「风险地图」选中企业并点「导入预测页」，或在此粘贴已扁平化的 JSON。
-          </p>
+        {!inputCollapsed && (
+          <div className="prediction-input-grid">
+            <div className="prediction-input-group">
+              <div className="subtitle">输入面板</div>
+              <label className="scada-label">企业 ID</label>
+              <input
+                className="scada-input"
+                value={enterpriseId}
+                onChange={(e) => setEnterpriseId(e.target.value)}
+              />
 
-          <button
-            className="scada-btn secondary"
-            type="button"
-            onClick={() => {
-              enterpriseImportRef.current = false;
-              setDataText(getDemoDataJson(scenario));
-              setUploadedFile(null);
-              setUploadedRow(null);
-              setUploadInfo("");
-            }}
-            style={{ marginBottom: 10 }}
-          >
-            🎲 模拟数据填充
-          </button>
+              <div className="prediction-scene-note">
+                当前场景: <b>{SCENARIO_NAMES[scenario]}</b>
+              </div>
+              <p className="muted prediction-input-help">
+                企业库 JSON 为嵌套结构，请先在「风险地图」选中企业并点「导入预测页」，或在此粘贴已扁平化的 JSON。
+              </p>
 
-          <label className="scada-label">企业数据（JSON）</label>
-          <textarea
-            className="scada-textarea"
-            rows={12}
-            value={dataText}
-            onChange={(e) => {
-              setDataText(e.target.value);
-              if (uploadedRow) setUploadedRow(null);
-            }}
-            disabled={!!uploadedRow}
-            style={uploadedRow ? { opacity: 0.5 } : undefined}
-          />
-          {uploadedRow && (
-            <div style={{ fontSize: 11, color: "#f59e0b", marginTop: 4 }}>
-              已加载上传文件，预测仅使用文件首行。
-              <button
-                type="button"
-                className="scada-btn secondary"
-                style={{ marginLeft: 8, fontSize: 10, padding: "2px 8px" }}
-                onClick={() => {
-                  setUploadedFile(null);
-                  setUploadedRow(null);
-                  setUploadInfo("");
+              <label className="scada-label">上传 CSV/Excel</label>
+              <input
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleUpload(f);
+                  e.currentTarget.value = "";
                 }}
-              >
-                改用手动 JSON
-              </button>
-            </div>
-          )}
+                className="prediction-file-input"
+              />
+              {uploadInfo && <div className="prediction-upload-info">{uploadInfo}</div>}
 
-          <label className="scada-label" style={{ marginTop: 8 }}>
-            上传 CSV/Excel
-          </label>
-          <input
-            type="file"
-            accept=".csv,.xlsx,.xls"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) handleUpload(f);
-              e.currentTarget.value = "";
-            }}
-            style={{ color: "#9ca3af", fontSize: 12 }}
-          />
-          {uploadInfo && (
-            <div
-              style={{
-                fontSize: 11,
-                color: "#10b981",
-                marginTop: 4,
-                fontFamily: "JetBrains Mono, monospace",
-              }}
-            >
-              {uploadInfo}
-            </div>
-          )}
+              <label className="prediction-stream-toggle">
+                <input
+                  type="checkbox"
+                  checked={useStream}
+                  onChange={(e) => setUseStream(e.target.checked)}
+                />
+                使用 SSE 实时节点流
+              </label>
 
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              fontSize: 12,
-              color: "#9ca3af",
-              margin: "12px 0 10px",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={useStream}
-              onChange={(e) => setUseStream(e.target.checked)}
-            />
-            使用 SSE 实时节点流
-          </label>
-
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button
-              className="scada-btn"
-              type="button"
-              onClick={handlePredict}
-              disabled={loading}
-              style={{ flex: 1, minWidth: 140 }}
-            >
-              {loading ? "执行中..." : "🚀 执行预测"}
-            </button>
-            {loading && (
-              <button
-                className="scada-btn danger"
-                type="button"
-                onClick={handleTerminatePredict}
-              >
-                终止任务
-              </button>
-            )}
-          </div>
-
-          {error && <div className="alert error" style={{ marginTop: 10 }}>{error}</div>}
-
-          <div className="scada-card" style={{ marginTop: 14, padding: 12 }}>
-            <div className="scada-card-title">批量完整决策</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", margin: "6px 0 8px" }}>
-              使用上方已上传的多行 CSV/Excel，逐家企业运行完整 Agent 工作流，并将 JSON 输出到系统配置页指定的服务端目录。
-            </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <button
-                className="scada-btn secondary"
-                type="button"
-                disabled={(batchLoading || batchCancelling) || !uploadedFile}
-                onClick={() => uploadedFile && startBatch(uploadedFile, scenario)}
-                style={{ flex: 1, minWidth: 160 }}
-              >
-                {batchLoading
-                  ? "批量任务运行中..."
-                  : batchCancelling
-                    ? "正在终止任务…"
-                    : "启动批量完整决策"}
-              </button>
-              {batchLoading && !batchCancelling && (
+              <div className="prediction-action-row">
                 <button
-                  className="scada-btn danger"
+                  className="scada-btn"
                   type="button"
-                  onClick={() => void cancelBatch()}
+                  onClick={handlePredict}
+                  disabled={loading}
                 >
-                  终止任务
+                  <IndustrialIcon name="run" />
+                  {loading ? "执行中..." : "执行预测"}
                 </button>
+                {loading && (
+                  <button
+                    className="scada-btn danger"
+                    type="button"
+                    onClick={handleTerminatePredict}
+                  >
+                    终止任务
+                  </button>
+                )}
+              </div>
+
+              {error && <div className="alert error prediction-inline-alert">{error}</div>}
+            </div>
+
+            <div className="prediction-input-group prediction-json-group">
+              <div className="prediction-json-header">
+                <label className="scada-label">企业数据（JSON）</label>
+                <button
+                  className="scada-btn secondary compact"
+                  type="button"
+                  onClick={() => {
+                    enterpriseImportRef.current = false;
+                    setDataText(getDemoDataJson(scenario));
+                    setUploadedFile(null);
+                    setUploadedRow(null);
+                    setUploadInfo("");
+                  }}
+                >
+                  <IndustrialIcon name="database" />
+                  模拟数据填充
+                </button>
+              </div>
+              <textarea
+                className="scada-textarea prediction-json-textarea"
+                rows={10}
+                value={dataText}
+                onChange={(e) => {
+                  setDataText(e.target.value);
+                  if (uploadedRow) setUploadedRow(null);
+                }}
+                disabled={!!uploadedRow}
+              />
+              {uploadedRow && (
+                <div className="prediction-upload-row-note">
+                  已加载上传文件，预测仅使用文件首行。
+                  <button
+                    type="button"
+                    className="scada-btn secondary compact"
+                    onClick={() => {
+                      setUploadedFile(null);
+                      setUploadedRow(null);
+                      setUploadInfo("");
+                    }}
+                  >
+                    改用手动 JSON
+                  </button>
+                </div>
               )}
-              {(batchFinished || batchCancelling) && batchStatus && (
+            </div>
+
+            <div className="prediction-input-group prediction-batch-panel">
+              <div className="scada-card-title">
+                <span className="title-with-icon">
+                  <IndustrialIcon name="file" />
+                  批量完整决策
+                </span>
+              </div>
+              <div className="prediction-batch-desc">
+                使用上方已上传的多行 CSV/Excel，逐家企业运行完整 Agent 工作流，并将 JSON 输出到系统配置页指定的服务端目录。
+              </div>
+              <div className="prediction-action-row">
                 <button
                   className="scada-btn secondary"
                   type="button"
-                  onClick={clearBatch}
+                  disabled={(batchLoading || batchCancelling) || !uploadedFile}
+                  onClick={() => uploadedFile && startBatch(uploadedFile, scenario)}
                 >
-                  关闭
+                  {batchLoading
+                    ? "批量任务运行中..."
+                    : batchCancelling
+                      ? "正在终止任务..."
+                      : "启动批量完整决策"}
                 </button>
+                {batchLoading && !batchCancelling && (
+                  <button
+                    className="scada-btn danger"
+                    type="button"
+                    onClick={() => void cancelBatch()}
+                  >
+                    终止任务
+                  </button>
+                )}
+                {(batchFinished || batchCancelling) && batchStatus && (
+                  <button
+                    className="scada-btn secondary"
+                    type="button"
+                    onClick={clearBatch}
+                  >
+                    关闭
+                  </button>
+                )}
+              </div>
+              {!uploadedFile && <div className="prediction-muted-note">请先在上方选择 CSV/Excel 文件</div>}
+              {batchInfo && (
+                <div
+                  className={
+                    batchStatus?.status === "cancelled" || batchCancelling
+                      ? "alert warning"
+                      : "prediction-batch-info"
+                  }
+                >
+                  {batchInfo}
+                </div>
+              )}
+              {batchStatus && !batchFinished && <BatchDecisionPanel status={batchStatus} />}
+              {batchStatus && batchFinished && (
+                <div className="prediction-muted-note">
+                  任务 {batchStatus.job_id} 已结束（{batchStatus.status}）。
+                  完成 {batchStatus.completed}，失败 {batchStatus.failed}，取消{" "}
+                  {batchStatus.results.filter((r) => r.status === "cancelled").length}。
+                </div>
               )}
             </div>
-            {!uploadedFile && (
-              <div style={{ fontSize: 11, color: "#64748b", marginTop: 6 }}>
-                请先在上方选择 CSV/Excel 文件
-              </div>
-            )}
-            {batchInfo && (
-              <div
-                className={
-                  batchStatus?.status === "cancelled" || batchCancelling
-                    ? "alert warning"
-                    : undefined
-                }
-                style={{
-                  fontSize: 11,
-                  marginTop: 6,
-                  color:
-                    batchStatus?.status === "cancelled" || batchCancelling
-                      ? undefined
-                      : "#38bdf8",
-                }}
-              >
-                {batchInfo}
-              </div>
-            )}
-            {batchStatus && !batchFinished && (
-              <BatchDecisionPanel status={batchStatus} />
-            )}
-            {batchStatus && batchFinished && (
-              <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 8 }}>
-                任务 {batchStatus.job_id} 已结束（{batchStatus.status}）。
-                完成 {batchStatus.completed}，失败 {batchStatus.failed}，取消{" "}
-                {batchStatus.results.filter((r) => r.status === "cancelled").length}。
-              </div>
-            )}
           </div>
-        </div>
+        )}
+      </section>
 
-        {/* 右侧结果区 */}
-        <div>
-          {loading && streamLog.length === 0 && <SpinnerBox />}
-          {!loading && !decision && streamLog.length === 0 && !error && (
-            <div className="empty-state">
-              👈 在左侧输入企业数据并点击「执行预测」查看结果
+      <div className="prediction-results">
+        {loading && streamLog.length === 0 && <SpinnerBox />}
+        {!loading && !decision && streamLog.length === 0 && !error && (
+          <div className="empty-state">
+            在上方输入企业数据并点击「执行预测」查看结果
+          </div>
+        )}
+        {streamLog.length > 0 && !decision && (
+          <div className="scada-card" style={{ marginBottom: 12 }}>
+            <div className="scada-card-title">
+              <span className="title-with-icon">
+                <IndustrialIcon name="stream" />
+                SSE 实时节点
+              </span>
             </div>
-          )}
-          {streamLog.length > 0 && !decision && (
-            <div className="scada-card" style={{ marginBottom: 12 }}>
-              <div className="scada-card-title">📡 SSE 实时节点</div>
-              <TimelineLogs nodes={streamLog} />
-            </div>
-          )}
-          {decision && (
-            <DecisionView
-              decision={decision}
-              streamLog={streamLog}
-              mockSource={mockSource}
-            />
-          )}
-        </div>
+            <TimelineLogs nodes={streamLog} />
+          </div>
+        )}
+        {decision && (
+          <DecisionView
+            decision={decision}
+            streamLog={streamLog}
+            mockSource={mockSource}
+          />
+        )}
       </div>
 
       <HistoryDecisionSection />
@@ -547,9 +541,13 @@ function HistoryDecisionSection() {
   return (
     <div className="scada-card" style={{ marginTop: 20 }}>
       <div className="risk-report-header">
-        <div className="risk-report-title">📁 历史决策记录</div>
+        <div className="risk-report-title title-with-icon">
+          <IndustrialIcon name="history" />
+          历史决策记录
+        </div>
         <button className="scada-btn secondary" type="button" onClick={loadRecords} disabled={loading}>
-          🔄 刷新
+          <IndustrialIcon name="refresh" />
+          刷新
         </button>
       </div>
       <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
@@ -841,8 +839,9 @@ export function DecisionView({ decision, streamLog, mockSource }: DecisionProps)
 
       <DecisionAdvice decision={decision} />
 
-      <div className="subtitle" style={{ marginTop: 16 }}>
-        🔒 风控拦截状态
+      <div className="subtitle subtitle-with-icon" style={{ marginTop: 16 }}>
+        <IndustrialIcon name="guard" />
+        风控拦截状态
       </div>
       <ValidationCards decision={decision} />
 
@@ -855,7 +854,10 @@ export function DecisionView({ decision, streamLog, mockSource }: DecisionProps)
             marginBottom: 8,
           }}
         >
-          📡 SSE 实时日志（工作流节点执行状态）
+          <span className="title-with-icon">
+            <IndustrialIcon name="stream" />
+            SSE 实时日志（工作流节点执行状态）
+          </span>
         </summary>
         <TimelineLogs nodes={finalNodes} />
       </details>
@@ -869,7 +871,10 @@ export function DecisionView({ decision, streamLog, mockSource }: DecisionProps)
             marginBottom: 8,
           }}
         >
-          🔍 原始决策 JSON
+          <span className="title-with-icon">
+            <IndustrialIcon name="json" />
+            原始决策 JSON
+          </span>
         </summary>
         <JsonView data={decision} />
       </details>
@@ -928,81 +933,99 @@ function KpiCards({ decision }: { decision: DecisionResponse }) {
   );
 }
 
+const CONTROL_PARAMETER_LABELS: Record<string, string> = {
+  dcs_tag: "DCS 标签",
+  target_values: "目标控制值",
+  monitoring_interval_minutes: "监测间隔",
+};
+
+function formatControlParameterLabel(key: string): string {
+  if (CONTROL_PARAMETER_LABELS[key]) return CONTROL_PARAMETER_LABELS[key];
+  if (/[\u4e00-\u9fa5]/.test(key)) return key;
+  return key
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatControlParameterValue(key: string, value: unknown): string {
+  if (key === "monitoring_interval_minutes" && typeof value === "number") {
+    return `${value} 分钟`;
+  }
+  if (Array.isArray(value)) return value.join("、");
+  if (value && typeof value === "object") return Object.values(value).join("、");
+  return String(value);
+}
+
 function DecisionAdvice({ decision }: { decision: DecisionResponse }) {
   const gov = decision.government_intervention;
   const ent = decision.enterprise_control;
   if (!gov && !ent) return null;
   return (
-    <div className="row cols-2" style={{ marginTop: 12 }}>
+    <div className="decision-advice-grid">
       {gov && (
         <div className="advice-card" style={{ borderLeftColor: "#ef4444" }}>
-          <div className="advice-card-title">🏛️ 政府干预建议</div>
+          <div className="advice-card-title">
+            <IndustrialIcon name="government" />
+            政府干预建议
+          </div>
           {gov.department_primary?.name && (
-            <div style={{ fontSize: 13, color: "#e5e7eb", marginBottom: 4 }}>
+            <div className="advice-card-primary">
               <b>{gov.department_primary.name}</b>
               {gov.department_primary.contact_role && (
-                <span style={{ color: "#9ca3af", marginLeft: 6 }}>
+                <span>
                   ({gov.department_primary.contact_role})
                 </span>
               )}
             </div>
           )}
           {gov.department_primary?.action && (
-            <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>
+            <div className="advice-card-copy">
               {gov.department_primary.action}
             </div>
           )}
           {gov.actions && gov.actions.length > 0 && (
-            <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: "#d1d5db" }}>
+            <ul className="advice-action-list">
               {gov.actions.map((a, i) => (
                 <li key={i}>{a}</li>
               ))}
             </ul>
           )}
           {gov.deadline_hours !== undefined && (
-            <div
-              style={{
-                marginTop: 8,
-                fontSize: 11,
-                color: "#f97316",
-                fontFamily: "JetBrains Mono, monospace",
-              }}
-            >
-              ⏱ 处置期限: {gov.deadline_hours} 小时
+            <div className="advice-deadline">
+              <IndustrialIcon name="clock" />
+              处置期限：{gov.deadline_hours} 小时
             </div>
           )}
         </div>
       )}
       {ent && (
         <div className="advice-card" style={{ borderLeftColor: "#3b82f6" }}>
-          <div className="advice-card-title">🏭 企业管控建议</div>
+          <div className="advice-card-title">
+            <IndustrialIcon name="factory" />
+            企业管控建议
+          </div>
           {ent.equipment_id && (
-            <div style={{ fontSize: 13, color: "#e5e7eb", marginBottom: 4 }}>
-              <b>设备:</b> {ent.equipment_id}
+            <div className="advice-card-primary">
+              <b>设备：</b> {ent.equipment_id}
             </div>
           )}
           {ent.operation && (
-            <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>
+            <div className="advice-card-copy">
               {ent.operation}
             </div>
           )}
           {ent.parameters && (
-            <pre
-              style={{
-                fontSize: 11,
-                background: "#0f172a",
-                padding: 8,
-                borderRadius: 4,
-                color: "#9ca3af",
-                margin: 0,
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {JSON.stringify(ent.parameters, null, 2)}
-            </pre>
+            <div className="advice-parameter-list">
+              {Object.entries(ent.parameters).map(([key, value]) => (
+                <div className="advice-parameter-item" key={key}>
+                  <span>{formatControlParameterLabel(key)}</span>
+                  <b>{formatControlParameterValue(key, value)}</b>
+                </div>
+              ))}
+            </div>
           )}
           {ent.personnel_actions && ent.personnel_actions.length > 0 && (
-            <ul style={{ margin: "8px 0 0", paddingLeft: 18, fontSize: 12, color: "#d1d5db" }}>
+            <ul className="advice-action-list">
               {ent.personnel_actions.map((a, i) => (
                 <li key={i}>{a}</li>
               ))}
@@ -1054,8 +1077,8 @@ function ValidationCards({ decision }: { decision: DecisionResponse }) {
           it.passed === undefined
             ? "未执行"
             : it.passed
-            ? "✅ 通过"
-            : "❌ 拦截";
+            ? "通过"
+            : "拦截";
         const color =
           it.passed === undefined
             ? "#9ca3af"
@@ -1066,6 +1089,9 @@ function ValidationCards({ decision }: { decision: DecisionResponse }) {
           <div className={`validation-card ${cls}`} key={idx}>
             <div className="v-title">{it.title}</div>
             <div className="v-status" style={{ color }}>
+              {it.passed !== undefined && (
+                <IndustrialIcon name={it.passed ? "check" : "block"} />
+              )}
               {status}
             </div>
             {it.detail && <div className="v-detail">{it.detail}</div>}
@@ -1085,21 +1111,22 @@ function TimelineLogs({ nodes }: { nodes: NodeStatus[] }) {
     <div className="timeline-container">
       {nodes.map((ns) => {
         const visual = resolveTimelineVisualStatus(ns.status);
-        const icon =
+        const iconName =
           visual === "completed"
-            ? "✓"
+            ? "check"
             : visual === "failed"
-            ? "✗"
+            ? "block"
             : visual === "skipped"
-            ? "⊘"
+            ? "list"
             : visual === "running"
-            ? "⟳"
-            : "○";
+            ? "iteration"
+            : "guard";
         return (
           <div className={`timeline-node ${visual}`} key={ns.node}>
             <div>
               <div className="node-name">
-                {icon} {getWorkflowNodeLabel(ns.node)}
+                <IndustrialIcon name={iconName} className="node-status-icon" />
+                {getWorkflowNodeLabel(ns.node)}
                 <span
                   style={{
                     marginLeft: 8,
@@ -1227,7 +1254,10 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
 
   return (
     <div style={{ marginTop: 16 }}>
-      <div className="subtitle">🎯 风险评分与等级分析</div>
+      <div className="subtitle subtitle-with-icon">
+        <IndustrialIcon name="radar" />
+        风险评分与等级分析
+      </div>
       <div className="row cols-3">
         <div className="scada-card">
           <div className="risk-report-title" style={{ marginBottom: 4 }}>
@@ -1307,7 +1337,10 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
 
       <div className="risk-report-section" style={{ marginTop: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📋 风险分析报告</div>
+          <div className="risk-report-title title-with-icon">
+            <IndustrialIcon name="list" />
+            风险分析报告
+          </div>
           <div style={{ display: "flex", gap: 8 }}>
             <span className={`tag tag-${level === "红" ? "red" : level === "橙" ? "orange" : level === "黄" ? "amber" : "blue"}`}>
               等级: {levelInfo?.label ?? level}
@@ -1323,7 +1356,7 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
             )}
           </div>
         </div>
-        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#d1d5db" }}>
+        <div className="risk-report-body">
           <p style={{ margin: "0 0 6px" }}>
             企业 <b style={{ color: "#f1f5f9" }}>{decision.enterprise_id}</b> 风险评估完成，
             Stacking 预测等级为 <b style={{ color: levelColor }}>{level}级</b>
@@ -1354,12 +1387,12 @@ function RiskScorePanel({ decision }: { decision: DecisionResponse }) {
           )}
           {level === "红" && (
             <p style={{ margin: 0, color: "#fca5a5" }}>
-              ⚠️ 建议立即启动应急响应，执行人员撤离与设备断电操作，同步通知属地应急管理部门。
+              建议立即启动应急响应，执行人员撤离与设备断电操作，同步通知属地应急管理部门。
             </p>
           )}
           {level === "橙" && (
             <p style={{ margin: 0, color: "#fdba74" }}>
-              ⚡ 建议限期整改，72小时内组织专项检查，加强重点设备监控频次。
+              建议限期整改，72小时内组织专项检查，加强重点设备监控频次。
             </p>
           )}
         </div>

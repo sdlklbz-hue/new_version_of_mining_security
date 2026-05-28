@@ -12,9 +12,9 @@ export const SCENARIO_NAMES: Record<ScenarioId, string> = {
 };
 
 export const SCENARIO_LABELS: Record<ScenarioId, string> = {
-  chemical: "🧪 危险化学品",
-  metallurgy: "🔩 冶金",
-  dust: "💨 粉尘涉爆",
+  chemical: "危险化学品",
+  metallurgy: "冶金",
+  dust: "粉尘涉爆",
 };
 
 export const DEMO_CHEMICAL = {

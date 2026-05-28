@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchIterationStatus, triggerIteration, fetchIterationTracking } from "../api/client";
 import type { IterationStatus, IterationRecord } from "../api/types";
 import ReactECharts from "echarts-for-react";
-import SubTabs from "../components/SubTabs";
+import IndustrialIcon from "../components/IndustrialIcon";
 
 const STATUS_MAP: Record<IterationRecord["status"], { label: string; color: string; bg: string }> = {
   draft: { label: "草稿", color: "#64748b", bg: "rgba(100,116,139,0.12)" },
@@ -15,12 +15,12 @@ const STATUS_MAP: Record<IterationRecord["status"], { label: string; color: stri
 };
 
 const WORKFLOW_STAGES = [
-  { key: "draft", label: "版本创建", icon: "📝" },
-  { key: "testing", label: "自动测试", icon: "🧪" },
-  { key: "pending_approval", label: "审批流程", icon: "📋" },
-  { key: "approved", label: "审批通过", icon: "✅" },
-  { key: "canary", label: "灰度发布", icon: "🔄" },
-  { key: "production", label: "正式上线", icon: "🚀" },
+  { key: "draft", label: "版本创建", icon: "file" },
+  { key: "testing", label: "自动测试", icon: "guard" },
+  { key: "pending_approval", label: "审批流程", icon: "list" },
+  { key: "approved", label: "审批通过", icon: "check" },
+  { key: "canary", label: "灰度发布", icon: "iteration" },
+  { key: "production", label: "正式上线", icon: "run" },
 ] as const;
 
 const STAGES_ITER = [
@@ -31,7 +31,7 @@ const STAGES_ITER = [
   { name: "回归测试与 Drift 分析...", pct: 0.75 },
   { name: "两级终审流程...", pct: 0.85 },
   { name: "灰度发布 0.1 → 0.5 → 1.0...", pct: 0.95 },
-  { name: "✅ 迭代完成，模型已上线", pct: 1.0 },
+  { name: "迭代完成，模型已上线", pct: 1.0 },
 ];
 
 let _idCounter = 0;
@@ -81,7 +81,7 @@ const FALLBACK_STATUS: IterationStatus = {
   ],
 };
 
-const ITERATION_SECTIONS = [
+export const ITERATION_SECTIONS = [
   { id: "dashboard", label: "迭代仪表盘" },
   { id: "tracking", label: "准确性追踪" },
   { id: "lifecycle", label: "生命周期管理" },
@@ -90,10 +90,16 @@ const ITERATION_SECTIONS = [
   { id: "changelog", label: "变更日志" },
 ] as const;
 
-type IterationSection = (typeof ITERATION_SECTIONS)[number]["id"];
+export type IterationSection = (typeof ITERATION_SECTIONS)[number]["id"];
 
-export default function IterationPage() {
-  const [activeSection, setActiveSection] = useState<IterationSection>("dashboard");
+interface IterationPageProps {
+  activeSection: IterationSection;
+  onSectionChange: (section: IterationSection) => void;
+}
+
+export default function IterationPage({
+  activeSection,
+}: IterationPageProps) {
 
   return (
     <div>
@@ -101,13 +107,6 @@ export default function IterationPage() {
         版本时间线与部分图表使用本地演示数据；连接后端后迭代状态与追踪数据将来自 API。
       </div>
       <div className="section-title">模型迭代全生命周期管理</div>
-      <SubTabs
-        tabs={[...ITERATION_SECTIONS]}
-        active={activeSection}
-        onChange={(id) => setActiveSection(id as IterationSection)}
-        ariaLabel="模型迭代子模块"
-      />
-      <div className="divider" />
       <div
         role="tabpanel"
         id={`subtab-panel-${activeSection}`}
@@ -184,11 +183,11 @@ function DashboardSection() {
       </div>
       <div className="row cols-2" style={{ marginBottom: 14 }}>
         <div className="scada-card">
-          <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 F1分数趋势</div>
+          <div className="risk-report-title" style={{ marginBottom: 10 }}> F1分数趋势</div>
           <ReactECharts option={f1TrendOption} style={{ height: 220 }} />
         </div>
         <div className="scada-card">
-          <div className="risk-report-title" style={{ marginBottom: 10 }}>🚀 灰度流量比例</div>
+          <div className="risk-report-title" style={{ marginBottom: 10 }}> 灰度流量比例</div>
           <div style={{ padding: "20px 0" }}>
             <div className="scada-progress-track" style={{ height: 20 }}><div className="scada-progress-fill" style={{ width: `${canaryRatio * 100}%` }} /></div>
             <div className="font-mono" style={{ fontSize: 13, color: "#94a3b8", marginTop: 10 }}>当前灰度比例: {(canaryRatio * 100).toFixed(0)}%</div>
@@ -205,7 +204,7 @@ function DashboardSection() {
         </div>
       </div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
-        <div className="risk-report-title" style={{ marginBottom: 10 }}>📜 版本历史</div>
+        <div className="risk-report-title" style={{ marginBottom: 10 }}> 版本历史</div>
         <table className="scada-table">
           <thead><tr><th>版本</th><th>日期</th><th>状态</th><th>F1</th><th>样本</th><th>审批人</th></tr></thead>
           <tbody>
@@ -223,8 +222,8 @@ function DashboardSection() {
         </table>
       </div>
       <div className="scada-card">
-        <div className="risk-report-title" style={{ marginBottom: 10 }}>▶️ 触发模拟迭代</div>
-        <button className="scada-btn full-width" type="button" onClick={runIteration} disabled={running}>{running ? "执行中..." : "🚀 触发模拟迭代流水线"}</button>
+        <div className="risk-report-title" style={{ marginBottom: 10 }}> 触发模拟迭代</div>
+        <button className="scada-btn full-width" type="button" onClick={runIteration} disabled={running}>{running ? "执行中..." : " 触发模拟迭代流水线"}</button>
         {running && <div style={{ marginTop: 12 }}><div className="font-mono" style={{ fontSize: 13, color: "#3b82f6", marginBottom: 6 }}>{STAGES_ITER[stageIdx].name}</div><div className="scada-progress-track"><div className="scada-progress-fill" style={{ width: `${pct * 100}%` }} /></div></div>}
         {resultMsg && <div className="alert info" style={{ marginTop: 12 }}>{resultMsg}</div>}
       </div>
@@ -333,12 +332,12 @@ function AccuracyTrackingSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📈 模型准确性变化追踪</div>
+          <div className="risk-report-title"> 模型准确性变化追踪</div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <select className="scada-input" value={periodFilter} onChange={(e) => setPeriodFilter(e.target.value)} style={{ width: 120, fontSize: 12 }}>
               <option value="all">全部时间</option><option value="7d">近7天</option><option value="30d">近30天</option><option value="90d">近90天</option><option value="180d">近180天</option>
             </select>
-            <button className="scada-btn secondary" type="button" onClick={loadTracking} disabled={loading}>🔄 刷新</button>
+            <button className="scada-btn secondary" type="button" onClick={loadTracking} disabled={loading}> 刷新</button>
           </div>
         </div>
       </div>
@@ -368,7 +367,7 @@ function AccuracyTrackingSection() {
       )}
       {latest && ci95 && (
         <div className="scada-card" style={{ marginBottom: 14 }}>
-          <div className="risk-report-title" style={{ marginBottom: 10 }}>📊 置信区间与统计显著性</div>
+          <div className="risk-report-title" style={{ marginBottom: 10 }}> 置信区间与统计显著性</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
             <div style={{ padding: 12, background: "rgba(15,23,42,0.5)", borderRadius: 8, border: "1px solid #1e293b" }}>
               <div style={{ fontSize: 11, color: "#64748b", marginBottom: 6 }}>95% 置信区间</div>
@@ -383,7 +382,9 @@ function AccuracyTrackingSection() {
               <div style={{ fontSize: 11, color: "#64748b", marginBottom: 6 }}>统计显著性</div>
               {deltaAcc !== null && (
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 20 }}>{Math.abs(deltaAcc) > 0.02 ? "✅" : "⚠️"}</span>
+                  <span className="inline-industrial-status" style={{ color: Math.abs(deltaAcc) > 0.02 ? "#10b981" : "#f59e0b" }}>
+                    <IndustrialIcon name={Math.abs(deltaAcc) > 0.02 ? "check" : "warning"} />
+                  </span>
                   <div><div style={{ fontSize: 13, color: Math.abs(deltaAcc) > 0.02 ? "#10b981" : "#f59e0b" }}>{Math.abs(deltaAcc) > 0.02 ? "显著改善" : "变化不显著"}</div><div style={{ fontSize: 11, color: "#94a3b8" }}>p &lt; 0.05 阈值</div></div>
                 </div>
               )}
@@ -392,16 +393,16 @@ function AccuracyTrackingSection() {
         </div>
       )}
       <div className="row cols-2" style={{ marginBottom: 14 }}>
-        <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📈 准确性趋势（多指标）</div><ReactECharts option={accuracyTrendOption} style={{ height: 300 }} /></div>
-        <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📊 误报/漏报率对比</div><ReactECharts option={errorRateOption} style={{ height: 300 }} /></div>
+        <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 准确性趋势（多指标）</div><ReactECharts option={accuracyTrendOption} style={{ height: 300 }} /></div>
+        <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 误报/漏报率对比</div><ReactECharts option={errorRateOption} style={{ height: 300 }} /></div>
       </div>
       <div className="row cols-2" style={{ marginBottom: 14 }}>
-        <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🔥 迭代性能热力图</div><ReactECharts option={heatmapOption} style={{ height: 300 }} /></div>
-        <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📊 迭代前后对比</div><ReactECharts option={comparisonOption} style={{ height: 300 }} /></div>
+        <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 迭代性能热力图</div><ReactECharts option={heatmapOption} style={{ height: 300 }} /></div>
+        <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 迭代前后对比</div><ReactECharts option={comparisonOption} style={{ height: 300 }} /></div>
       </div>
       {filteredHistory.length > 0 && (
         <div className="scada-card">
-          <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 迭代追踪详细数据</div>
+          <div className="risk-report-title" style={{ marginBottom: 10 }}> 迭代追踪详细数据</div>
           <table className="scada-table">
             <thead><tr><th>版本</th><th>时间</th><th>准确率</th><th>精确率</th><th>召回率</th><th>F1</th><th>FPR</th><th>FNR</th><th>样本</th><th>改进</th></tr></thead>
             <tbody>
@@ -452,8 +453,11 @@ function LifecycleSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">🔧 版本全生命周期管理</div>
-          <button className="scada-btn" type="button" onClick={() => setShowCreate(!showCreate)}>{showCreate ? "取消创建" : "➕ 创建新版本"}</button>
+          <div className="risk-report-title"> 版本全生命周期管理</div>
+          <button className="scada-btn" type="button" onClick={() => setShowCreate(!showCreate)}>
+            <IndustrialIcon name="file" />
+            {showCreate ? "取消创建" : "创建新版本"}
+          </button>
         </div>
         {showCreate && (
           <div style={{ marginTop: 14, padding: 16, background: "var(--bg-input)", borderRadius: 8, border: "1px solid var(--border-mid)" }}>
@@ -467,7 +471,13 @@ function LifecycleSection() {
             <textarea className="scada-input" style={{ minHeight: 40, resize: "vertical" }} value={newImprovements} onChange={(e) => setNewImprovements(e.target.value)} placeholder="改进点1, 改进点2..." />
             <label className="scada-label" style={{ marginTop: 10 }}>技术实现方案</label>
             <textarea className="scada-input" style={{ minHeight: 50, resize: "vertical" }} value={newTechDetails} onChange={(e) => setNewTechDetails(e.target.value)} placeholder="详细的技术实现方案..." />
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}><button className="scada-btn" type="button" onClick={createVersion}>✅ 创建版本</button><button className="scada-btn secondary" type="button" onClick={() => setShowCreate(false)}>取消</button></div>
+            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+              <button className="scada-btn" type="button" onClick={createVersion}>
+                <IndustrialIcon name="check" />
+                创建版本
+              </button>
+              <button className="scada-btn secondary" type="button" onClick={() => setShowCreate(false)}>取消</button>
+            </div>
           </div>
         )}
       </div>
@@ -484,7 +494,14 @@ function LifecycleSection() {
               <button className="icon-btn" style={{ marginLeft: "auto" }} type="button" onClick={() => setSelectedRecord(selectedRecord?.id === rec.id ? null : rec)} title="查看详情">{selectedRecord?.id === rec.id ? "▲" : "▼"}</button>
             </div>
             <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
-              {WORKFLOW_STAGES.map((ws, i) => (<div key={ws.key} style={{ flex: 1, textAlign: "center" }}><div style={{ fontSize: 16, marginBottom: 2, opacity: i <= progress ? 1 : 0.3 }}>{ws.icon}</div><div style={{ fontSize: 9, color: i <= progress ? "#94a3b8" : "#475569", fontWeight: i <= progress ? 600 : 400 }}>{ws.label}</div></div>))}
+              {WORKFLOW_STAGES.map((ws, i) => (
+                <div key={ws.key} style={{ flex: 1, textAlign: "center" }}>
+                  <div className="workflow-industrial-icon" style={{ opacity: i <= progress ? 1 : 0.3 }}>
+                    <IndustrialIcon name={ws.icon} />
+                  </div>
+                  <div style={{ fontSize: 9, color: i <= progress ? "#94a3b8" : "#475569", fontWeight: i <= progress ? 600 : 400 }}>{ws.label}</div>
+                </div>
+              ))}
             </div>
             <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 8 }}>{rec.description}</div>
             {rec.improvements && rec.improvements.length > 0 && (<div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>{rec.improvements.map((imp, i) => (<span key={i} className="tag tag-cyan" style={{ fontSize: 10 }}>{imp}</span>))}</div>)}
@@ -496,8 +513,18 @@ function LifecycleSection() {
               </div>
             )}
             <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-              {rec.status === "draft" && (<button className="scada-btn" style={{ fontSize: 11, padding: "4px 10px" }} type="button" onClick={() => startTest(rec.id)} disabled={testRunning === rec.id}>{testRunning === rec.id ? "测试中..." : "🧪 开始测试"}</button>)}
-              {rec.status === "testing" && (<button className="scada-btn" style={{ fontSize: 11, padding: "4px 10px" }} type="button" onClick={() => submitForApproval(rec.id)}>📋 提交审批</button>)}
+              {rec.status === "draft" && (
+                <button className="scada-btn" style={{ fontSize: 11, padding: "4px 10px" }} type="button" onClick={() => startTest(rec.id)} disabled={testRunning === rec.id}>
+                  <IndustrialIcon name="guard" />
+                  {testRunning === rec.id ? "测试中..." : "开始测试"}
+                </button>
+              )}
+              {rec.status === "testing" && (
+                <button className="scada-btn" style={{ fontSize: 11, padding: "4px 10px" }} type="button" onClick={() => submitForApproval(rec.id)}>
+                  <IndustrialIcon name="list" />
+                  提交审批
+                </button>
+              )}
             </div>
           </div>
         );
@@ -519,12 +546,12 @@ function ApprovalWorkflowSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📋 迭代审批工作流</div>
+          <div className="risk-report-title"> 迭代审批工作流</div>
           <span className="tag tag-orange">待审批: {pendingRecords.length}</span>
         </div>
       </div>
       {pendingRecords.length === 0 ? (
-        <div className="scada-card"><div className="empty-state"><div className="empty-state-icon">✅</div><div>暂无待审批的迭代版本</div></div></div>
+        <div className="scada-card"><div className="empty-state"><div className="empty-state-icon"></div><div>暂无待审批的迭代版本</div></div></div>
       ) : (
         pendingRecords.map((rec) => {
           const prevRec = records.find((r) => r.id !== rec.id && r.f1 > 0);
@@ -548,8 +575,14 @@ function ApprovalWorkflowSection() {
                 <textarea className="scada-input" style={{ minHeight: 50, resize: "vertical" }} placeholder="请输入审批意见..." value={approvalComment[rec.id] || ""} onChange={(e) => setApprovalComment({ ...approvalComment, [rec.id]: e.target.value })} />
               </div>
               <div style={{ display: "flex", gap: 8 }}>
-                <button className="scada-btn" style={{ background: "#10b981" }} type="button" onClick={() => handleApprove(rec.id)}>✅ 批准发布</button>
-                <button className="scada-btn" style={{ background: "#ef4444" }} type="button" onClick={() => handleReject(rec.id)} disabled={!approvalComment[rec.id]?.trim()}>❌ 驳回</button>
+                <button className="scada-btn" style={{ background: "#10b981" }} type="button" onClick={() => handleApprove(rec.id)}>
+                  <IndustrialIcon name="approve" />
+                  批准发布
+                </button>
+                <button className="scada-btn" style={{ background: "#ef4444" }} type="button" onClick={() => handleReject(rec.id)} disabled={!approvalComment[rec.id]?.trim()}>
+                  <IndustrialIcon name="reject" />
+                  驳回
+                </button>
               </div>
             </div>
           );
@@ -557,7 +590,7 @@ function ApprovalWorkflowSection() {
       )}
       {processedRecords.length > 0 && (
         <div className="scada-card">
-          <div className="risk-report-title" style={{ marginBottom: 10 }}>📜 审批历史</div>
+          <div className="risk-report-title" style={{ marginBottom: 10 }}> 审批历史</div>
           <table className="scada-table">
             <thead><tr><th>版本</th><th>状态</th><th>审批人</th><th>审批意见</th><th>审批时间</th></tr></thead>
             <tbody>
@@ -614,7 +647,7 @@ function CompareSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📑 版本对比分析</div>
+          <div className="risk-report-title"> 版本对比分析</div>
           <span className="tag tag-blue">已选: {selectedIds.length}/3</span>
         </div>
         <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 8 }}>选择2-3个版本进行对比分析</div>
@@ -640,11 +673,11 @@ function CompareSection() {
       {selectedRecords.length >= 2 && (
         <>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 雷达图对比</div><ReactECharts option={radarOption} style={{ height: 320 }} /></div>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📊 柱状图对比</div><ReactECharts option={barCompareOption} style={{ height: 320 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 雷达图对比</div><ReactECharts option={radarOption} style={{ height: 320 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 柱状图对比</div><ReactECharts option={barCompareOption} style={{ height: 320 }} /></div>
           </div>
           <div className="scada-card">
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 详细对比表</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 详细对比表</div>
             <table className="scada-table">
               <thead><tr><th>指标</th>{selectedRecords.map((r) => (<th key={r.id} style={{ color: "#3b82f6" }}>{r.version}</th>))}</tr></thead>
               <tbody>
@@ -674,7 +707,7 @@ function ChangelogSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📝 迭代变更日志</div>
+          <div className="risk-report-title"> 迭代变更日志</div>
           <div style={{ display: "flex", gap: 8 }}>
             <select className="scada-input" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={{ width: 120, fontSize: 12 }}>
               <option value="">全部状态</option><option value="production">生产环境</option><option value="canary">灰度发布</option><option value="pending_approval">待审批</option><option value="approved">已批准</option><option value="rejected">已驳回</option>
@@ -695,7 +728,7 @@ function ChangelogSection() {
                   <span className="tag" style={{ background: st.bg, color: st.color, fontWeight: 700 }}>{st.label}</span>
                   <span style={{ fontSize: 11, color: "#64748b" }}>{rec.date}</span>
                   {rec.f1 > 0 && <span className="tag tag-emerald" style={{ fontSize: 10 }}>F1: {rec.f1.toFixed(3)}</span>}
-                  <span style={{ marginLeft: "auto", color: "#64748b", fontSize: 12 }}>{expandedId === rec.id ? "▼" : "▶"}</span>
+                  <span style={{ marginLeft: "auto", color: "#64748b", fontSize: 12 }}>{expandedId === rec.id ? "▼" : ""}</span>
                 </div>
                 <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6 }}>{rec.description}</div>
                 {rec.improvements && rec.improvements.length > 0 && (<div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 6 }}>{rec.improvements.map((imp, i) => (<span key={i} className="tag tag-cyan" style={{ fontSize: 9 }}>{imp}</span>))}</div>)}

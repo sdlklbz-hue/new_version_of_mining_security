@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   fetchEarlyWarningTrend,
   fetchCorrelationScatter,
@@ -35,6 +35,8 @@ import {
 import ReactECharts from "echarts-for-react";
 import "echarts-gl";
 import * as echarts from "echarts";
+import IndustrialIcon from "../components/IndustrialIcon";
+import type { IndustrialIconName } from "../components/IndustrialIcon";
 
 export default function VisualizationDashboard() {
   const [trendData, setTrendData] = useState<TrendDataPoint[] | null>(null);
@@ -64,8 +66,7 @@ export default function VisualizationDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadAllData() {
+  const loadAllData = useCallback(async () => {
       setLoading(true);
       setError(null);
 
@@ -112,10 +113,11 @@ export default function VisualizationDashboard() {
       } finally {
         setLoading(false);
       }
-    }
-
-    loadAllData();
   }, []);
+
+  useEffect(() => {
+    void loadAllData();
+  }, [loadAllData]);
 
   if (loading) {
     return (
@@ -128,7 +130,9 @@ export default function VisualizationDashboard() {
         fontSize: "16px"
       }}>
         <div>
-          <div style={{ fontSize: "24px", marginBottom: "10px" }}>📊</div>
+          <div className="loading-industrial-icon">
+            <IndustrialIcon name="chart" />
+          </div>
           正在加载数据可视化图表...
         </div>
       </div>
@@ -145,6 +149,15 @@ export default function VisualizationDashboard() {
         color: "#ef4444",
         margin: "20px"
       }}>
+        <button
+          type="button"
+          className="scada-btn secondary"
+          onClick={() => void loadAllData()}
+          disabled={loading}
+          style={{ marginRight: 12 }}
+        >
+          刷新数据
+        </button>
         <strong>错误:</strong> {error}
       </div>
     );
@@ -152,14 +165,16 @@ export default function VisualizationDashboard() {
 
   return (
     <div className="visualization-dashboard">
-      <div style={{ marginBottom: "24px" }}>
-        <h2 style={{
+      <div style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-start" }}>
+        <div>
+        <h2 className="title-with-icon" style={{
           color: "#e5e7eb",
           fontSize: "24px",
           fontWeight: "bold",
           marginBottom: "8px"
         }}>
-          📈 数据可视化仪表盘
+          <IndustrialIcon name="chart" />
+          数据可视化仪表盘
         </h2>
         <p style={{
           color: "#9ca3af",
@@ -168,6 +183,15 @@ export default function VisualizationDashboard() {
         }}>
           基于真实企业数据的统计分析图表 | Data Visualization Dashboard
         </p>
+        </div>
+        <button
+          type="button"
+          className="scada-btn secondary"
+          onClick={() => void loadAllData()}
+          disabled={loading}
+        >
+          {loading ? "刷新中..." : "刷新数据"}
+        </button>
       </div>
 
       {/* 三模块时间趋势对比（支持拖拽缩放） */}
@@ -259,14 +283,15 @@ export default function VisualizationDashboard() {
           border: "1px solid #374151",
           marginBottom: "32px"
         }}>
-          <h3 style={{
+          <h3 className="title-with-icon" style={{
             color: "#e5e7eb",
             fontSize: "16px",
             fontWeight: "bold",
             marginTop: 0,
             marginBottom: "12px"
           }}>
-            📋 数据概览
+            <IndustrialIcon name="table" />
+            数据概览
           </h3>
           <div style={{
             display: "grid",
@@ -355,7 +380,7 @@ export default function VisualizationDashboard() {
       {/* 企业综合统计数据分析 */}
       {enterpriseStats && (
         <div style={{ marginTop: "40px" }}>
-          <h3 style={{
+          <h3 className="title-with-icon" style={{
             color: "#e5e7eb",
             fontSize: "20px",
             fontWeight: "bold",
@@ -363,7 +388,8 @@ export default function VisualizationDashboard() {
             paddingBottom: "12px",
             borderBottom: "2px solid #4f46e5"
           }}>
-            🏭 企业深度数据挖掘分析
+            <IndustrialIcon name="factory" />
+            企业深度数据挖掘分析
           </h3>
           <p style={{
             color: "#9ca3af",
@@ -381,12 +407,12 @@ export default function VisualizationDashboard() {
             marginBottom: "32px"
           }}>
             {[
-              { label: "企业总数", value: enterpriseStats.summary.total_enterprises.toLocaleString(), icon: "🏢", color: "#3b82f6", bg: "rgba(59, 130, 246, 0.1)" },
-              { label: "高危企业", value: enterpriseStats.summary.high_risk_count, icon: "⚠️", color: "#ef4444", bg: "rgba(239, 68, 68, 0.1)" },
-              { label: "平均安全评分", value: `${enterpriseStats.summary.avg_safety_score}分`, icon: "✅", color: "#10b981", bg: "rgba(16, 185, 129, 0.1)" },
-              { label: "年度检查次数", value: enterpriseStats.summary.total_inspections_ytd.toLocaleString(), icon: "🔍", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.1)" },
-              { label: "违规次数", value: enterpriseStats.summary.total_violations_ytd.toLocaleString(), icon: "📋", color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.1)" },
-              { label: "合规率", value: `${enterpriseStats.summary.compliance_rate}%`, icon: "🎯", color: "#06b6d4", bg: "rgba(6, 182, 212, 0.1)" },
+              { label: "企业总数", value: enterpriseStats.summary.total_enterprises.toLocaleString(), icon: "enterprise", color: "#3b82f6", bg: "rgba(59, 130, 246, 0.1)" },
+              { label: "高危企业", value: enterpriseStats.summary.high_risk_count, icon: "warning", color: "#ef4444", bg: "rgba(239, 68, 68, 0.1)" },
+              { label: "平均安全评分", value: `${enterpriseStats.summary.avg_safety_score}分`, icon: "check", color: "#10b981", bg: "rgba(16, 185, 129, 0.1)" },
+              { label: "年度检查次数", value: enterpriseStats.summary.total_inspections_ytd.toLocaleString(), icon: "search", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.1)" },
+              { label: "违规次数", value: enterpriseStats.summary.total_violations_ytd.toLocaleString(), icon: "list", color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.1)" },
+              { label: "合规率", value: `${enterpriseStats.summary.compliance_rate}%`, icon: "risk", color: "#06b6d4", bg: "rgba(6, 182, 212, 0.1)" },
             ].map((item, idx) => (
               <div key={idx} style={{
                 padding: "20px",
@@ -396,7 +422,9 @@ export default function VisualizationDashboard() {
                 textAlign: "center",
                 transition: "transform 0.2s",
               }}>
-                <div style={{ fontSize: "32px", marginBottom: "8px" }}>{item.icon}</div>
+                <div className="metric-industrial-icon" style={{ color: item.color }}>
+                  <IndustrialIcon name={item.icon as IndustrialIconName} />
+                </div>
                 <div style={{
                   color: item.color,
                   fontSize: "28px",
@@ -418,11 +446,11 @@ export default function VisualizationDashboard() {
             marginBottom: "32px"
           }}>
             {[
-              { label: "累计样本数", value: enterpriseStats.summary.cumulative_samples?.toLocaleString() || "N/A", icon: "📊", color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.1)" },
-              { label: "F1分数", value: enterpriseStats.summary.f1_score?.toFixed(3) || "N/A", icon: "🎯", color: "#ec4899", bg: "rgba(236, 72, 153, 0.1)" },
-              { label: "模型准确率", value: enterpriseStats.summary.model_accuracy ? `${(enterpriseStats.summary.model_accuracy * 100).toFixed(1)}%` : "N/A", icon: "🧠", color: "#14b8a6", bg: "rgba(20, 184, 166, 0.1)" },
-              { label: "召回率", value: enterpriseStats.summary.recall_rate ? `${(enterpriseStats.summary.recall_rate * 100).toFixed(1)}%` : "N/A", icon: "📡", color: "#f97316", bg: "rgba(249, 115, 22, 0.1)" },
-              { label: "精确率", value: enterpriseStats.summary.precision_rate ? `${(enterpriseStats.summary.precision_rate * 100).toFixed(1)}%` : "N/A", icon: "💎", color: "#06b6d4", bg: "rgba(6, 182, 212, 0.1)" },
+              { label: "累计样本数", value: enterpriseStats.summary.cumulative_samples?.toLocaleString() || "N/A", icon: "chart", color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.1)" },
+              { label: "F1分数", value: enterpriseStats.summary.f1_score?.toFixed(3) || "N/A", icon: "radar", color: "#ec4899", bg: "rgba(236, 72, 153, 0.1)" },
+              { label: "模型准确率", value: enterpriseStats.summary.model_accuracy ? `${(enterpriseStats.summary.model_accuracy * 100).toFixed(1)}%` : "N/A", icon: "memory", color: "#14b8a6", bg: "rgba(20, 184, 166, 0.1)" },
+              { label: "召回率", value: enterpriseStats.summary.recall_rate ? `${(enterpriseStats.summary.recall_rate * 100).toFixed(1)}%` : "N/A", icon: "stream", color: "#f97316", bg: "rgba(249, 115, 22, 0.1)" },
+              { label: "精确率", value: enterpriseStats.summary.precision_rate ? `${(enterpriseStats.summary.precision_rate * 100).toFixed(1)}%` : "N/A", icon: "check", color: "#06b6d4", bg: "rgba(6, 182, 212, 0.1)" },
             ].map((item, idx) => (
               <div key={idx} style={{
                 padding: "20px",
@@ -432,7 +460,9 @@ export default function VisualizationDashboard() {
                 textAlign: "center",
                 transition: "transform 0.2s",
               }}>
-                <div style={{ fontSize: "32px", marginBottom: "8px" }}>{item.icon}</div>
+                <div className="metric-industrial-icon" style={{ color: item.color }}>
+                  <IndustrialIcon name={item.icon as IndustrialIconName} />
+                </div>
                 <div style={{
                   color: item.color,
                   fontSize: "28px",
@@ -470,7 +500,7 @@ export default function VisualizationDashboard() {
                 alignItems: "center",
                 gap: "8px"
               }}>
-                <span>📊</span> 企业行业分布
+                <IndustrialIcon name="chart" /> 企业行业分布
               </h4>
               <ReactECharts
                 option={{
@@ -531,7 +561,7 @@ export default function VisualizationDashboard() {
                 alignItems: "center",
                 gap: "8px"
               }}>
-                <span>📈</span> 季度风险等级分布趋势
+                <IndustrialIcon name="trend" /> 季度风险等级分布趋势
               </h4>
               <ReactECharts
                 option={{
@@ -603,7 +633,7 @@ export default function VisualizationDashboard() {
                 alignItems: "center",
                 gap: "8px"
               }}>
-                <span>🏗️</span> 企业规模分布
+                <IndustrialIcon name="enterprise" /> 企业规模分布
               </h4>
               <ReactECharts
                 option={{
@@ -673,7 +703,7 @@ export default function VisualizationDashboard() {
                 alignItems: "center",
                 gap: "8px"
               }}>
-                <span>📊</span> 安全评分分布
+                <IndustrialIcon name="check" /> 安全评分分布
               </h4>
               <ReactECharts
                 option={{
@@ -744,7 +774,7 @@ export default function VisualizationDashboard() {
               alignItems: "center",
               gap: "8px"
             }}>
-              <span>📅</span> 月度综合趋势分析
+              <IndustrialIcon name="trend" /> 月度综合趋势分析
             </h4>
             <ReactECharts
               option={{
@@ -854,7 +884,7 @@ export default function VisualizationDashboard() {
               alignItems: "center",
               gap: "8px"
             }}>
-              <span>⚠️</span> TOP 8 高风险企业预警（按企业名称长度降序排列）
+              <IndustrialIcon name="warning" /> TOP 8 高风险企业预警（按企业名称长度降序排列）
             </h4>
             <table style={{
               width: "100%",
@@ -948,7 +978,7 @@ export default function VisualizationDashboard() {
             paddingBottom: "12px",
             borderBottom: "2px solid #f97316"
           }}>
-            🔬 工业大类预警情况深度对比分析
+             工业大类预警情况深度对比分析
           </h3>
           <p style={{
             color: "#9ca3af",
@@ -999,7 +1029,7 @@ export default function VisualizationDashboard() {
               alignItems: "center",
               gap: "8px"
             }}>
-              <span>📋</span> 工业大类预警数据明细表
+              <IndustrialIcon name="table" /> 工业大类预警数据明细表
             </h4>
             <div style={{ overflowX: "auto" }}>
               <table style={{

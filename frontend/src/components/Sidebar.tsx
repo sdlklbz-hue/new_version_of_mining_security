@@ -1,89 +1,176 @@
-import type { HealthResponse, IterationStatus } from "../api/types";
+import { useEffect, useState } from "react";
+import IndustrialIcon from "./IndustrialIcon";
+import type { IndustrialIconName } from "./IndustrialIcon";
+
+export interface NavChildItem {
+  id: string;
+  label: string;
+  icon?: IndustrialIconName;
+}
+
+export interface NavItem {
+  id: string;
+  label: string;
+  icon?: IndustrialIconName;
+  children?: NavChildItem[];
+}
 
 interface Props {
-  health: HealthResponse | null;
-  iteration: IterationStatus | null;
+  activeTab: string;
+  activeChildByTab?: Record<string, string | undefined>;
+  onTabChange: (id: string) => void;
+  onChildChange: (parentId: string, childId: string) => void;
+  navItems: NavItem[];
   pendingApprovals?: number | null;
-  demoMode: boolean;
-  onDemoToggle: (b: boolean) => void;
-  open?: boolean;
-  onClose?: () => void;
+}
+
+const SIDEBAR_EXPANDED_STORAGE_KEY = "mining-security-sidebar-expanded";
+
+function readStoredExpanded(): boolean {
+  if (typeof window === "undefined") return true;
+
+  const stored = window.localStorage.getItem(SIDEBAR_EXPANDED_STORAGE_KEY);
+  return stored === null ? true : stored === "true";
 }
 
 export default function Sidebar({
-  health,
-  iteration,
+  activeTab,
+  activeChildByTab,
+  onTabChange,
+  onChildChange,
+  navItems,
   pendingApprovals,
-  demoMode,
-  onDemoToggle,
-  open = false,
-  onClose,
 }: Props) {
-  const online = health?.status === "healthy";
+  const approvalCount = pendingApprovals ?? 0;
+  const [expanded, setExpanded] = useState(readStoredExpanded);
+  const [openGroups, setOpenGroups] = useState<Set<string>>(
+    () =>
+      new Set(
+        navItems
+          .filter((item) => item.id === activeTab && item.children?.length)
+          .map((item) => item.id),
+      ),
+  );
+
+  useEffect(() => {
+    window.localStorage.setItem(SIDEBAR_EXPANDED_STORAGE_KEY, String(expanded));
+  }, [expanded]);
+
+  useEffect(() => {
+    const activeItem = navItems.find((item) => item.id === activeTab);
+    if (!activeItem?.children?.length) return;
+
+    setOpenGroups((prev) => (prev.has(activeTab) ? prev : new Set([activeTab])));
+  }, [activeTab, navItems]);
+
+  function toggleGroup(id: string, selected: boolean) {
+    setOpenGroups((prev) => {
+      if (selected && prev.has(id)) {
+        return new Set();
+      }
+      return new Set([id]);
+    });
+  }
 
   return (
     <aside
-      className={`sidebar ${open ? "open" : ""}`}
-      aria-label="系统控制侧栏"
+      className={`sidebar ${expanded ? "sidebar-expanded" : "sidebar-collapsed"}`}
+      aria-label="主导航"
     >
-      <div className="sidebar-title">风险预警智能体</div>
-      <div className="sidebar-subtitle">SCADA DASHBOARD v1.0</div>
-
-      <div
-        className={`sidebar-status ${online ? "online" : "offline"}`}
-        role="status"
-      >
-        <span className={`status-dot ${online ? "online" : "offline"}`} aria-hidden="true" />
-        <span>{online ? "后端服务正常" : "后端离线（演示数据）"}</span>
-      </div>
-
-      <div className="sidebar-divider" />
-      <div className="sidebar-section-title">系统状态</div>
-      {iteration ? (
-        <>
-          <div className="sidebar-state-text">
-            {iteration.current_state_cn || iteration.current_state || "未知"}
+      <div className="sidebar-rail" role="navigation">
+        <div className="sidebar-top">
+          <div className="sidebar-brand">
+            <div className="sidebar-title">风险预警智能体</div>
+            <div className="sidebar-subtitle">INDUSTRIAL WARNING SYSTEM</div>
           </div>
-          {(pendingApprovals ?? 0) > 0 ? (
-            <div className="sidebar-hint warn">
-              待审批: {pendingApprovals} 项（含决策审批）
+          <button
+            type="button"
+            className="sidebar-toggle"
+            onClick={() => setExpanded((value) => !value)}
+            aria-label={expanded ? "收拢侧边栏" : "展开侧边栏"}
+            title={expanded ? "收拢侧边栏" : "展开侧边栏"}
+          >
+            <IndustrialIcon name={expanded ? "collapse" : "expand"} />
+          </button>
+        </div>
+
+        {navItems.map((item) => {
+          const hasChildren = Boolean(item.children?.length);
+          const selected = item.id === activeTab;
+          const groupOpen = openGroups.has(item.id);
+          const activeChildId = activeChildByTab?.[item.id];
+          const showBadge = item.id === "risk" && approvalCount > 0;
+
+          return (
+            <div
+              key={item.id}
+              className={`rail-group ${selected ? "active" : ""} ${groupOpen ? "open" : ""}`}
+            >
+              <button
+                id={`nav-${item.id}`}
+                type="button"
+                className={`rail-button ${selected ? "active" : ""} ${hasChildren ? "has-children" : ""}`}
+                onClick={() => {
+                  onTabChange(item.id);
+                  if (hasChildren && expanded) toggleGroup(item.id, selected);
+                }}
+                aria-current={selected ? "page" : undefined}
+                aria-expanded={hasChildren && expanded ? groupOpen : undefined}
+                aria-controls={hasChildren ? `nav-group-${item.id}` : undefined}
+                aria-label={item.label}
+                title={item.label}
+              >
+                <span className="rail-icon">
+                  <IndustrialIcon name={item.icon ?? "details"} />
+                </span>
+                <span className="rail-label">{item.label}</span>
+                {showBadge && (
+                  <span className="rail-badge font-mono">{approvalCount}</span>
+                )}
+                {hasChildren && expanded && (
+                  <span className="rail-chevron" aria-hidden="true">
+                    <IndustrialIcon name={groupOpen ? "collapse" : "expand"} />
+                  </span>
+                )}
+              </button>
+
+              {hasChildren && expanded && groupOpen && (
+                <div
+                  id={`nav-group-${item.id}`}
+                  className="sidebar-subnav"
+                  role="group"
+                  aria-label={`${item.label}子目录`}
+                >
+                  {item.children?.map((child) => {
+                    const childSelected = selected && child.id === activeChildId;
+
+                    return (
+                      <button
+                        key={child.id}
+                        id={`nav-${item.id}-${child.id}`}
+                        type="button"
+                        className={`subnav-button ${childSelected ? "active" : ""}`}
+                        onClick={() => {
+                          setOpenGroups(new Set([item.id]));
+                          onChildChange(item.id, child.id);
+                        }}
+                        aria-current={childSelected ? "page" : undefined}
+                        title={child.label}
+                      >
+                        <span className="subnav-icon" aria-hidden="true">
+                          <IndustrialIcon name={child.icon ?? "details"} />
+                        </span>
+                        <span className="subnav-label">{child.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          ) : iteration.pending_approvals && iteration.pending_approvals.length > 0 ? (
-            <div className="sidebar-hint warn">
-              模型迭代待审批: {iteration.pending_approvals.length} 项
-            </div>
-          ) : (
-            <div className="sidebar-hint">无待审批事项</div>
-          )}
-        </>
-      ) : (
-        <div className="sidebar-hint">无法获取迭代状态</div>
-      )}
+          );
+        })}
 
-      <div className="sidebar-divider" />
-      <div className="sidebar-section-title">路演控制</div>
-      <label className="sidebar-demo-label">
-        <input
-          type="checkbox"
-          checked={demoMode}
-          onChange={(e) => onDemoToggle(e.target.checked)}
-        />
-        演示模式（主 Tab 自动轮播）
-      </label>
-      {demoMode && (
-        <div className="sidebar-hint accent">每 12 秒切换主 Tab</div>
-      )}
-
-      {open && onClose && (
-        <button type="button" className="sidebar-close-btn" onClick={onClose}>
-          收起侧栏
-        </button>
-      )}
-
-      <div className="sidebar-footnote">
-        Harness 工程化管控
-        <br />
-        推荐 1920×1080 投影
+        <div className="rail-spacer" />
       </div>
     </aside>
   );

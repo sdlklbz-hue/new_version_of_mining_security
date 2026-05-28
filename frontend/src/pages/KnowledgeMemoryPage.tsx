@@ -18,8 +18,9 @@ import {
   deleteEnterpriseDataBySource,
 } from "../api/client";
 import ReactECharts from "echarts-for-react";
-import SubTabs from "../components/SubTabs";
 import DecisionApprovalSection from "../components/DecisionApprovalSection";
+import IndustrialIcon from "../components/IndustrialIcon";
+import type { IndustrialIconName } from "../components/IndustrialIcon";
 
 const PRIO_COLORS: Record<string, string> = { P0: "#ef4444", P1: "#f97316", P2: "#3b82f6", P3: "#10b981" };
 const PRIO_BG: Record<string, string> = { P0: "rgba(239,68,68,0.15)", P1: "rgba(249,115,22,0.15)", P2: "rgba(59,130,246,0.15)", P3: "rgba(16,185,129,0.15)" };
@@ -47,10 +48,18 @@ interface EnterpriseRiskResult {
   inference_stored: boolean;
 }
 
-function StatCard({ value, label, color, icon }: { value: number; label: string; color: string; icon?: string }) {
+function alertTone(message: string): "success" | "error" | "info" {
+  if (message.includes("失败")) return "error";
+  if (message.includes("成功") || message.includes("完成") || message.includes("已删除")) return "success";
+  return "info";
+}
+
+function StatCard({ value, label, color, icon }: { value: number; label: string; color: string; icon?: IndustrialIconName | string }) {
   return (
     <div className="scada-card" style={{ textAlign: "center", padding: 16, position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", top: -10, right: -10, fontSize: 40, opacity: 0.08, color }}>{icon || "📊"}</div>
+      <div className="stat-card-watermark" style={{ color }}>
+        <IndustrialIcon name={(icon as IndustrialIconName) || "chart"} />
+      </div>
       <div style={{ fontSize: 28, fontWeight: 800, color, fontFamily: "JetBrains Mono", position: "relative" }}>{value.toLocaleString()}</div>
       <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4, position: "relative" }}>{label}</div>
     </div>
@@ -79,14 +88,14 @@ function ExportDialog({ memoryType, onClose }: { memoryType: string; onClose: ()
     if (filterEnterprise) filters.enterprise_id = filterEnterprise;
     if (Object.keys(filters).length > 0) payload.filters = filters;
     const blob = await exportMemoryData(payload);
-    if (!blob) { setMsg("❌ 导出失败"); setExporting(false); return; }
+    if (!blob) { setMsg("导出失败"); setExporting(false); return; }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `${memoryType}_export_${new Date().toISOString().slice(0, 10)}.${format}`;
     a.click();
     URL.revokeObjectURL(url);
-    setMsg("✅ 导出成功");
+    setMsg("导出成功");
     setExporting(false);
   }, [format, timeFrom, timeTo, filterCategory, filterPriority, filterEnterprise, memoryType]);
 
@@ -95,8 +104,11 @@ function ExportDialog({ memoryType, onClose }: { memoryType: string; onClose: ()
   return (
     <div className="scada-card" style={{ marginBottom: 14, border: "1px solid #3b82f6" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <div className="risk-report-title">📤 导出 {typeLabel}</div>
-        <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={onClose}>✕ 关闭</button>
+        <div className="risk-report-title title-with-icon">
+          <IndustrialIcon name="export" />
+          导出 {typeLabel}
+        </div>
+        <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={onClose}> 关闭</button>
       </div>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
         <div>
@@ -144,14 +156,17 @@ function ExportDialog({ memoryType, onClose }: { memoryType: string; onClose: ()
           <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 4 }}>企业ID</div>
           <input className="scada-input" placeholder="输入企业ID..." value={filterEnterprise} onChange={(e) => setFilterEnterprise(e.target.value)} style={{ width: 130 }} />
         </div>
-        <button className="scada-btn" type="button" onClick={handleExport} disabled={exporting}>{exporting ? "导出中..." : "📥 执行导出"}</button>
+        <button className="scada-btn" type="button" onClick={handleExport} disabled={exporting}>
+          <IndustrialIcon name="export" />
+          {exporting ? "导出中..." : "执行导出"}
+        </button>
       </div>
-      {msg && <div className={`alert ${msg.includes("✅") ? "success" : msg.includes("❌") ? "error" : "info"}`} style={{ marginTop: 10 }}>{msg}</div>}
+      {msg && <div className={`alert ${alertTone(msg)}`} style={{ marginTop: 10 }}>{msg}</div>}
     </div>
   );
 }
 
-const KNOWLEDGE_SECTIONS = [
+export const KNOWLEDGE_SECTIONS = [
   { id: "overview", label: "总览仪表盘" },
   { id: "data", label: "数据管理" },
   { id: "risk", label: "风险评估" },
@@ -163,36 +178,71 @@ const KNOWLEDGE_SECTIONS = [
   { id: "audit", label: "审计日志" },
 ] as const;
 
-type KnowledgeSection = (typeof KNOWLEDGE_SECTIONS)[number]["id"];
+export type KnowledgeSection = (typeof KNOWLEDGE_SECTIONS)[number]["id"];
 
-export default function KnowledgeMemoryPage() {
-  const [activeSection, setActiveSection] = useState<KnowledgeSection>("overview");
+interface KnowledgeMemoryPageProps {
+  activeSection: KnowledgeSection;
+  onSectionChange: (section: KnowledgeSection) => void;
+}
+
+export default function KnowledgeMemoryPage({
+  activeSection,
+}: KnowledgeMemoryPageProps) {
+  const [visitedSections, setVisitedSections] = useState<Set<KnowledgeSection>>(
+    () => new Set([activeSection]),
+  );
+
+  useEffect(() => {
+    setVisitedSections((prev) => {
+      if (prev.has(activeSection)) return prev;
+      return new Set([...prev, activeSection]);
+    });
+  }, [activeSection]);
+
+  function renderSection(section: KnowledgeSection) {
+    switch (section) {
+      case "overview":
+        return <OverviewDashboard />;
+      case "data":
+        return <DataManagementSection />;
+      case "risk":
+        return <RiskVisualizationSection />;
+      case "import":
+        return <ExcelImportSection />;
+      case "experience":
+        return <WarningExperienceSection />;
+      case "short":
+        return <ShortTermMemorySection />;
+      case "long":
+        return <LongTermMemorySection />;
+      case "approval":
+        return <ApprovalSection />;
+      case "audit":
+        return <AuditLogSection />;
+      default:
+        return null;
+    }
+  }
 
   return (
     <div>
       <div className="section-title">知识库与预警经验管理</div>
-      <SubTabs
-        tabs={[...KNOWLEDGE_SECTIONS]}
-        active={activeSection}
-        onChange={(id) => setActiveSection(id as KnowledgeSection)}
-        ariaLabel="知识库与记忆子模块"
-      />
-      <div className="divider" />
-      <div
-        role="tabpanel"
-        id={`subtab-panel-${activeSection}`}
-        aria-labelledby={`subtab-${activeSection}`}
-      >
-        {activeSection === "overview" && <OverviewDashboard />}
-        {activeSection === "data" && <DataManagementSection />}
-        {activeSection === "risk" && <RiskVisualizationSection />}
-        {activeSection === "import" && <ExcelImportSection />}
-        {activeSection === "experience" && <WarningExperienceSection />}
-        {activeSection === "short" && <ShortTermMemorySection />}
-        {activeSection === "long" && <LongTermMemorySection />}
-        {activeSection === "approval" && <ApprovalSection />}
-        {activeSection === "audit" && <AuditLogSection />}
-      </div>
+      {KNOWLEDGE_SECTIONS.map((section) => {
+        const active = section.id === activeSection;
+        if (!active && !visitedSections.has(section.id)) return null;
+        return (
+          <div
+            key={section.id}
+            role="tabpanel"
+            id={`subtab-panel-${section.id}`}
+            aria-labelledby={`subtab-${section.id}`}
+            aria-hidden={!active}
+            hidden={!active}
+          >
+            {renderSection(section.id)}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -356,18 +406,18 @@ function OverviewDashboard() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📊 记忆系统总览仪表盘</div>
-          <button className="scada-btn secondary" type="button" onClick={loadStats} disabled={loading}>🔄 刷新</button>
+          <div className="risk-report-title"> 记忆系统总览仪表盘</div>
+          <button className="scada-btn secondary" type="button" onClick={loadStats} disabled={loading}> 刷新</button>
         </div>
       </div>
 
       {memStats && (
         <>
           <div className="row cols-4" style={{ marginBottom: 14 }}>
-            <StatCard value={grandTotal} label="记忆总量" color="#f1f5f9" icon="📚" />
-            <StatCard value={shortTotal} label="短期记忆" color="#3b82f6" icon="🧠" />
-            <StatCard value={longTotal} label="长期记忆" color="#10b981" icon="💾" />
-            <StatCard value={weTotal} label="预警经验" color="#8b5cf6" icon="⚡" />
+            <StatCard value={grandTotal} label="记忆总量" color="#f1f5f9" icon="database" />
+            <StatCard value={shortTotal} label="短期记忆" color="#3b82f6" icon="memory" />
+            <StatCard value={longTotal} label="长期记忆" color="#10b981" icon="database" />
+            <StatCard value={weTotal} label="预警经验" color="#8b5cf6" icon="warning" />
           </div>
 
           <div className="row cols-4" style={{ marginBottom: 14 }}>
@@ -379,48 +429,48 @@ function OverviewDashboard() {
                   : "待审批"
               }
               color="#f59e0b"
-              icon="📋"
+              icon="list"
             />
-            <StatCard value={memStats.iteration_count ?? 0} label="迭代次数" color="#06b6d4" icon="🔄" />
-            <StatCard value={memStats.audit_log_count ?? 0} label="审计日志" color="#64748b" icon="🔍" />
-            <StatCard value={memStats.warning_experiences?.financial_total ?? 0} label="财务影响(万元)" color="#ef4444" icon="💰" />
+            <StatCard value={memStats.iteration_count ?? 0} label="迭代次数" color="#06b6d4" icon="iteration" />
+            <StatCard value={memStats.audit_log_count ?? 0} label="审计日志" color="#64748b" icon="search" />
+            <StatCard value={memStats.warning_experiences?.financial_total ?? 0} label="财务影响(万元)" color="#ef4444" icon="chart" />
           </div>
 
           <div className="scada-card" style={{ marginBottom: 14 }}>
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 三模块时间趋势对比（支持拖拽缩放）</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 三模块时间趋势对比（支持拖拽缩放）</div>
             <ReactECharts option={combinedTimelineOption} style={{ height: 350 }} />
           </div>
 
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 多维度雷达对比</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 多维度雷达对比</div>
               <ReactECharts option={radarOption} style={{ height: 350 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>🌐 记忆结构旭日图</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 记忆结构旭日图</div>
               <ReactECharts option={sunburstOption} style={{ height: 350 }} />
             </div>
           </div>
 
           <div className="scada-card" style={{ marginBottom: 14 }}>
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>⏱️ 系统状态仪表盘</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 系统状态仪表盘</div>
             <ReactECharts option={gaugeOption} style={{ height: 250 }} />
           </div>
 
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📊 三模块分类对比（堆叠柱状图）</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 三模块分类对比（堆叠柱状图）</div>
               <ReactECharts option={stackedBarOption} style={{ height: 300 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 优先级分布对比</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 优先级分布对比</div>
               <ReactECharts option={priorityCompareOption} style={{ height: 300 }} />
             </div>
           </div>
 
           <div className="row cols-3" style={{ marginBottom: 14 }}>
             <div className="scada-card" style={{ padding: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#3b82f6", marginBottom: 10 }}>🧠 短期记忆分类</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#3b82f6", marginBottom: 10 }}> 短期记忆分类</div>
               {Object.entries(memStats.short_term?.by_category || {}).sort(([, a], [, b]) => (b as number) - (a as number)).map(([k, v]) => (
                 <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                   <span style={{ fontSize: 12, color: "#cbd5e1" }}>{CAT_LABELS[k] || k}</span>
@@ -429,7 +479,7 @@ function OverviewDashboard() {
               ))}
             </div>
             <div className="scada-card" style={{ padding: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#10b981", marginBottom: 10 }}>💾 长期记忆分类</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#10b981", marginBottom: 10 }}> 长期记忆分类</div>
               {Object.entries(memStats.long_term?.by_category || {}).sort(([, a], [, b]) => (b as number) - (a as number)).map(([k, v]) => (
                 <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                   <span style={{ fontSize: 12, color: "#cbd5e1" }}>{CAT_LABELS[k] || k}</span>
@@ -438,7 +488,7 @@ function OverviewDashboard() {
               ))}
             </div>
             <div className="scada-card" style={{ padding: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#8b5cf6", marginBottom: 10 }}>⚡ 预警等级分布</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#8b5cf6", marginBottom: 10 }}> 预警等级分布</div>
               {Object.entries(memStats.warning_experiences?.by_level || {}).sort(([, a], [, b]) => (b as number) - (a as number)).map(([k, v]) => (
                 <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                   <span style={{ fontSize: 12, color: "#cbd5e1" }}>{k}级预警</span>
@@ -451,7 +501,7 @@ function OverviewDashboard() {
       )}
 
       {!memStats && !loading && (
-        <div className="scada-card"><div className="empty-state"><div className="empty-state-icon">📊</div><div>点击刷新加载统计数据</div></div></div>
+        <div className="scada-card"><div className="empty-state"><div className="empty-state-icon"></div><div>点击刷新加载统计数据</div></div></div>
       )}
     </div>
   );
@@ -469,13 +519,13 @@ function DataManagementSection() {
     try {
       const result = await importEnterpriseData("folder");
       if (result?.success) {
-        setStatus(`✅ 导入完成：${result.rows} 行数据`);
+        setStatus(`导入完成：${result.rows} 行数据`);
         refreshStats();
       } else {
-        setStatus(`❌ 导入失败: ${result?.message || "未知错误"}`);
+        setStatus(`导入失败: ${result?.message || "未知错误"}`);
       }
     } catch (e) {
-      setStatus(`❌ 导入失败: ${(e as Error).message}`);
+      setStatus(`导入失败: ${(e as Error).message}`);
     }
     setLoading(false);
   }, []);
@@ -492,10 +542,10 @@ function DataManagementSection() {
     if (!window.confirm(`确定要删除数据源「${src}」及其全部企业数据记忆吗？此操作不可恢复。`)) return;
     const result = await deleteEnterpriseDataBySource(src);
     if (!result?.success) {
-      setStatus(`❌ 删除失败: ${src}`);
+      setStatus(`删除失败: ${src}`);
       return;
     }
-    setStatus(`✅ 已删除 ${result.deleted_count ?? 0} 条记忆条目（数据源: ${src}）`);
+    setStatus(`已删除 ${result.deleted_count ?? 0} 条记忆条目（数据源: ${src}）`);
     refreshStats();
   }, [refreshStats]);
 
@@ -503,7 +553,7 @@ function DataManagementSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📊 数据实时更新流式清洗 Pipeline</div>
+          <div className="risk-report-title"> 数据实时更新流式清洗 Pipeline</div>
           <div style={{ display: "flex", gap: 8 }}>
             <span className="tag tag-emerald">数据表: {stats?.table_count ?? 0}</span>
             <span className="tag tag-blue">企业数: {stats?.enterprise_count ?? 0}</span>
@@ -514,11 +564,11 @@ function DataManagementSection() {
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
           <button className="scada-btn" type="button" onClick={importFromNewData} disabled={loading}>
-            {loading ? "导入中..." : "📁 从 datasets/raw/public 导入Excel数据"}
+            {loading ? "导入中..." : "从 datasets/raw/public 导入Excel数据"}
           </button>
-          <button className="scada-btn secondary" type="button" onClick={refreshStats}>🔄 刷新统计</button>
+          <button className="scada-btn secondary" type="button" onClick={refreshStats}> 刷新统计</button>
         </div>
-        {status && <div className={`alert ${status.includes("✅") ? "success" : status.includes("❌") ? "error" : "info"}`} style={{ marginTop: 10 }}>{status}</div>}
+        {status && <div className={`alert ${alertTone(status)}`} style={{ marginTop: 10 }}>{status}</div>}
       </div>
 
       {stats && (
@@ -539,7 +589,7 @@ function DataManagementSection() {
 
       {stats?.sources?.length > 0 && (
         <div className="scada-card">
-          <div className="risk-report-title" style={{ marginBottom: 10 }}>📁 已导入数据源</div>
+          <div className="risk-report-title" style={{ marginBottom: 10 }}> 已导入数据源</div>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {stats.sources.map((src: string, i: number) => (
               <span key={i} className="tag tag-cyan" style={{ fontSize: 11, display: "inline-flex", alignItems: "center", gap: 6 }}>
@@ -551,7 +601,6 @@ function DataManagementSection() {
                   title={`删除数据源 ${src}`}
                   onClick={() => handleDeleteSource(src)}
                 >
-                  🗑️
                 </button>
               </span>
             ))}
@@ -576,12 +625,12 @@ function RiskVisualizationSection() {
       const resp = await batchRiskAssessment();
       if (resp?.success && resp.results) {
         setResults(resp.results);
-        setMessage(`✅ 完成 ${resp.results.length} 家企业风险评估，预警经验已自动生成`);
+        setMessage(`完成 ${resp.results.length} 家企业风险评估，预警经验已自动生成`);
       } else {
-        setMessage(`❌ 评估失败: ${resp?.message || "未知错误"}`);
+        setMessage(`评估失败: ${resp?.message || "未知错误"}`);
       }
     } catch (e) {
-      setMessage(`❌ 评估失败: ${(e as Error).message}`);
+      setMessage(`评估失败: ${(e as Error).message}`);
     }
     setLoading(false);
   }, []);
@@ -667,46 +716,46 @@ function RiskVisualizationSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">🎯 批量风险评估与预警经验生成</div>
+          <div className="risk-report-title"> 批量风险评估与预警经验生成</div>
           <button className="scada-btn" type="button" onClick={runBatchAssessment} disabled={loading}>
-            {loading ? "评估中..." : "🚀 执行批量风险评估"}
+            {loading ? "评估中..." : " 执行批量风险评估"}
           </button>
         </div>
         <div style={{ marginTop: 8, fontSize: 12, color: "#94a3b8" }}>
           这里用于记忆库演示级批量评分；需要逐家运行完整 Agent 决策并输出 JSON 时，请使用「企业风险预测」页的批量完整决策。
         </div>
-        {message && <div className={`alert ${message.includes("✅") ? "success" : message.includes("❌") ? "error" : "info"}`} style={{ marginTop: 10 }}>{message}</div>}
+        {message && <div className={`alert ${alertTone(message)}`} style={{ marginTop: 10 }}>{message}</div>}
       </div>
 
       {results.length === 0 ? (
-        <div className="scada-card"><div className="empty-state"><div className="empty-state-icon">🎯</div><div>点击"执行批量风险评估"开始风险分析</div></div></div>
+        <div className="scada-card"><div className="empty-state"><div className="empty-state-icon"></div><div>点击"执行批量风险评估"开始风险分析</div></div></div>
       ) : (
         <>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📊 风险等级分布</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 风险等级分布</div>
               <ReactECharts option={pieOption} style={{ height: 280 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 风险评分趋势</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 风险评分趋势</div>
               <ReactECharts option={trendOption} style={{ height: 280 }} />
             </div>
           </div>
 
           <div className="scada-card" style={{ marginBottom: 14 }}>
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>🔥 企业风险热力图</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 企业风险热力图</div>
             <ReactECharts option={heatmapOption} style={{ height: 400 }} />
           </div>
 
           {selectedEnterprise && historyChartOption && (
             <div className="scada-card" style={{ marginBottom: 14 }}>
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 企业风险历史 - {selectedEnterprise}</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 企业风险历史 - {selectedEnterprise}</div>
               <ReactECharts option={historyChartOption} style={{ height: 250 }} />
             </div>
           )}
 
           <div className="scada-card">
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 详细评估结果</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 详细评估结果</div>
             <table className="scada-table">
               <thead>
                 <tr><th>企业ID</th><th>企业名称</th><th>场景</th><th>风险评分</th><th>风险等级</th><th>评估时间</th><th>预警经验</th><th>历史</th></tr>
@@ -720,8 +769,8 @@ function RiskVisualizationSection() {
                     <td className="font-mono" style={{ fontWeight: 700, color: LEVEL_COLORS[r.risk_level] }}>{r.risk_score.toFixed(4)}</td>
                     <td><span className="tag" style={{ background: LEVEL_BG[r.risk_level], color: LEVEL_COLORS[r.risk_level], fontWeight: 700 }}>{r.risk_level}级</span></td>
                     <td style={{ fontSize: 11, color: "#94a3b8" }}>{r.assessment_time}</td>
-                    <td>{r.inference_stored ? <span style={{ color: "#10b981" }}>✅ 已生成</span> : <span style={{ color: "#64748b" }}>—</span>}</td>
-                    <td><button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 8px" }} type="button" onClick={() => viewEnterpriseHistory(r.enterprise_id)}>📈</button></td>
+                    <td>{r.inference_stored ? <span style={{ color: "#10b981" }}>已生成</span> : <span style={{ color: "#64748b" }}>—</span>}</td>
+                    <td><button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 8px" }} type="button" onClick={() => viewEnterpriseHistory(r.enterprise_id)}></button></td>
                   </tr>
                 ))}
               </tbody>
@@ -749,12 +798,12 @@ function ExcelImportSection() {
       const result = await assessEnterpriseFile(file);
       if (result?.success && result.results) {
         setResults(result.results);
-        setStatus(`✅ 完成 ${result.total_rows} 条数据预测分析，预警经验已自动生成`);
+        setStatus(`完成 ${result.total_rows} 条数据预测分析，预警经验已自动生成`);
       } else {
-        setStatus(`❌ 预测分析失败: ${result?.message || "未知错误"}`);
+        setStatus(`预测分析失败: ${result?.message || "未知错误"}`);
       }
     } catch (err) {
-      setStatus(`❌ 预测分析失败: ${(err as Error).message}`);
+      setStatus(`预测分析失败: ${(err as Error).message}`);
     }
     setLoading(false);
     if (predictFileRef.current) predictFileRef.current.value = "";
@@ -768,12 +817,12 @@ function ExcelImportSection() {
     try {
       const result = await importExcelFile(file);
       if (result?.success) {
-        setStatus(`✅ ${file.name} 导入成功：${result.rows}行 × ${result.columns}列`);
+        setStatus(`${file.name} 导入成功：${result.rows}行 × ${result.columns}列`);
       } else {
-        setStatus(`❌ 导入失败: ${result?.message || "未知错误"}`);
+        setStatus(`导入失败: ${result?.message || "未知错误"}`);
       }
     } catch (err) {
-      setStatus(`❌ 导入失败: ${(err as Error).message}`);
+      setStatus(`导入失败: ${(err as Error).message}`);
     }
     setLoading(false);
     if (memoryFileRef.current) memoryFileRef.current.value = "";
@@ -781,14 +830,14 @@ function ExcelImportSection() {
 
   const handleExport = useCallback(async (memoryType: string, format: string) => {
     const blob = await exportMemoryData({ memory_type: memoryType, format });
-    if (!blob) { setStatus("❌ 导出失败"); return; }
+    if (!blob) { setStatus("导出失败"); return; }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `${memoryType}_export.${format}`;
     a.click();
     URL.revokeObjectURL(url);
-    setStatus(`✅ 导出成功`);
+    setStatus(`导出成功`);
   }, []);
 
   const levelDistribution = useMemo(() => {
@@ -810,32 +859,32 @@ function ExcelImportSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📥 Excel/CSV 文件导入与预测分析</div>
+          <div className="risk-report-title"> Excel/CSV 文件导入与预测分析</div>
         </div>
         <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
           <label className="scada-btn" style={{ cursor: "pointer" }}>
-            🔍 选择文件进行预测分析
+             选择文件进行预测分析
             <input ref={predictFileRef} type="file" accept=".xlsx,.xls,.csv" style={{ display: "none" }} onChange={handleFileUpload} disabled={loading} />
           </label>
           <label className="scada-btn secondary" style={{ cursor: "pointer" }}>
-            💾 导入到长期记忆库
+            导入到长期记忆库
             <input ref={memoryFileRef} type="file" accept=".xlsx,.xls,.csv" style={{ display: "none" }} onChange={handleImportToMemory} disabled={loading} />
           </label>
-          <button className="scada-btn secondary" type="button" onClick={() => handleExport("long", "xlsx")}>📤 导出长期记忆（XLSX）</button>
-          <button className="scada-btn secondary" type="button" onClick={() => handleExport("short", "csv")}>📤 导出短期记忆（CSV）</button>
+          <button className="scada-btn secondary" type="button" onClick={() => handleExport("long", "xlsx")}>导出长期记忆（XLSX）</button>
+          <button className="scada-btn secondary" type="button" onClick={() => handleExport("short", "csv")}>导出短期记忆（CSV）</button>
         </div>
-        {status && <div className={`alert ${status.includes("✅") ? "success" : status.includes("❌") ? "error" : "info"}`} style={{ marginTop: 10 }}>{status}</div>}
+        {status && <div className={`alert ${alertTone(status)}`} style={{ marginTop: 10 }}>{status}</div>}
       </div>
 
       {results.length > 0 && (
         <>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📊 风险等级分布</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 风险等级分布</div>
               <ReactECharts option={pieOption} style={{ height: 250 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 预测结果摘要</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 预测结果摘要</div>
               <div style={{ fontSize: 13, lineHeight: 2 }}>
                 <div>总企业数: <b style={{ color: "#f1f5f9" }}>{results.length}</b></div>
                 <div style={{ color: "#ef4444" }}>红色预警: <b>{levelDistribution["红"]}</b> 家</div>
@@ -846,7 +895,7 @@ function ExcelImportSection() {
             </div>
           </div>
           <div className="scada-card">
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>📋 详细预测结果</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 详细预测结果</div>
             <table className="scada-table">
               <thead><tr><th>企业名称</th><th>风险评分</th><th>风险等级</th><th>场景</th><th>关键指标</th></tr></thead>
               <tbody>
@@ -974,10 +1023,10 @@ function WarningExperienceSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">⚡ 预警经验库</div>
+          <div className="risk-report-title"> 预警经验库</div>
           <div style={{ display: "flex", gap: 8 }}>
             <span className="tag tag-violet">总计: {total} 条</span>
-            <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={() => setShowExport(!showExport)}>📤 导出</button>
+            <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={() => setShowExport(!showExport)}>导出</button>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap", alignItems: "center" }}>
@@ -985,7 +1034,7 @@ function WarningExperienceSection() {
           <select className="scada-input" value={filterLevel} onChange={(e) => { setFilterLevel(e.target.value); setPage(0); }} style={{ width: 120 }}>
             <option value="">全部等级</option><option value="红">红色</option><option value="橙">橙色</option><option value="黄">黄色</option><option value="蓝">蓝色</option>
           </select>
-          <button className="scada-btn secondary" type="button" onClick={loadExperiences}>🔍 搜索</button>
+          <button className="scada-btn secondary" type="button" onClick={loadExperiences}> 搜索</button>
         </div>
       </div>
 
@@ -994,21 +1043,21 @@ function WarningExperienceSection() {
       {memStats && (
         <>
           <div className="row cols-4" style={{ marginBottom: 14 }}>
-            <StatCard value={memStats.warning_experiences?.total ?? 0} label="预警经验总数" color="#8b5cf6" icon="⚡" />
-            <StatCard value={memStats.warning_experiences?.by_level?.["红"] ?? 0} label="红色预警" color="#ef4444" icon="🔴" />
-            <StatCard value={Object.keys(memStats.warning_experiences?.by_scenario || {}).length} label="场景类型" color="#f59e0b" icon="🎯" />
-            <StatCard value={financialTotal} label="财务影响(万元)" color="#10b981" icon="💰" />
+            <StatCard value={memStats.warning_experiences?.total ?? 0} label="预警经验总数" color="#8b5cf6" icon="warning" />
+            <StatCard value={memStats.warning_experiences?.by_level?.["红"] ?? 0} label="红色预警" color="#ef4444" icon="risk" />
+            <StatCard value={Object.keys(memStats.warning_experiences?.by_scenario || {}).length} label="场景类型" color="#f59e0b" icon="radar" />
+            <StatCard value={financialTotal} label="财务影响(万元)" color="#10b981" icon="chart" />
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📊 风险等级分布</div><ReactECharts option={pieOption} style={{ height: 280 }} /></div>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📈 预警生成趋势</div><ReactECharts option={weStatsTimelineOption} style={{ height: 280 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 风险等级分布</div><ReactECharts option={pieOption} style={{ height: 280 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 预警生成趋势</div><ReactECharts option={weStatsTimelineOption} style={{ height: 280 }} /></div>
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>💰 财务影响仪表盘</div><ReactECharts option={financialGaugeOption} style={{ height: 220 }} /></div>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 场景分布</div><ReactECharts option={scenarioBarOption} style={{ height: 220 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 财务影响仪表盘</div><ReactECharts option={financialGaugeOption} style={{ height: 220 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 场景分布</div><ReactECharts option={scenarioBarOption} style={{ height: 220 }} /></div>
           </div>
           <div className="scada-card" style={{ marginBottom: 14 }}>
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>🔥 等级×场景关联热力图</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 等级×场景关联热力图</div>
             <ReactECharts option={weLevelScenarioHeatmapOption} style={{ height: 250 }} />
           </div>
         </>
@@ -1016,7 +1065,7 @@ function WarningExperienceSection() {
 
       <div className="scada-card">
         {experiences.length === 0 ? (
-          <div className="empty-state"><div className="empty-state-icon">⚡</div><div>暂无预警经验，执行风险评估后自动生成</div></div>
+          <div className="empty-state"><div className="empty-state-icon"></div><div>暂无预警经验，执行风险评估后自动生成</div></div>
         ) : (
           experiences.map((exp) => (
             <div key={exp.id} style={{ border: "1px solid #1e293b", borderRadius: 8, marginBottom: 8, overflow: "hidden" }}>
@@ -1030,7 +1079,7 @@ function WarningExperienceSection() {
                   <span style={{ fontSize: 11, color: "#94a3b8" }}>评分: {exp.risk_score?.toFixed(4)}</span>
                   <span style={{ fontSize: 11, color: "#94a3b8" }}>{exp.generated_at}</span>
                 </div>
-                <span style={{ color: "#64748b", fontSize: 12 }}>{expandedId === exp.id ? "▼" : "▶"}</span>
+                <span style={{ color: "#64748b", fontSize: 12 }}>{expandedId === exp.id ? "▼" : ""}</span>
               </div>
               {expandedId === exp.id && (
                 <div style={{ padding: 14, background: "rgba(15,23,42,0.5)" }}>
@@ -1080,8 +1129,8 @@ function MemoryDetailModal({ item, onClose }: { item: any; onClose: () => void }
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
       <div style={{ background: "#0f172a", border: "1px solid #334155", borderRadius: 12, padding: 24, maxWidth: 700, width: "90%", maxHeight: "80vh", overflow: "auto" }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9" }}>📋 记忆详情</div>
-          <button className="scada-btn secondary" style={{ fontSize: 11, padding: "4px 10px" }} type="button" onClick={onClose}>✕ 关闭</button>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9" }}> 记忆详情</div>
+          <button className="scada-btn secondary" style={{ fontSize: 11, padding: "4px 10px" }} type="button" onClick={onClose}> 关闭</button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
           <div><span style={{ color: "#64748b", fontSize: 11 }}>ID: </span><span className="font-mono" style={{ color: "#94a3b8", fontSize: 11 }}>{item.id}</span></div>
@@ -1091,7 +1140,7 @@ function MemoryDetailModal({ item, onClose }: { item: any; onClose: () => void }
           <div><span style={{ color: "#64748b", fontSize: 11 }}>企业ID: </span><span className="font-mono" style={{ color: "#94a3b8", fontSize: 11 }}>{item.enterprise_id || "—"}</span></div>
           <div><span style={{ color: "#64748b", fontSize: 11 }}>时间: </span><span style={{ color: "#94a3b8", fontSize: 11 }}>{item.time}</span></div>
           {item.data_source && <div><span style={{ color: "#64748b", fontSize: 11 }}>数据源: </span><span style={{ color: "#94a3b8", fontSize: 11 }}>{item.data_source}</span></div>}
-          {item.verified !== undefined && <div><span style={{ color: "#64748b", fontSize: 11 }}>已验证: </span><span style={{ color: item.verified ? "#10b981" : "#ef4444", fontSize: 11 }}>{item.verified ? "✅ 是" : "❌ 否"}</span></div>}
+          {item.verified !== undefined && <div><span style={{ color: "#64748b", fontSize: 11 }}>已验证: </span><span style={{ color: item.verified ? "#10b981" : "#ef4444", fontSize: 11 }}>{item.verified ? "是" : "否"}</span></div>}
         </div>
         <div style={{ marginBottom: 12 }}>
           <div style={{ color: "#64748b", fontSize: 11, marginBottom: 6 }}>完整内容:</div>
@@ -1249,11 +1298,11 @@ function ShortTermMemorySection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">🧠 短期记忆库</div>
+          <div className="risk-report-title"> 短期记忆库</div>
           <div style={{ display: "flex", gap: 8 }}>
             <span className="tag tag-blue">总计: {total} 条</span>
-            <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={() => handleMigrate(items.map((i) => i.id))}>⬆️ 全部迁移</button>
-            <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={() => setShowExport(!showExport)}>📤 导出</button>
+            <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={() => handleMigrate(items.map((i) => i.id))}>⬆ 全部迁移</button>
+            <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={() => setShowExport(!showExport)}>导出</button>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
@@ -1262,7 +1311,7 @@ function ShortTermMemorySection() {
             <option value="">全部分类</option>
             <option value="inference">推理过程</option><option value="warning">预警记录</option><option value="experience">预警经验</option><option value="context">上下文</option>
           </select>
-          <button className="scada-btn secondary" type="button" onClick={loadData}>🔄 刷新</button>
+          <button className="scada-btn secondary" type="button" onClick={loadData}> 刷新</button>
         </div>
       </div>
 
@@ -1271,25 +1320,25 @@ function ShortTermMemorySection() {
       {memStats && (
         <>
           <div className="row cols-4" style={{ marginBottom: 14 }}>
-            <StatCard value={memStats.short_term?.total ?? 0} label="短期记忆总数" color="#3b82f6" icon="🧠" />
-            <StatCard value={memStats.short_term?.by_priority?.P0 ?? 0} label="P0 紧急" color="#ef4444" icon="🔴" />
-            <StatCard value={Object.keys(memStats.short_term?.by_category || {}).length} label="分类数量" color="#10b981" icon="📂" />
-            <StatCard value={Object.keys(memStats.short_term?.by_enterprise || {}).length} label="关联企业" color="#f59e0b" icon="🏢" />
+            <StatCard value={memStats.short_term?.total ?? 0} label="短期记忆总数" color="#3b82f6" icon="memory" />
+            <StatCard value={memStats.short_term?.by_priority?.P0 ?? 0} label="P0 紧急" color="#ef4444" icon="warning" />
+            <StatCard value={Object.keys(memStats.short_term?.by_category || {}).length} label="分类数量" color="#10b981" icon="file" />
+            <StatCard value={Object.keys(memStats.short_term?.by_enterprise || {}).length} label="关联企业" color="#f59e0b" icon="enterprise" />
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📊 分类分布</div><ReactECharts option={catPieOption} style={{ height: 280 }} /></div>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📈 优先级分布</div><ReactECharts option={prioBarOption} style={{ height: 280 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 分类分布</div><ReactECharts option={catPieOption} style={{ height: 280 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 优先级分布</div><ReactECharts option={prioBarOption} style={{ height: 280 }} /></div>
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>📈 入库时间趋势</div><ReactECharts option={timelineOption} style={{ height: 280 }} /></div>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🏢 企业关联TOP8</div><ReactECharts option={enterpriseBarOption} style={{ height: 280 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 入库时间趋势</div><ReactECharts option={timelineOption} style={{ height: 280 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 企业关联TOP8</div><ReactECharts option={enterpriseBarOption} style={{ height: 280 }} /></div>
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>⏱️ 记忆重要度评分</div><ReactECharts option={importanceGaugeOption} style={{ height: 220 }} /></div>
-            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}>🎯 分类关联强度散点图</div><ReactECharts option={associationScatterOption} style={{ height: 220 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 记忆重要度评分</div><ReactECharts option={importanceGaugeOption} style={{ height: 220 }} /></div>
+            <div className="scada-card"><div className="risk-report-title" style={{ marginBottom: 10 }}> 分类关联强度散点图</div><ReactECharts option={associationScatterOption} style={{ height: 220 }} /></div>
           </div>
           <div className="scada-card" style={{ marginBottom: 14 }}>
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>🔥 分类×优先级关联热力图</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 分类×优先级关联热力图</div>
             <ReactECharts option={heatmapOption} style={{ height: Math.max(200, Object.keys(memStats.short_term?.by_category || {}).length * 40 + 80) }} />
           </div>
         </>
@@ -1297,7 +1346,7 @@ function ShortTermMemorySection() {
 
       <div className="scada-card">
         {items.length === 0 ? (
-          <div className="empty-state"><div className="empty-state-icon">🧠</div><div>短期记忆库为空</div></div>
+          <div className="empty-state"><div className="empty-state-icon"></div><div>短期记忆库为空</div></div>
         ) : (
           <table className="scada-table">
             <thead><tr><th>优先级</th><th>分类</th><th>内容</th><th>企业ID</th><th>时间</th><th>标签</th><th>操作</th></tr></thead>
@@ -1312,9 +1361,9 @@ function ShortTermMemorySection() {
                   <td>{(item.tags || []).slice(0, 2).map((t: string) => <span key={t} className="tag" style={{ fontSize: 9, background: "rgba(100,116,139,0.15)", color: "#94a3b8", margin: 1 }}>{t}</span>)}</td>
                   <td>
                     <div style={{ display: "flex", gap: 4 }}>
-                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px" }} type="button" onClick={() => setDetailItem(item)}>📋 详情</button>
-                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px" }} type="button" onClick={() => handleMigrate([item.id])}>⬆️ 迁移</button>
-                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px", color: "#ef4444" }} type="button" onClick={() => handleDelete(item.id)}>🗑️</button>
+                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px" }} type="button" onClick={() => setDetailItem(item)}> 详情</button>
+                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px" }} type="button" onClick={() => handleMigrate([item.id])}>⬆ 迁移</button>
+                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px", color: "#ef4444" }} type="button" onClick={() => handleDelete(item.id)}></button>
                     </div>
                   </td>
                 </tr>
@@ -1571,10 +1620,10 @@ function LongTermMemorySection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">💾 长期记忆库</div>
+          <div className="risk-report-title"> 长期记忆库</div>
           <div style={{ display: "flex", gap: 8 }}>
             <span className="tag tag-emerald">总计: {total} 条</span>
-            <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={() => setShowExport(!showExport)}>📤 导出</button>
+            <button className="scada-btn secondary" style={{ fontSize: 11, padding: "2px 8px" }} type="button" onClick={() => setShowExport(!showExport)}>导出</button>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
@@ -1587,7 +1636,7 @@ function LongTermMemorySection() {
             <option value="regulation">法规标准</option>
             <option value="accident_case">事故案例</option>
           </select>
-          <button className="scada-btn secondary" type="button" onClick={loadData}>🔄 刷新</button>
+          <button className="scada-btn secondary" type="button" onClick={loadData}> 刷新</button>
         </div>
       </div>
 
@@ -1596,53 +1645,53 @@ function LongTermMemorySection() {
       {memStats && (
         <>
           <div className="row cols-4" style={{ marginBottom: 14 }}>
-            <StatCard value={memStats.long_term?.total ?? 0} label="长期记忆总数" color="#10b981" icon="💾" />
-            <StatCard value={memStats.long_term?.by_priority?.P0 ?? 0} label="P0 紧急" color="#ef4444" icon="🔴" />
-            <StatCard value={Object.keys(memStats.long_term?.by_category || {}).length} label="分类数量" color="#3b82f6" icon="📂" />
-            <StatCard value={Object.keys(memStats.long_term?.by_enterprise || {}).length} label="关联企业" color="#f59e0b" icon="🏢" />
+            <StatCard value={memStats.long_term?.total ?? 0} label="长期记忆总数" color="#10b981" icon="database" />
+            <StatCard value={memStats.long_term?.by_priority?.P0 ?? 0} label="P0 紧急" color="#ef4444" icon="warning" />
+            <StatCard value={Object.keys(memStats.long_term?.by_category || {}).length} label="分类数量" color="#3b82f6" icon="file" />
+            <StatCard value={Object.keys(memStats.long_term?.by_enterprise || {}).length} label="关联企业" color="#f59e0b" icon="enterprise" />
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📊 分类分布</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 分类分布</div>
               <ReactECharts option={catPieOption} style={{ height: 280 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 优先级分布</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 优先级分布</div>
               <ReactECharts option={prioBarOption} style={{ height: 280 }} />
             </div>
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📈 入库时间趋势</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 入库时间趋势</div>
               <ReactECharts option={timelineOption} style={{ height: 280 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📁 数据来源TOP10</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 数据来源TOP10</div>
               <ReactECharts option={sourceBarOption} style={{ height: 280 }} />
             </div>
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>🏢 企业关联TOP8</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 企业关联TOP8</div>
               <ReactECharts option={enterpriseBarOption} style={{ height: 280 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>⏱️ 验证覆盖率</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 验证覆盖率</div>
               <ReactECharts option={ltImportanceGaugeOption} style={{ height: 220 }} />
             </div>
           </div>
           <div className="row cols-2" style={{ marginBottom: 14 }}>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>📦 数据源分布</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 数据源分布</div>
               <ReactECharts option={ltSourcePieOption} style={{ height: 280 }} />
             </div>
             <div className="scada-card">
-              <div className="risk-report-title" style={{ marginBottom: 10 }}>🔥 企业×分类关联热力图</div>
+              <div className="risk-report-title" style={{ marginBottom: 10 }}> 企业×分类关联热力图</div>
               <ReactECharts option={ltEnterpriseHeatmapOption} style={{ height: 280 }} />
             </div>
           </div>
           <div className="scada-card" style={{ marginBottom: 14 }}>
-            <div className="risk-report-title" style={{ marginBottom: 10 }}>🔥 分类×优先级关联热力图</div>
+            <div className="risk-report-title" style={{ marginBottom: 10 }}> 分类×优先级关联热力图</div>
             <ReactECharts option={heatmapOption} style={{ height: Math.max(200, Object.keys(memStats.long_term?.by_category || {}).length * 40 + 80) }} />
           </div>
         </>
@@ -1650,7 +1699,7 @@ function LongTermMemorySection() {
 
       <div className="scada-card">
         {items.length === 0 ? (
-          <div className="empty-state"><div className="empty-state-icon">💾</div><div>长期记忆库为空</div></div>
+          <div className="empty-state"><div className="empty-state-icon"></div><div>长期记忆库为空</div></div>
         ) : (
           <table className="scada-table">
             <thead><tr><th>优先级</th><th>分类</th><th>内容</th><th>数据源</th><th>企业ID</th><th>时间</th><th>已验证</th><th>操作</th></tr></thead>
@@ -1663,11 +1712,11 @@ function LongTermMemorySection() {
                   <td style={{ fontSize: 11, color: "#94a3b8" }}>{item.data_source || "—"}</td>
                   <td className="font-mono" style={{ fontSize: 11 }}>{item.enterprise_id || "—"}</td>
                   <td style={{ fontSize: 11, color: "#94a3b8" }}>{item.time}</td>
-                  <td>{item.verified ? <span style={{ color: "#10b981" }}>✅</span> : <span style={{ color: "#64748b" }}>—</span>}</td>
+                  <td>{item.verified ? <span style={{ color: "#10b981" }}></span> : <span style={{ color: "#64748b" }}>—</span>}</td>
                   <td>
                     <div style={{ display: "flex", gap: 4 }}>
-                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px" }} type="button" onClick={() => setDetailItem(item)}>📋 详情</button>
-                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px", color: "#ef4444" }} type="button" onClick={() => handleDelete(item.id)}>🗑️</button>
+                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px" }} type="button" onClick={() => setDetailItem(item)}> 详情</button>
+                      <button className="scada-btn secondary" style={{ fontSize: 10, padding: "2px 6px", color: "#ef4444" }} type="button" onClick={() => handleDelete(item.id)}></button>
                     </div>
                   </td>
                 </tr>
@@ -1724,7 +1773,7 @@ function AuditLogSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">🔍 审计日志</div>
+          <div className="risk-report-title"> 审计日志</div>
           <span className="tag tag-blue">总计: {total} 条</span>
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
@@ -1738,13 +1787,13 @@ function AuditLogSection() {
             <option value="create_approval">创建审批</option>
             <option value="decide_approval">审批决策</option>
           </select>
-          <button className="scada-btn secondary" type="button" onClick={loadData}>🔍 搜索</button>
+          <button className="scada-btn secondary" type="button" onClick={loadData}> 搜索</button>
         </div>
       </div>
 
       <div className="scada-card">
         {logs.length === 0 ? (
-          <div className="empty-state"><div className="empty-state-icon">🔍</div><div>暂无审计日志</div></div>
+          <div className="empty-state"><div className="empty-state-icon"></div><div>暂无审计日志</div></div>
         ) : (
           <table className="scada-table">
             <thead><tr><th>时间</th><th>操作</th><th>操作人</th><th>目标</th><th>详情</th></tr></thead>
