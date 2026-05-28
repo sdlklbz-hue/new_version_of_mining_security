@@ -6,6 +6,7 @@ import {
 } from "../api/client";
 import { formatFinalStatus } from "../utils/decisionStatus";
 import DecisionDetailModal from "./DecisionDetailModal";
+import IndustrialIcon from "./IndustrialIcon";
 
 export default function DecisionApprovalSection() {
   const [approvals, setApprovals] = useState<any[]>([]);
@@ -82,7 +83,10 @@ export default function DecisionApprovalSection() {
     <div>
       <div className="scada-card" style={{ marginBottom: 14 }}>
         <div className="risk-report-header">
-          <div className="risk-report-title">📋 管理员审批工作流</div>
+          <div className="risk-report-title title-with-icon">
+            <IndustrialIcon name="list" />
+            管理员审批工作流
+          </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <span className="tag tag-orange">
               待审批: {approvals.filter((a) => a.status === "pending").length}
@@ -105,7 +109,8 @@ export default function DecisionApprovalSection() {
             <option value="rejected">已驳回</option>
           </select>
           <button className="scada-btn secondary" type="button" onClick={loadData} disabled={loading}>
-            🔄 刷新
+            <IndustrialIcon name="refresh" />
+            刷新
           </button>
           <button className="scada-btn" type="button" onClick={handleSyncFromDisk} disabled={syncing}>
             {syncing ? "同步中..." : "同步并清理无效审批"}
@@ -117,7 +122,7 @@ export default function DecisionApprovalSection() {
       <div className="scada-card">
         {sortedApprovals.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">📋</div>
+            <div className="empty-state-icon"></div>
             <div>暂无审批记录</div>
             <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 8 }}>
               若已有 HUMAN_REVIEW 历史 JSON，可点击「同步并清理无效审批」补录；删除本地决策 JSON 后刷新或同步即可清除无效待审批。
@@ -221,7 +226,8 @@ export default function DecisionApprovalSection() {
                               type="button"
                               onClick={() => handleDecide(a.id, "approved")}
                             >
-                              ✅ 批准
+                              <IndustrialIcon name="approve" />
+                              批准
                             </button>
                             <button
                               className="scada-btn"
@@ -229,7 +235,8 @@ export default function DecisionApprovalSection() {
                               type="button"
                               onClick={() => handleDecide(a.id, "rejected")}
                             >
-                              ❌ 驳回
+                              <IndustrialIcon name="reject" />
+                              驳回
                             </button>
                           </>
                         )}

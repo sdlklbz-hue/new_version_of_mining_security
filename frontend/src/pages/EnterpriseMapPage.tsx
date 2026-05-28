@@ -24,10 +24,11 @@ import "../styles/enterprise-map.css";
 
 interface Props {
   scenario: ScenarioId;
+  active?: boolean;
 }
 
 const SUZHOU_CENTER: [number, number] = [31.298886, 120.585316];
-const REFRESH_MS = 30_000;
+const BATCH_MARKER_REFRESH_MS = 10_000;
 
 function markerTag(level?: string | null): string {
   if (level === "红") return "tag-red";
@@ -148,7 +149,7 @@ function MapBoundsReporter({ onBoundsChange }: { onBoundsChange: (bounds: RiskFi
   return null;
 }
 
-export default function EnterpriseMapPage({ scenario }: Props) {
+export default function EnterpriseMapPage({ scenario, active = true }: Props) {
   const storedSettings = useMemo(() => loadEnterpriseMapSettings(), []);
   const [markers, setMarkers] = useState<EnterpriseMapMarker[]>([]);
   const [meta, setMeta] = useState<EnterpriseMapMeta | null>(null);
@@ -228,6 +229,14 @@ export default function EnterpriseMapPage({ scenario }: Props) {
   }, [mapEngine]);
 
   useEffect(() => {
+    if (!active) return;
+    const timer = window.setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [active, mapEngine]);
+
+  useEffect(() => {
     saveEnterpriseMapSettings({
       showRiskField,
       riskFieldOpacity,
@@ -252,10 +261,10 @@ export default function EnterpriseMapPage({ scenario }: Props) {
   ]);
 
   useEffect(() => {
-    const intervalMs = batchStatus && !["completed", "completed_with_errors", "cancelled"].includes(batchStatus.status)
-      ? 10_000
-      : REFRESH_MS;
-    const id = window.setInterval(() => loadMarkers({ silent: true }), intervalMs);
+    if (!batchStatus || ["completed", "completed_with_errors", "cancelled"].includes(batchStatus.status)) {
+      return;
+    }
+    const id = window.setInterval(() => loadMarkers({ silent: true }), BATCH_MARKER_REFRESH_MS);
     return () => window.clearInterval(id);
   }, [loadMarkers, batchStatus?.status]);
 
@@ -435,6 +444,14 @@ export default function EnterpriseMapPage({ scenario }: Props) {
             {mapSourceLabel} · 当前场景 {scenario} · 批量预测仅调用 Stacking 模型
           </p>
         </div>
+        <button
+          type="button"
+          className="scada-btn secondary"
+          onClick={() => void loadMarkers()}
+          disabled={loading}
+        >
+          {loading ? "刷新中..." : "刷新点位"}
+        </button>
         <div className="enterprise-map-stats">
           <div><strong>{meta?.with_coordinates ?? 0}</strong><span>有效坐标</span></div>
           <div><strong>{meta?.tracked_count ?? 0}</strong><span>已跟踪</span></div>
