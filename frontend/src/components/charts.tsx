@@ -413,6 +413,8 @@ export function EarlyWarningTrendChart({ data, title = "早期预警生成趋势
       nameTextStyle: { color: "#9ca3af" },
       axisLine: { lineStyle: { color: "#374151" } },
       axisLabel: { color: "#9ca3af" },
+      min: 0,
+      max: 300,
       splitLine: { lineStyle: { color: "#1f2937" } }
     },
     series: [
@@ -1163,9 +1165,9 @@ export function CategoryPriorityHeatmapChart({ categories, priorities, matrix }:
   };
 
   return (
-    <div className="scada-card" style={{ padding: 8 }}>
-      <ReactECharts option={option} style={{ height: 400 }} />
-    </div>
+        <div className="scada-card" style={{ padding: 8, marginLeft: "-10%" }}>
+          <ReactECharts option={option} style={{ height: 400, width: "100%" }} />
+        </div>
   );
 }
 
@@ -1197,10 +1199,10 @@ export function EnterpriseCategoryHeatmapChart({ enterprises, categories, matrix
       }
     },
     grid: {
-      left: "25%",
-      right: "5%",
-      bottom: "15%",
-      top: "15%",
+      left: "12%",
+      right: "8%",
+      bottom: "10%",
+      top: "8%",
       containLabel: true
     },
     xAxis: {
@@ -1214,7 +1216,7 @@ export function EnterpriseCategoryHeatmapChart({ enterprises, categories, matrix
       type: "category",
       data: enterprises,
       axisLine: { lineStyle: { color: "#374151" } },
-      axisLabel: { color: "#e5e7eb", fontSize: 9 },
+      axisLabel: { color: "#e5e7eb", fontSize: 10 },
       splitArea: { show: true }
     },
     visualMap: {
@@ -1223,9 +1225,9 @@ export function EnterpriseCategoryHeatmapChart({ enterprises, categories, matrix
       calculable: true,
       orient: "horizontal",
       left: "center",
-      bottom: "2%",
+      bottom: "1%",
       inRange: {
-        color: ['#1b5e20', '#2e7d32', '#43a047', '#66bb6a', '#a5d6a7', '#e8f5e9']
+        color: ['#1a9850', '#91cf60', '#d9ef8b', '#fee08b', '#fc8d59', '#d73027']
       },
       text: ["强关联", "弱关联"],
       textStyle: { color: "#9ca3af" }
@@ -1238,8 +1240,8 @@ export function EnterpriseCategoryHeatmapChart({ enterprises, categories, matrix
       label: {
         show: true,
         formatter: (p: any) => p.data[2].toFixed(2),
-        fontSize: 9,
-        color: "#fff"
+        fontSize: 10,
+        color: "#1f2937"
       },
       emphasis: {
         itemStyle: {
@@ -1255,9 +1257,9 @@ export function EnterpriseCategoryHeatmapChart({ enterprises, categories, matrix
   };
 
   return (
-    <div className="scada-card" style={{ padding: 8 }}>
-      <ReactECharts option={option} style={{ height: 500 }} />
-    </div>
+        <div className="scada-card" style={{ padding: 8, marginLeft: "-10%" }}>
+          <ReactECharts option={option} style={{ height: Math.max(500, enterprises.length * 24), width: "100%" }} />
+        </div>
   );
 }
 
