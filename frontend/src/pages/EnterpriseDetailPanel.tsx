@@ -428,7 +428,34 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
           gap: 12
         }}>
           {Object.entries(basicInfo).map(([key, value], idx) => {
-            if (key === "工艺流程内容" || value === null || value === undefined || value === "") return null;
+            // 排除内部/管理字段：不直观且对安全监管用户无意义
+            const excludeKeys = [
+              "工艺流程内容",      // 已单独展示为工艺流程图
+              "是否有效",           // 系统软删除标记
+              "删除标识",           // 逻辑删除标识，与"是否有效"重叠
+              "主键ID",             // UUID，用户不可读
+              "报告历史ID",         // UUID，用户不可读
+              "创建人",             // 全是"admin"
+              "修改人",             // 全是"admin"
+              "修改时间",           // 系统时间戳，用户不关心
+              "创建时间",           // 系统时间戳，用户不关心
+              "上次调用省接口保存数据截至页数", // 调试/同步状态字段
+              "变更原因",           // 全部为null
+              "机构编码",           // 几乎全null
+              // "区县编码",           // 现已通过地区编码映射显示地名
+              "更新时间",           // 系统时间戳
+              "更新人",             // 系统字段
+              // "是否上报风险报告",   // 保留显示
+              // "是否规上企业",       // 保留显示
+              "法人证件号",         // 敏感隐私信息，不宜展示
+              "法人移动电话",       // 敏感隐私
+              "法人固定电话",       // 敏感隐私
+              "申请人联系方式",     // 敏感隐私
+              "其他名称",           // 几乎全null
+              "法人职务",           // 几乎全null
+              "法人类型",           // 几乎全null
+            ];
+            if (excludeKeys.includes(key) || value === null || value === undefined || value === "") return null;
             const labelMap: Record<string, string> = {
               "ENTNAME": "企业名称", "UNISCID": "统一社会信用代码", "REGNO": "注册号",
               "ENTTYPE": "企业类型", "INDUS_TYPE_LAGRE_NAME": "行业监管大类",
@@ -441,6 +468,94 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
               "注册地址": "注册地址", "企业名称": "企业名称",
             };
             const displayLabel = labelMap[key] || key;
+            // 对 0/1 标记类字段做友好显示
+            // 地区编码 → 地名映射（国标 GB/T 2260）
+            const regionCodeMap: Record<number, string> = {
+              320000: "江苏省", 320500: "苏州市",
+              // 市辖区
+              320505: "虎丘区", 320506: "吴中区", 320507: "相城区",
+              320508: "姑苏区", 320509: "吴江区",
+              320581: "常熟市", 320582: "张家港市", 320583: "昆山市", 320585: "太仓市",
+              // 虎丘区乡镇
+              320505002: "虎丘区浒墅关镇", 320505004: "虎丘区通安镇",
+              320505005: "虎丘区东渚镇", 320505105: "虎丘区镇湖街道",
+              320505400: "虎丘区浒墅关经济开发区", 320505501: "虎丘区科技城",
+              // 吴中区乡镇
+              320506003: "吴中区长桥街道", 320506004: "吴中区越溪街道",
+              320506005: "吴中区郭巷街道", 320506006: "吴中区横泾街道",
+              320506007: "吴中区香山街道", 320506008: "吴中区城南街道",
+              320506009: "吴中区太湖街道",
+              320506101: "吴中区甪直镇", 320506104: "吴中区光福镇",
+              320506108: "吴中区东山镇", 320506109: "吴中区木渎镇",
+              320506111: "吴中区胥口镇", 320506112: "吴中区临湖镇",
+              // 相城区乡镇
+              320507002: "相城区元和街道", 320507004: "相城区澄阳街道",
+              320507007: "相城区北桥街道", 320507009: "相城区漕湖街道",
+              320507100: "相城区望亭镇", 320507103: "相城区黄埭镇",
+              320507107: "相城区渭塘镇", 320507111: "相城区阳澄湖镇",
+              // 吴江区乡镇
+              320509003: "吴江区松陵街道", 320509004: "吴江区横扇街道",
+              320509005: "吴江区八坼街道",
+              320509101: "吴江区同里镇", 320509102: "吴江区黎里镇",
+              320509103: "吴江区平望镇", 320509104: "吴江区盛泽镇",
+              320509105: "吴江区震泽镇", 320509106: "吴江区七都镇",
+              320509107: "吴江区桃源镇",
+              // 常熟市乡镇
+              320581006: "常熟市碧溪街道", 320581007: "常熟市东南街道",
+              320581102: "常熟市梅李镇", 320581107: "常熟市古里镇",
+              320581109: "常熟市支塘镇", 320581117: "常熟市尚湖镇",
+              320581120: "常熟市辛庄镇",
+              // 张家港市乡镇
+              320582102: "张家港市塘桥镇", 320582103: "张家港市金港镇",
+              320582105: "张家港市锦丰镇", 320582107: "张家港市乐余镇",
+              320582110: "张家港市大新镇", 320582403: "张家港市双山香山旅游度假区",
+              // 昆山市乡镇
+              320583100: "昆山市玉山镇", 320583107: "昆山市周市镇",
+              320583108: "昆山市陆家镇", 320583110: "昆山市千灯镇",
+              320583111: "昆山市淀山湖镇",
+              // 太仓市乡镇
+              320585100: "太仓市城厢镇", 320585103: "太仓市浮桥镇",
+              320585105: "太仓市双凤镇", 320585109: "太仓市沙溪镇",
+              320585110: "太仓市浏河镇", 320585111: "太仓市璜泾镇",
+              320585402: "太仓市港区", 320585498: "太仓市科教新城",
+              320585500: "太仓市陆渡街道",
+              // 苏州工业园区
+              320591407: "工业园区胜浦街道", 320591408: "工业园区唯亭街道",
+              320591409: "工业园区斜塘街道", 320591410: "工业园区娄葑街道",
+            };
+            // 行业监管分类映射（GB/T 4754—2017 门类 + 地方监管细分）
+            const industryCodeMap: Record<string, string> = {
+              "A": "农、林、牧、渔业", "B": "采矿业", "C": "制造业",
+              "D": "电力、热力、燃气及水生产和供应业", "E": "建筑业",
+              "F": "批发和零售业", "G": "交通运输、仓储和邮政业",
+              "H": "住宿和餐饮业", "I": "信息传输、软件和信息技术服务业",
+              "J": "金融业", "K": "房地产业", "L": "租赁和商务服务业",
+              "M": "科学研究和技术服务业", "N": "水利、环境和公共设施管理业",
+              "O": "居民服务、修理和其他服务业",
+              "E_1": "房屋建筑业", "E_2": "土木工程建筑业", "E_3": "建筑安装业",
+              "E_4": "建筑装饰、装修和其他建筑业", "E_5": "市政公用工程",
+              "E_6": "钢结构工程", "E_8": "地基基础工程",
+            };
+            const boolValueMap: Record<string, string> = {
+              "是否上报风险报告": value === 1 ? "已上报" : "未上报",
+              "是否规上企业": value === 1 ? "是" : "否",
+              "企业规模": ({ 1: "大型", 2: "中型", 3: "小型", 4: "微型" } as Record<number, string>)[value as number] || String(value),
+              "经营状态": value === 1 ? "正常" : "非正常",
+              "是否有效": value === 1 ? "有效" : "无效",
+              "所在省": regionCodeMap[value as number] || String(value),
+              "所在市": regionCodeMap[value as number] || String(value),
+              "所在县（市、区）": regionCodeMap[value as number] || String(value),
+              "所在乡镇（街道）": regionCodeMap[value as number] || String(value),
+              "区县编码": regionCodeMap[value as number] || String(value),
+              // 金额/面积字段加单位
+              "占地面积": typeof value === "number" ? value.toLocaleString() + " ㎡" : String(value),
+              "上一年经营收入": typeof value === "number" ? "¥" + value.toLocaleString() : String(value),
+              "固定资产": typeof value === "number" ? "¥" + value.toLocaleString() : String(value),
+              // 行业监管分类：编码后加详细类别名
+              "行业监管大类": industryCodeMap[String(value)] ? String(value) + "（" + industryCodeMap[String(value)] + "）" : String(value),
+              "行业监管小类": String(value),
+            };
+            const displayValue = boolValueMap[key] !== undefined ? boolValueMap[key] : String(value);
             const colors = ["#3b82f6", "#8b5cf6", "#ec4899", "#f97316", "#10b981", "#06b6d4"];
             const c = colors[idx % colors.length];
             return (
@@ -452,7 +567,7 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
                 transition: "transform 0.2s"
               }}>
                 <div style={{ color: "#6b7280", fontSize: 11, marginBottom: 4 }}>{displayLabel}</div>
-                <div style={{ color: "#e5e7eb", fontSize: 13, fontWeight: 500, wordBreak: "break-all" }}>{String(value)}</div>
+                <div style={{ color: "#e5e7eb", fontSize: 13, fontWeight: 500, wordBreak: "break-all" }}>{displayValue}</div>
               </div>
             );
           })}
@@ -493,7 +608,39 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
             gap: 12
           }}>
             {Object.entries(safetyInfo).map(([key, value], idx) => {
-              if (key === "工艺流程内容" || value === null || value === undefined || value === "") return null;
+              // 排除内部字段
+              const excludeKeys = ["工艺流程内容", "主键ID", "报告历史ID", "时间戳", "删除标识", "主要负责人电话", "安全负责人电话"];
+              if (excludeKeys.includes(key) || value === null || value === undefined || value === "") return null;
+              // 安全信息友好映射
+              const safetyLabelMap: Record<string, string> = {
+                "企业主要负责人": "企业主要负责人", "企业安全负责人": "企业安全负责人",
+                "安全管理部门": "安全管理部门", "安全总监": "安全总监",
+                "企业职工总人数": "企业职工总人数", "企业职工外用总人数": "企业职工外用总人数",
+                "专职安全生产管理人员数": "专职安全员人数", "兼职安全生产管理人员数": "兼职安全员人数",
+                "专职安全生产管理人持证员数": "专职安全员持证人数", "兼职安全生产管理人持证员数": "兼职安全员持证人数",
+                "特种作业人数持证人数": "特种作业持证人数", "部门安全管理人员数量": "部门安全员人数",
+                "企业安全管理人员数量": "企业安全员人数",
+                "从业人员本科占比": "本科及以上占比（%）",
+                "上一年人员流动率": "人员流动率（%）",
+                "工伤保险支出（万元）": "工伤保险支出（万元）",
+                "投保人数": "投保人数",
+                "是否投保": "是否投保", "是否履行三同时手续": "是否履行三同时",
+                "主要负责人证书": "主要负责人持证", "安全负责人证书": "安全负责人持证",
+                // "主要负责人电话": "主要负责人电话", // 数据已脱敏加密，显示为乱码，隐藏
+                // "安全负责人电话": "安全负责人电话", // 数据已脱敏加密，显示为乱码，隐藏
+                "安全生产标准化建设情况": "安全生产标准化等级",
+              };
+              const displayLabel = safetyLabelMap[key] || key;
+              // 0/1 标记友好显示
+              const safetyValueMap: Record<string, string> = {
+                "是否投保": value === 1 ? "已投保" : "未投保",
+                "是否履行三同时手续": value === 1 ? "已履行" : "未履行",
+                "主要负责人证书": value === 1 ? "有" : "无",
+                "安全负责人证书": value === 1 ? "有" : "无",
+                "安全总监": value === 1 ? "已设置" : "未设置",
+                "安全生产标准化建设情况": ({ 0: "未评定", 1: "一级", 2: "二级", 3: "三级", 4: "四级", 5: "五级" } as Record<number, string>)[value as number] || String(value),
+              };
+              const displayValue = safetyValueMap[key] !== undefined ? safetyValueMap[key] : String(value);
               const colors = ["#ef4444", "#f97316", "#eab308", "#10b981", "#3b82f6", "#8b5cf6"];
               const c = colors[idx % colors.length];
               return (
@@ -503,8 +650,8 @@ export default function EnterpriseDetailPanel({ data, onBack }: Props) {
                   borderRadius: 10,
                   borderLeft: `3px solid ${c}`,
                 }}>
-                  <div style={{ color: "#6b7280", fontSize: 11, marginBottom: 4 }}>{key}</div>
-                  <div style={{ color: "#e5e7eb", fontSize: 13, fontWeight: 500, wordBreak: "break-all" }}>{String(value)}</div>
+                  <div style={{ color: "#6b7280", fontSize: 11, marginBottom: 4 }}>{displayLabel}</div>
+                  <div style={{ color: "#e5e7eb", fontSize: 13, fontWeight: 500, wordBreak: "break-all" }}>{displayValue}</div>
                 </div>
               );
             })}

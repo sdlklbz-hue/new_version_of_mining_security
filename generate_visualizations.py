@@ -17,17 +17,23 @@ def generate_early_warning_trend_data():
     dates = pd.date_range(start='2024-01-01', end='2024-12-31', freq='D')
     n_days = len(dates)
 
-    base_trend = np.linspace(15, 45, n_days)
-    seasonal = 8 * np.sin(2 * np.pi * np.arange(n_days) / 365.25 * 12)
-    weekly_pattern = 3 * np.sin(2 * np.pi * np.arange(n_days) / 7)
-    noise = np.random.normal(0, 2.5, n_days)
+    # ===== 放大波动 =====
+    base_trend = np.linspace(0, 350, n_days)
+    seasonal = 120 * np.sin(2 * np.pi * np.arange(n_days) / (365.25 / 12) * 12)
+    weekly_pattern = 70 * np.sin(2 * np.pi * np.arange(n_days) / (7 / 8))
+    noise = np.random.normal(0, 80, n_days)
 
     trend_values = base_trend + seasonal + weekly_pattern + noise
     trend_values = np.maximum(trend_values, 0).astype(int)
 
-    high_risk_warnings = (trend_values * np.random.uniform(0.15, 0.25, n_days)).astype(int)
-    medium_risk_warnings = (trend_values * np.random.uniform(0.30, 0.40, n_days)).astype(int)
+    high_risk_pcts = 0.15 + 0.30 * np.sin(2 * np.pi * np.arange(n_days) / 50) + np.random.normal(0, 0.12, n_days)
+    high_risk_pcts = np.clip(high_risk_pcts, 0.01, 0.55)
+    medium_risk_pcts = 0.30 + 0.35 * np.sin(2 * np.pi * np.arange(n_days) / 35 + 2.0) + np.random.normal(0, 0.15, n_days)
+    medium_risk_pcts = np.clip(medium_risk_pcts, 0.02, 0.70)
+    high_risk_warnings = (trend_values * high_risk_pcts).astype(int)
+    medium_risk_warnings = (trend_values * medium_risk_pcts).astype(int)
     low_risk_warnings = trend_values - high_risk_warnings - medium_risk_warnings
+    low_risk_warnings = np.maximum(low_risk_warnings, 0).astype(int)
 
     df = pd.DataFrame({
         '日期': dates,

@@ -751,14 +751,14 @@ export default function VisualizationDashboard() {
                 tooltip: {
                   trigger: "axis"
                 },
-                legend: {
+                                legend: {
                   data: ["企业数量", "风险事件", "安全检查", "违规次数"],
                   top: 0,
                   textStyle: { color: "#9ca3af", fontSize: 11 }
                 },
                 grid: {
                   left: "3%",
-                  right: "4%",
+                  right: "5%",
                   bottom: "3%",
                   containLabel: true
                 },
@@ -772,10 +772,19 @@ export default function VisualizationDashboard() {
                 yAxis: [
                   {
                     type: "value",
-                    name: "数量",
+                    name: "企业 / 检查（家/次）",
                     position: "left",
-                    axisLabel: { color: "#9ca3af" },
-                    splitLine: { lineStyle: { color: "#374151" } }
+                    axisLabel: { color: "#60a5fa" },
+                    splitLine: { lineStyle: { color: "#374151" } },
+                    nameTextStyle: { color: "#60a5fa", fontSize: 11 }
+                  },
+                  {
+                    type: "value",
+                    name: "风险 / 违规（次）",
+                    position: "right",
+                    axisLabel: { color: "#f87171" },
+                    splitLine: { show: false },
+                    nameTextStyle: { color: "#f87171", fontSize: 11 }
                   }
                 ],
                 series: [
@@ -783,6 +792,7 @@ export default function VisualizationDashboard() {
                     name: "企业数量",
                     type: "line",
                     smooth: true,
+                    yAxisIndex: 0,
                     data: enterpriseStats.monthly_trend.enterprise_count,
                     lineStyle: { width: 3, color: "#3b82f6" },
                     areaStyle: {
@@ -793,26 +803,29 @@ export default function VisualizationDashboard() {
                     },
                     itemStyle: { color: "#3b82f6" }
                   },
-                  {
+                                    {
                     name: "风险事件",
                     type: "line",
                     smooth: true,
+                    yAxisIndex: 1,
                     data: enterpriseStats.monthly_trend.risk_incidents,
                     lineStyle: { width: 3, color: "#ef4444" },
                     itemStyle: { color: "#ef4444" }
                   },
-                  {
+                                    {
                     name: "安全检查",
                     type: "line",
                     smooth: true,
+                    yAxisIndex: 0,
                     data: enterpriseStats.monthly_trend.inspections,
                     lineStyle: { width: 3, color: "#10b981" },
                     itemStyle: { color: "#10b981" }
                   },
-                  {
+                                    {
                     name: "违规次数",
                     type: "line",
                     smooth: true,
+                    yAxisIndex: 1,
                     data: enterpriseStats.monthly_trend.violations,
                     lineStyle: { width: 3, color: "#f59e0b" },
                     itemStyle: { color: "#f59e0b" }
