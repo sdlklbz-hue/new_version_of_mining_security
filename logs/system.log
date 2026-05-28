@@ -11023,3 +11023,1139 @@ json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 16217556 (c
 2026-05-25 08:41:25,650 - mining_risk_serve.api.routers.memory - INFO - 持久化 approval_store 成功: 1 条
 2026-05-25 08:41:25,651 - mining_risk_serve.api.routers.memory - INFO - 持久化 audit_log 成功: 3 条
 2026-05-25 08:41:38,649 - mining_risk_common.dataplane.loader - INFO - API 数据加载成功，企业ID: ENT-DEMO-001, 形状: (294, 41)
+2026-05-27 12:34:25,965 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 12:34:25,966 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 long_term.json，使用空数据
+2026-05-27 12:34:25,966 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 short_term.json，使用空数据
+2026-05-27 12:34:25,966 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 warning_experience.json，使用空数据
+2026-05-27 12:34:25,966 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 iteration_history.json，使用空数据
+2026-05-27 12:34:25,967 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 approval_store.json，使用空数据
+2026-05-27 12:34:25,967 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 audit_log.json，使用空数据
+2026-05-27 12:34:25,967 - mining_risk_serve.api.routers.memory - INFO - 持久化文件不存在 enterprise_risk_history.json，使用空数据
+2026-05-27 12:34:26,129 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 12:34:26,129 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 12:36:43,797 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 12:36:47,133 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 12:36:47,133 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 12:36:47,134 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 12:36:47,134 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 12:36:47,135 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 12:36:47,135 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 0 条
+2026-05-27 12:36:47,136 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 0 条
+2026-05-27 12:36:47,137 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 12:36:47,423 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 12:36:47,424 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 12:36:53,616 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 12:36:53,954 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 12:37:16,448 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 12:37:16,777 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 12:37:23,221 - mining_risk_common.dataplane.preprocessor - INFO - Pipeline 已从 artifacts/pipelines/preprocessing_pipeline.pkl 加载
+2026-05-27 12:37:23,222 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-27 12:37:23,346 - mining_risk_common.model.stacking - INFO - 基学习器 multinomial_lr (logistic_regression) 已初始化
+2026-05-27 12:37:23,347 - mining_risk_common.model.stacking - INFO - 基学习器 xgboost (xgboost) 已初始化
+2026-05-27 12:37:23,348 - mining_risk_common.model.stacking - INFO - 基学习器 lightgbm (lightgbm) 已初始化
+2026-05-27 12:37:23,351 - mining_risk_common.model.stacking - INFO - 基学习器 catboost (catboost) 已初始化
+2026-05-27 12:37:23,352 - mining_risk_common.model.stacking - INFO - 基学习器 random_forest (random_forest) 已初始化
+2026-05-27 12:37:23,353 - mining_risk_common.model.stacking - INFO - 元学习器已初始化
+2026-05-27 12:37:23,648 - mining_risk_common.model.stacking - INFO - 模型已从 artifacts/models/stacking_risk_v1_stable.pkl 加载 (meta_fitted=True, base_learners=[multinomial_lr=LogisticRegression, xgboost=XGBClassifier, lightgbm=LGBMClassifier, catboost=CatBoostClassifier, random_forest=RandomForestClassifier])
+2026-05-27 12:37:34,992 - mining_risk_serve.harness.agentfs - INFO - AgentFS 数据库已初始化
+2026-05-27 12:37:35,111 - mining_risk_serve.harness.agentfs - INFO - Git 仓库已初始化: var/agentfs/git
+2026-05-27 12:37:35,169 - mining_risk_serve.agent.workflow - WARNING - 记忆召回跳过: VectorStore 需要可选依赖 chromadb。请安装 `pip install -r requirements-rag.txt` 或 `pip install -r requirements-full.txt`。 原始错误: No module named 'chromadb'
+2026-05-27 12:37:35,177 - mining_risk_serve.agent.workflow - ERROR - 决策生成失败: Missing credentials. Please pass an `api_key`, `workload_identity`, `admin_api_key`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+2026-05-27 12:37:35,191 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-27 12:37:35,288 - mining_risk_serve.agent.workflow - WARNING - 记忆召回跳过: VectorStore 需要可选依赖 chromadb。请安装 `pip install -r requirements-rag.txt` 或 `pip install -r requirements-full.txt`。 原始错误: No module named 'chromadb'
+2026-05-27 12:37:35,292 - mining_risk_serve.agent.workflow - ERROR - 决策生成失败: Missing credentials. Please pass an `api_key`, `workload_identity`, `admin_api_key`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+2026-05-27 12:37:35,294 - mining_risk_serve.api.services.prediction_service - WARNING - Workflow 返回结果不完整，降级至 Mock: Missing credentials. Please pass an `api_key`, `workload_identity`, `admin_api_key`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+2026-05-27 12:37:35,312 - mining_risk_serve.api.services.decision_store - INFO - 完整决策结果已输出: D:\Desktop\new_version_of_mining_security\var\decisions\ENT-DEMO-001_chemical_20260527_123735_310030.json
+2026-05-27 12:37:35,314 - mining_risk_serve.api.routers.memory - INFO - 持久化 approval_store 成功: 1 条
+2026-05-27 12:37:35,315 - mining_risk_serve.api.routers.memory - INFO - 持久化 audit_log 成功: 1 条
+2026-05-27 12:37:54,928 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 12:37:55,000 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 12:37:55,002 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 12:37:55,016 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 12:37:55,032 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 12:37:55,041 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 12:37:55,288 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 12:37:59,286 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 12:37:59,327 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 12:37:59,329 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 12:37:59,592 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 12:37:59,598 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 12:37:59,604 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 12:37:59,634 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 12:42:13,453 - mining_risk_serve.api.routers.memory - ERROR - 读取文件失败 D:\Desktop\new_version_of_mining_security\datasets\raw\public\新建文件夹\cf_government_units_copy1_202605270737.csv: No columns to parse from file
+2026-05-27 12:42:13,454 - mining_risk_serve.api.routers.memory - ERROR - 读取文件失败 D:\Desktop\new_version_of_mining_security\datasets\raw\public\新建文件夹\cf_government_units_copy1_202605270959.csv: No columns to parse from file
+2026-05-27 13:54:25,334 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 13:54:26,529 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 13:54:26,532 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 13:54:26,534 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 13:54:26,536 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 13:54:26,537 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 13:54:26,538 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 13:54:26,539 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 13:54:26,945 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 13:54:26,947 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 13:55:06,083 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 13:55:06,181 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 13:55:14,031 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 13:55:14,061 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 13:55:14,078 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 13:55:14,086 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 13:55:14,121 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 13:55:14,123 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 13:55:14,342 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 13:55:17,570 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 13:55:17,611 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 13:55:17,619 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 13:55:17,624 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 13:55:17,877 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 13:55:17,878 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 13:55:17,908 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:16:24,070 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:16:25,465 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:16:25,467 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:16:25,474 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:16:25,477 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:16:25,479 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:16:25,480 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:16:25,482 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:18:31,922 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:18:33,299 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:18:33,302 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:18:33,304 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:18:33,306 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:18:33,307 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:18:33,308 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:18:33,308 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:18:33,745 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:18:33,746 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:18:48,844 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:18:53,624 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:18:54,842 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:18:54,847 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:18:54,853 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:18:54,856 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:18:54,857 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:18:54,859 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:18:54,859 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:18:55,222 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:18:55,223 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:20:27,708 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:20:32,684 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:20:33,968 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:20:33,971 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:20:33,972 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:20:33,974 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:20:33,975 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:20:33,976 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:20:33,977 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:20:34,414 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:20:34,415 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:20:37,705 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:20:42,725 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:20:43,961 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:20:43,964 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:20:43,966 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:20:43,968 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:20:43,970 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:20:43,971 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:20:43,972 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:20:44,386 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:20:44,387 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:20:46,370 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:20:51,423 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:20:52,591 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:20:52,593 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:20:52,595 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:20:52,596 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:20:52,596 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:20:52,598 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:20:52,599 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:20:53,005 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:20:53,006 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:21:12,655 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:21:12,774 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:21:13,918 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:13,950 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:13,952 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:21:14,001 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:21:14,014 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:21:14,023 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:21:14,268 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:18,042 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:18,075 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:18,077 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:21:18,335 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:21:18,341 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:21:18,345 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:21:18,358 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:25,868 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:26,063 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:21:26,070 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:21:26,078 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:21:26,097 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:26,100 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:21:26,212 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:31,188 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:21:31,218 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:31,498 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:21:31,503 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:21:31,507 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:21:31,520 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:31,522 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:21:31,557 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:31,859 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:31,881 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:31,883 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:21:31,942 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:21:31,948 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:21:31,953 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:21:32,186 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:36,030 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:36,051 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:21:36,255 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:36,256 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:21:36,328 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:21:36,333 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:21:36,338 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:21:36,384 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:21:40,501 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:22:36,177 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:22:41,831 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:22:43,025 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:22:43,028 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:22:43,031 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:22:43,032 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:22:43,034 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:22:43,035 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:22:43,036 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:22:43,443 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:22:43,444 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:22:48,709 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:22:53,849 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:22:55,054 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:22:55,057 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:22:55,058 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:22:55,059 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:22:55,062 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:22:55,063 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:22:55,064 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:22:55,510 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:22:55,511 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:23:12,216 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:23:12,261 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:23:12,264 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:23:12,297 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:23:12,311 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:23:12,320 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:23:12,558 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:23:16,195 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:23:16,234 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:23:16,523 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:23:16,525 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:23:16,542 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:23:16,550 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:23:16,558 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:23:16,579 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:23:20,048 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:24:18,479 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:24:18,658 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:24:18,660 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:24:18,668 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:24:18,675 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:24:18,681 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:24:18,811 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:24:22,372 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:24:22,474 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:24:22,703 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:24:22,705 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:24:22,713 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:24:22,718 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:24:22,723 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:24:22,812 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:24:26,820 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:26:01,965 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:26:07,042 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:26:08,291 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:26:08,296 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:26:08,297 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:26:08,298 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:26:08,299 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:26:08,300 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:26:08,301 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:26:08,708 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:26:08,710 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:26:13,398 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:26:18,455 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:26:19,709 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:26:19,712 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:26:19,714 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:26:19,715 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:26:19,716 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:26:19,716 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:26:19,717 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:26:20,142 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:26:20,144 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:33:22,969 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:34:02,416 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:34:03,586 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:34:03,589 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:34:03,591 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:34:03,592 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:34:03,593 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:34:03,593 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:34:03,594 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:34:04,017 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:34:04,018 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:36:29,285 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:36:33,743 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:36:34,808 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 56212 条
+2026-05-27 14:36:34,810 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:36:34,814 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:36:34,815 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:36:34,816 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:36:34,818 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:36:34,819 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:36:35,243 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:36:35,244 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:37:07,826 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:37:11,669 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:37:12,482 - mining_risk_serve.api.routers.memory - ERROR - 加载 long_term 失败: Expecting value: line 1 column 43012193 (char 43012192)
+Traceback (most recent call last):
+  File "D:\Desktop\new_version_of_mining_security\packages\mining_risk_serve\src\mining_risk_serve\api\routers\memory.py", line 109, in _load_store
+    data = json.load(f)
+  File "D:\Python310\lib\json\__init__.py", line 293, in load
+    return loads(fp.read(),
+  File "D:\Python310\lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "D:\Python310\lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "D:\Python310\lib\json\decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 43012193 (char 43012192)
+2026-05-27 14:37:12,494 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:37:12,495 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:37:12,496 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:37:12,497 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:37:12,498 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:37:12,500 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:37:13,013 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:37:13,014 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:38:06,205 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:38:06,528 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:38:08,649 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:38:08,689 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:38:08,691 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:38:08,727 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:38:08,740 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:38:08,749 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:38:09,001 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:38:12,838 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:38:12,870 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:38:12,873 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:38:13,119 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:38:13,124 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:38:13,128 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:38:13,169 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:44:26,090 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:44:29,584 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:44:29,585 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:44:29,585 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:44:29,586 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:44:29,587 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:44:29,587 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:44:29,588 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:44:29,588 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:44:29,853 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:44:29,855 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:45:25,220 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:45:28,911 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:45:28,912 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:45:28,914 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:45:28,915 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:45:28,916 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:45:28,916 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:45:28,917 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:45:28,918 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:45:29,335 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:45:29,336 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:45:51,116 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:45:54,708 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:45:54,709 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:45:54,709 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:45:54,710 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:45:54,710 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:45:54,711 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:45:54,711 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:45:54,711 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:45:54,987 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:45:54,988 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:46:50,814 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:46:54,756 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:46:54,757 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:46:54,758 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:46:54,759 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:46:54,761 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:46:54,762 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:46:54,763 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:46:54,765 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:46:55,166 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:46:55,167 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:47:04,819 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:47:08,434 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:47:08,435 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:47:08,436 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:47:08,436 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:47:08,437 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:47:08,438 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:47:08,438 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:47:08,439 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:47:08,811 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:47:08,813 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:48:15,106 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:48:19,849 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:48:19,850 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:48:19,851 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:48:19,852 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:48:19,853 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:48:19,854 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:48:19,855 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:48:19,856 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:48:20,309 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:48:20,310 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:49:22,883 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:49:27,595 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:49:27,597 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:49:27,598 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:49:27,599 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:49:27,600 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:49:27,601 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:49:27,603 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:49:27,603 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:49:27,979 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:49:27,980 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:51:02,095 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:51:06,183 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:51:06,185 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:51:06,186 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:51:06,187 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:51:06,187 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:51:06,188 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:51:06,189 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:51:06,190 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:51:06,610 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:51:06,612 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:51:27,637 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:51:32,544 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:51:32,545 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:51:32,546 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:51:32,547 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:51:32,548 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:51:32,549 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:51:32,550 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:51:32,551 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:51:32,926 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:51:32,928 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:51:36,216 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:51:40,957 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:51:40,958 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:51:40,959 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:51:40,961 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:51:40,962 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:51:40,963 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:51:40,964 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:51:40,966 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:51:41,380 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:51:41,382 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:52:08,612 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:52:08,678 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:52:08,680 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:52:08,694 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:52:08,707 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:52:08,715 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:52:08,969 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:52:12,392 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:52:12,420 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:52:12,724 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:52:12,726 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:52:12,770 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:52:12,777 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:52:12,782 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:52:12,812 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:52:16,492 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:53:14,460 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:53:18,538 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:53:18,539 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:53:18,540 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:53:18,541 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:53:18,542 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:53:18,543 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:53:18,544 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:53:18,545 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:53:18,960 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:53:18,962 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:53:57,111 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:54:01,186 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:54:01,188 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:54:01,189 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:54:01,190 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:54:01,192 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:54:01,193 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:54:01,194 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:54:01,194 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:54:01,606 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:54:01,608 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:54:05,671 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:54:09,044 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:54:09,044 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:54:09,044 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:54:09,045 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:54:09,045 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:54:09,046 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:54:09,047 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:54:09,047 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:54:09,201 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:54:09,202 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:54:20,045 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:54:24,401 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:54:24,402 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:54:24,403 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:54:24,405 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:54:24,406 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:54:24,406 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:54:24,407 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:54:24,408 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:54:24,831 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:54:24,832 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:54:58,714 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:54:58,749 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:54:58,752 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:54:58,764 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:54:58,776 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:54:58,783 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:54:59,056 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:55:02,606 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:55:02,643 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:55:03,050 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:55:03,051 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 14:55:03,064 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 14:55:03,095 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 14:55:03,106 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 14:55:03,114 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 14:55:06,768 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 14:57:23,301 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:57:26,639 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:57:26,639 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:57:26,639 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:57:26,640 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:57:26,640 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:57:26,641 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:57:26,641 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:57:26,642 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:57:26,850 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:57:26,850 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 14:57:49,737 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 14:57:53,687 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 14:57:53,689 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 14:57:53,690 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 14:57:53,691 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 14:57:53,692 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 14:57:53,693 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 14:57:53,695 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 14:57:53,696 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 14:57:54,009 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 14:57:54,010 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:01:20,340 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:01:24,101 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:01:24,103 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:01:24,104 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:01:24,105 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:01:24,107 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:01:24,108 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:01:24,109 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:01:24,110 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:01:24,563 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:01:24,565 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:02:39,616 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:02:43,524 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:02:43,525 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:02:43,526 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:02:43,528 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:02:43,530 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:02:43,531 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:02:43,533 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:02:43,534 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:02:43,981 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:02:43,983 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:04:40,908 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:04:44,726 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:04:44,727 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:04:44,730 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:04:44,731 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:04:44,732 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:04:44,734 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:04:44,735 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:04:44,736 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:04:45,234 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:04:45,235 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:05:06,352 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:05:11,928 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:05:11,930 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:05:11,931 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:05:11,933 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:05:11,934 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:05:11,936 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:05:11,937 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:05:11,939 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:05:12,432 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:05:12,434 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:06:28,821 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:06:32,300 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:06:32,302 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:06:32,302 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:06:32,303 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:06:32,303 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:06:32,305 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:06:32,306 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:06:32,306 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:06:32,600 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:06:32,601 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:07:48,140 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:07:51,698 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:07:51,700 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:07:51,702 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:07:51,703 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:07:51,704 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:07:51,705 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:07:51,706 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:07:51,709 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:07:52,055 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:07:52,057 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:08:55,559 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:08:59,683 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:08:59,683 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:08:59,685 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:08:59,686 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:08:59,687 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:08:59,687 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:08:59,689 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:08:59,691 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:09:00,115 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:09:00,116 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:11:24,611 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:11:28,052 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:11:28,053 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:11:28,053 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:11:28,054 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:11:28,054 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:11:28,055 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:11:28,055 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:11:28,056 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:11:28,383 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:11:28,384 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:22:45,354 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:22:50,564 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:22:50,566 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:22:50,567 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:22:50,568 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:22:50,569 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:22:50,570 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:22:50,571 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:22:50,572 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:22:51,009 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:22:51,011 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:23:17,215 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:23:21,200 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:23:21,200 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:23:21,201 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:23:21,203 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:23:21,204 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:23:21,205 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:23:21,206 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:23:21,207 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:23:21,620 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:23:21,622 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:23:33,112 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 15:23:33,445 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 15:26:17,878 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:26:21,624 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:26:21,625 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:26:21,625 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:26:21,626 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:26:21,626 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:26:21,626 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:26:21,626 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:26:21,627 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:26:22,028 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:26:22,029 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:27:46,332 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:27:50,166 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:27:50,167 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:27:50,169 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:27:50,170 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:27:50,171 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:27:50,173 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:27:50,174 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:27:50,176 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:27:50,608 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:27:50,610 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:30:57,073 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:31:00,478 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:31:00,479 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:31:00,480 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:31:00,480 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:31:00,481 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:31:00,481 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:31:00,482 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:31:00,482 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:31:00,700 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:31:00,700 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:36:59,930 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:37:02,649 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:37:02,650 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:37:02,650 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:37:02,651 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:37:02,651 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:37:02,651 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:37:02,652 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:37:02,652 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:37:02,810 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:37:02,811 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:40:32,924 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:40:36,721 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:40:36,722 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:40:36,723 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:40:36,725 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:40:36,726 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:40:36,727 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:40:36,728 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:40:36,730 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:40:37,166 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:40:37,168 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:40:56,404 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:41:00,518 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:41:00,519 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:41:00,521 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:41:00,522 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:41:00,523 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:41:00,524 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:41:00,526 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:41:00,527 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:41:00,934 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:41:00,935 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:47:34,816 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:47:38,610 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:47:38,611 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:47:38,612 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:47:38,612 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:47:38,613 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:47:38,614 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:47:38,614 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:47:38,615 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:47:38,943 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:47:38,945 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:47:49,848 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:47:54,075 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:47:54,076 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:47:54,077 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:47:54,079 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:47:54,080 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:47:54,081 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:47:54,082 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:47:54,083 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:47:54,539 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:47:54,540 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:48:22,991 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 15:48:23,067 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 15:48:23,070 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 15:48:23,106 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 15:48:23,129 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 15:48:23,139 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 15:48:23,358 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 15:48:27,224 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 15:48:27,252 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 15:48:27,254 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 15:48:27,527 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 15:48:27,532 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 15:48:27,537 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 15:48:27,551 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 15:52:11,062 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:52:14,850 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:52:14,851 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:52:14,852 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:52:14,853 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:52:14,855 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:52:14,856 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:52:14,857 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:52:14,857 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:52:15,288 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:52:15,289 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 15:52:49,944 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 15:52:53,881 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 15:52:53,882 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 15:52:53,884 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 15:52:53,886 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 15:52:53,886 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 15:52:53,888 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 15:52:53,888 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 15:52:53,889 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 15:52:54,346 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 15:52:54,347 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:16:00,850 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:16:04,471 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:16:04,471 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:16:04,472 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:16:04,472 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:16:04,473 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:16:04,473 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:16:04,473 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:16:04,474 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:16:04,651 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:16:04,652 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:18:21,338 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:18:24,809 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:18:24,810 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:18:24,810 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:18:24,811 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:18:24,811 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:18:24,811 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:18:24,812 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:18:24,812 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:18:24,995 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:18:24,996 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:18:39,204 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:18:42,573 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:18:42,574 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:18:42,575 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:18:42,575 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:18:42,576 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:18:42,576 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:18:42,577 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:18:42,577 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:18:42,752 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:18:42,753 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:29:17,977 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:29:21,905 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:29:21,906 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:29:21,906 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:29:21,907 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:29:21,907 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:29:21,908 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:29:21,908 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:29:21,909 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:29:22,174 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:29:22,176 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:29:38,080 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:29:41,348 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:29:41,348 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:29:41,349 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:29:41,350 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:29:41,350 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:29:41,351 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:29:41,351 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:29:41,352 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:29:41,608 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:29:41,609 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:33:40,066 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:33:43,241 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:33:43,242 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:33:43,242 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:33:43,243 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:33:43,243 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:33:43,244 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:33:43,244 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:33:43,244 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:33:43,417 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:33:43,419 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:34:30,132 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:34:33,239 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:34:33,239 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:34:33,240 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:34:33,241 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:34:33,242 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:34:33,243 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:34:33,244 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:34:33,244 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:34:33,393 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:34:33,394 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:39:26,125 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:39:29,796 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:39:29,796 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:39:29,797 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:39:29,797 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:39:29,798 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:39:29,798 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:39:29,798 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:39:29,799 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:39:29,945 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:39:29,945 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:41:05,706 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:41:09,320 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:41:09,321 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:41:09,322 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:41:09,322 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:41:09,323 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:41:09,323 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:41:09,324 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:41:09,324 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:41:09,687 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:41:09,688 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:41:40,818 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 16:41:41,153 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 16:48:53,279 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:48:56,634 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:48:56,634 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:48:56,634 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:48:56,635 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:48:56,635 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:48:56,635 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:48:56,635 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:48:56,636 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:48:56,777 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:48:56,778 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:54:30,637 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:54:33,671 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:54:33,671 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:54:33,672 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:54:33,673 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:54:33,674 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:54:33,674 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:54:33,675 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:54:33,675 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:54:33,831 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:54:33,831 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:55:11,321 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 16:55:11,654 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 16:57:13,012 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:57:16,635 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:57:16,636 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:57:16,636 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:57:16,637 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:57:16,637 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:57:16,638 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:57:16,638 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:57:16,639 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:57:16,863 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:57:16,864 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:58:21,652 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 16:58:25,076 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 16:58:25,078 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 16:58:25,079 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 16:58:25,080 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 16:58:25,081 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 16:58:25,082 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 16:58:25,082 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 16:58:25,083 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 16:58:25,359 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 16:58:25,360 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 16:59:29,016 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 16:59:29,346 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 17:04:45,360 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 17:04:49,033 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 17:04:49,033 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 17:04:49,033 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 17:04:49,034 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 17:04:49,034 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 17:04:49,035 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 17:04:49,035 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 17:04:49,036 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 17:04:49,347 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 17:04:49,349 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 17:08:28,664 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 17:08:32,001 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 17:08:32,002 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 17:08:32,002 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 17:08:32,003 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 17:08:32,004 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 17:08:32,005 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 17:08:32,005 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 17:08:32,006 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 17:08:32,289 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 17:08:32,290 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 17:16:33,897 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 17:16:34,227 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 17:22:16,718 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 17:22:20,314 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 17:22:20,314 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 17:22:20,315 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 17:22:20,315 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 17:22:20,315 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 17:22:20,316 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 17:22:20,316 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 17:22:20,317 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 17:22:20,481 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 17:22:20,482 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 17:24:56,338 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 17:24:59,738 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 17:24:59,739 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 17:24:59,740 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 17:24:59,740 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 17:24:59,741 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 17:24:59,741 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 17:24:59,742 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 17:24:59,742 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 17:24:59,959 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 17:24:59,960 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 17:25:01,735 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 17:25:04,834 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 17:25:04,835 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 17:25:04,835 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 17:25:04,836 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 17:25:04,836 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 17:25:04,837 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 17:25:04,837 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 17:25:04,837 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 17:25:05,038 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 17:25:05,039 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 17:26:50,452 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 17:26:53,850 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 17:26:53,851 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 17:26:53,852 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 17:26:53,853 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 17:26:53,853 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 17:26:53,853 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 17:26:53,853 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 17:26:53,854 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 17:26:54,067 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 17:26:54,068 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 17:29:34,023 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 17:29:34,355 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 17:31:20,929 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 17:31:24,513 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 17:31:24,513 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 17:31:24,514 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 17:31:24,515 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 17:31:24,516 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 17:31:24,516 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 17:31:24,517 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 17:31:24,518 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 17:31:24,863 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 17:31:24,864 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 17:32:10,977 - mining_risk_serve.api.main - INFO - 应用关闭
+2026-05-27 17:32:14,100 - mining_risk_serve.api.routers.memory - INFO - 自动保存线程已启动（每30秒）
+2026-05-27 17:32:14,101 - mining_risk_serve.api.routers.memory - INFO - 加载 long_term 成功: 0 条
+2026-05-27 17:32:14,105 - mining_risk_serve.api.routers.memory - INFO - 加载 short_term 成功: 0 条
+2026-05-27 17:32:14,106 - mining_risk_serve.api.routers.memory - INFO - 加载 warning_experience 成功: 0 条
+2026-05-27 17:32:14,107 - mining_risk_serve.api.routers.memory - INFO - 加载 iteration_history 成功: 0 条
+2026-05-27 17:32:14,107 - mining_risk_serve.api.routers.memory - INFO - 加载 approval_store 成功: 1 条
+2026-05-27 17:32:14,109 - mining_risk_serve.api.routers.memory - INFO - 加载 audit_log 成功: 1 条
+2026-05-27 17:32:14,109 - mining_risk_serve.api.routers.memory - INFO - 加载 enterprise_risk_history 成功: 0 条
+2026-05-27 17:32:14,351 - mining_risk_serve.api.main - INFO - mining_risk_agent v1.0.0 启动中...
+2026-05-27 17:32:14,352 - mining_risk_serve.api.main - WARNING - RAG 索引尚未建立（D:\Desktop\new_version_of_mining_security\var\chroma\chroma.sqlite3 不存在）。请安装 requirements-rag.txt 后执行: python scripts/rebuild_rag_index.py
+2026-05-27 18:10:30,546 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:10:30,593 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:10:30,595 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 18:10:30,640 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 18:10:30,660 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 18:10:30,668 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 18:10:30,905 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:10:34,878 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:10:34,908 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:10:34,911 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 18:10:35,185 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 18:10:35,190 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 18:10:35,195 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 18:10:35,242 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:15:30,939 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 18:15:31,272 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 18:32:29,827 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 18:32:30,142 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 18:48:49,206 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 18:48:49,538 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 18:59:21,299 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:59:21,328 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 18:59:21,342 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 18:59:21,350 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 18:59:21,387 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:59:21,389 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 18:59:25,489 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:59:25,508 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:59:25,532 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 18:59:25,541 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 18:59:25,548 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 18:59:25,811 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 18:59:25,814 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 18:59:33,422 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 19:01:43,274 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 19:01:43,307 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 19:01:43,316 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 19:01:43,323 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 19:01:43,341 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 19:01:43,344 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 19:01:43,608 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 19:01:47,858 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 19:01:47,883 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 19:01:47,892 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 19:01:47,899 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 19:01:48,161 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 19:01:48,162 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 19:01:48,227 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:00,584 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:00,868 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:00,869 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 20:02:00,879 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 20:02:00,882 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 20:02:00,884 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 20:02:02,394 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:11,720 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:12,023 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:12,024 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 20:02:12,028 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 20:02:12,032 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 20:02:12,034 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 20:02:12,046 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:23,040 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:23,041 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 20:02:23,049 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 20:02:23,052 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 20:02:23,054 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 20:02:23,059 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:23,352 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:46,687 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:47,001 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:02:47,002 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 20:02:47,004 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 20:02:47,007 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 20:02:47,009 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 20:02:47,020 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:39:07,629 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:39:07,677 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:39:07,678 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 20:39:07,682 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 20:39:07,686 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 20:39:07,689 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 20:39:07,957 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:39:09,438 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 20:39:09,450 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:39:09,753 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:39:09,753 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 20:39:09,758 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 20:39:09,761 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 20:39:09,763 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 20:39:09,776 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 20:39:11,635 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 21:18:01,259 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 21:18:01,570 - mining_risk_serve.iteration.monitor - INFO - 监控表已初始化
+2026-05-27 21:18:04,605 - mining_risk_common.dataplane.preprocessor - INFO - Pipeline 已从 artifacts/pipelines/preprocessing_pipeline.pkl 加载
+2026-05-27 21:18:04,606 - mining_risk_serve.agent.workflow - INFO - Workflow 输入字段标准化完成: mapped=['企业名称->enterprise_name', '企业职工总人数->staff_num', '专职安全生产管理人员数->fulltime_safety_num', '兼职安全生产管理人员数->parttime_safety_num', '上一年经营收入->last_year_income', '固定资产->fixed_assets', '安全生产标准化建设情况->safety_build', '行业监管大类->supervision_large', '国民经济大类->indus_type_large', '是否发生事故->risk_accident_flag', '是否发现问题隐患 0-否 1-是->has_risk_item'] defaulted_count=49
+2026-05-27 21:18:04,658 - mining_risk_common.model.stacking - INFO - 基学习器 multinomial_lr (logistic_regression) 已初始化
+2026-05-27 21:18:04,660 - mining_risk_common.model.stacking - INFO - 基学习器 xgboost (xgboost) 已初始化
+2026-05-27 21:18:04,660 - mining_risk_common.model.stacking - INFO - 基学习器 lightgbm (lightgbm) 已初始化
+2026-05-27 21:18:04,664 - mining_risk_common.model.stacking - INFO - 基学习器 catboost (catboost) 已初始化
+2026-05-27 21:18:04,665 - mining_risk_common.model.stacking - INFO - 基学习器 random_forest (random_forest) 已初始化
+2026-05-27 21:18:04,665 - mining_risk_common.model.stacking - INFO - 元学习器已初始化
+2026-05-27 21:18:04,819 - mining_risk_common.model.stacking - INFO - 模型已从 artifacts/models/stacking_risk_v1_stable.pkl 加载 (meta_fitted=True, base_learners=[multinomial_lr=LogisticRegression, xgboost=XGBClassifier, lightgbm=LGBMClassifier, catboost=CatBoostClassifier, random_forest=RandomForestClassifier])
+2026-05-27 21:18:10,686 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 21:18:10,695 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 21:18:10,698 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 21:18:10,700 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 21:18:10,707 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 21:18:10,707 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 21:18:11,008 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 21:18:12,364 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_enterprise_risk_history.csv, 共 100 行
+2026-05-27 21:18:12,367 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: enterprise_routine_check_log.csv, 共 100 行
+2026-05-27 21:18:12,371 - mining_risk_serve.api.routers.visualization - INFO -   加载成功: szs_ent_label_report_history.csv, 共 100 行
+2026-05-27 21:18:12,378 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 21:18:12,379 - mining_risk_serve.api.routers.visualization - INFO - 成功加载 100 个企业名称，按名称长度降序排列
+2026-05-27 21:18:12,386 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 21:18:12,688 - mining_risk_serve.api.routers.visualization - INFO - 成功加载企业数据: D:\Desktop\new_version_of_mining_security\datasets\raw\public\数据参考\szs_enterprise_information.csv, 共 100 条记录
+2026-05-27 21:18:49,762 - mining_risk_serve.api.main - INFO - 应用关闭

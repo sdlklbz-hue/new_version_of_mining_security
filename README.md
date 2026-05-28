@@ -514,6 +514,7 @@ python scripts/fetch_emergency_facilities.py
 **README 与 config 不一致？**  
 以 `config.yaml` 为准（基学习器数量、模型路径、RAG 开关）。
 
+**新的数据库放在"new_version_of_mining_security\datasets\raw\public\数据补充"文件夹里**
 ---
 
 ## 许可证
